@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shader name="TextBatchDefaultShader">
+
+  <properties>
+    <transparent enabled="false" />
+    <blend enabled="true" template_file="Blend.DefaultAlpha.xml"/>
+    <cull enabled="false" />
+    <depth enabled="false" />
+  </properties>
+  
+  <aliases>
+    <alias uniform="mvp0" type="mat4" ref="ModelViewProjectionMatrix" />
+	<alias uniform="fx0" type="vec4" ref="Callback" />
+	<alias uniform="fx1" type="float" ref="Callback" />
+	<alias uniform="fx2" type="float" ref="Callback" />
+	<alias uniform="fx3" type="vec4" ref="Callback" />
+	<alias uniform="fx4" type="vec4" ref="Callback" />
+	<alias uniform="fx5" type="vec4" ref="Callback" />
+	<alias uniform="fx6" type="vec2" ref="Callback" />
+	<alias uniform="fx7" type="vec4" ref="Callback" />
+	<alias uniform="fx8" type="vec2" ref="Callback" />
+	<alias uniform="fx9" type="vec4" ref="Callback" />
+	<alias uniform="fx10" type="vec4" ref="Callback" />
+	<alias uniform="fx11" type="vec4" ref="Callback" />
+	<alias uniform="fx12" type="vec4" ref="Callback" />
+  </aliases>
+  
+  <vertex>
+    <![CDATA[
+    #version 330 core
+    layout (location = 0) in vec4 pos0uv0;
+    
+    out vec2 uv0_out;
+	out float upside_out;
+    in int gl_VertexID;
+	
+    uniform mat4 mvp0;
+	
+	uniform float fx2; //italic = font_max_width * italic_power
+	
+    void main()
+    {
+		upside_out = 1.0-step(2.0,mod(gl_VertexID, 4));
+		
+		gl_Position = mvp0 * vec4(pos0uv0.xy+vec2(fx2*upside_out,0.0), 0.0, 1.0);
+		
+		uv0_out = pos0uv0.zw;
+    }
+    ]]>
+  </vertex>
+  
+  <fragment>
+    <![CDATA[
+    #version 330 core
+    out vec4 FragColor;
+    
+    in vec2 uv0_out;
+	in float upside_out;
+	   
+    uniform sampler2D tex0;
+	
+	uniform vec4 fx0; //brush_color
+	uniform float fx1; //brush_bold_power
+	
+	uniform vec4 fx3; //gradient_color_up
+	uniform vec4 fx4; //gradient_color_down
+	
+	uniform vec4 fx5; //outer_glow_color
+	uniform vec2 fx6; //_brush_outer_glow_min_range and _brush_outer_glow_max_range
+
+	uniform vec4 fx7; //inner_glow_color
+	uniform vec2 fx8; //_brush_inner_glow_min_range and _brush_inner_glow_max_range
+	
+	uniform vec4 fx9; //inner_shadow_color
+	uniform vec4 fx10; //_brush_inner_shadow_min_range and _brush_inner_shadow_max_range and shift_x and shift_y
+	
+	uniform vec4 fx11; //outer_shadow_color
+	uniform vec4 fx12; //_brush_outer_shadow_min_range and _brush_outer_shadow_max_range and shift_x and shift_y
+	
+	float median(float r, float g, float b) {
+		return max(min(r, g), min(max(r, g), b));
+	}
+	
+    void main()
+    {
+		FragColor = texture(tex0, uv0_out);
+
+		float distance_field_range = 0.45 * (1.0 - fx1);
+		
+		float glyph_med = median(FragColor.r, FragColor.g, FragColor.b);
+		
+		vec3 ShadowSample;
+		ShadowSample = texture(tex0, uv0_out + fx10.zw).rgb;
+		ShadowSample.x = median(ShadowSample.r, ShadowSample.g, ShadowSample.b);
+		ShadowSample.y = texture(tex0, uv0_out + fx12.zw).a;
+		
+		vec4 result_color;
+		
+		vec4 gradient_color = mix(fx4, fx3, (clamp(upside_out,0.25,0.75)-0.25)/0.5);
+		
+		result_color.rgb = mix(fx0.rgb, gradient_color.rgb, gradient_color.a);
+		result_color.a = smoothstep(distance_field_range,distance_field_range + 0.1,glyph_med)*fx0.a;
+		
+		//inner_shadow
+		float inner_shadow = smoothstep(fx10.x,fx10.y,ShadowSample.x);
+		result_color.rgb = mix(result_color.rgb, fx9.rgb, (1.0-inner_shadow) * result_color.a * fx9.a);
+		
+		//inner_glow
+		result_color.rgb = mix(result_color.rgb, fx7.rgb, (1.0-smoothstep(fx8.x,fx8.y,glyph_med)) * result_color.a * fx7.a);
+		
+		//outer_shadow
+		float outer_shadow_a = smoothstep(fx12.x,fx12.y,ShadowSample.y)*fx11.a;
+		//result_color.rgb = mix(result_color.rgb, fx11.rgb, clamp(outer_shadow_a-result_color.a,0.0,1.0));
+
+		//outer_glow
+		float outer_glow_a = smoothstep(fx6.x,fx6.y,FragColor.a)*fx5.a;
+		//result_color.rgb = mix(result_color.rgb, fx5.rgb, clamp((1.0-result_color.a)*outer_glow_a,0.0,1.0));
+		
+		//Sresult_color.rgb = mix(result_color.rgb,mix(fx11.rgb, fx5.rgb, outer_glow_a), 1.0-result_color.a);
+
+
+		float stepped_outer_shadow_a = step(0.001,outer_shadow_a);
+		float stepped_outer_glow_a = step(0.001,outer_glow_a);
+		
+		vec3 layers_mix = vec3(mix(outer_shadow_a,stepped_outer_shadow_a, 1.0-stepped_outer_glow_a),result_color.a,mix(outer_glow_a, stepped_outer_glow_a, 1.0-stepped_outer_shadow_a));
+		
+		result_color.a = max(max(outer_glow_a, outer_shadow_a),result_color.a);
+
+		//vec3 res2;
+		//res2.rgb = mix(result_color.rgb, fx11.rgb, clamp(layers_mix.r-layers_mix.g,0,1));
+				
+		FragColor = result_color*0.001+vec4(layers_mix,result_color.a*0.001+1.0);
+    }
+    ]]>
+  </fragment>
+  
+  <geometry>
+    <![CDATA[]]>
+  </geometry>
+</shader>

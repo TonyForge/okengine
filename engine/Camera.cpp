@@ -1,0 +1,230 @@
+#include "Camera.h"
+
+ok::graphics::Camera* ok::graphics::Camera::_currentCamera = nullptr;
+std::stack<ok::graphics::Camera*>  ok::graphics::Camera::_currentCamera_stack;
+bool ok::graphics::Camera::_fixed_resolution_enabled;
+bool ok::graphics::Camera::_keep_aspect_ratio_enabled;
+int ok::graphics::Camera::_viewport_x;
+int ok::graphics::Camera::_viewport_y;
+int ok::graphics::Camera::_viewport_w;
+int ok::graphics::Camera::_viewport_h;
+std::stack<glm::ivec4> ok::graphics::Camera::_scissorTest_stack;
+
+ok::graphics::Camera::Camera(ok::graphics::CameraCoordinateSystem coordinate_system) : mView(1.0f), mProj(1.0f), mVP(1.0f), _coordinate_system(coordinate_system)
+{
+	mP_dirty = false;
+	mV_dirty = false;
+	perspective_enabled = false;
+}
+
+void ok::graphics::Camera::SetProjectionOrtho(float width, float height, float clip_plane_near, float clip_plane_far)
+{
+	std::swap(clip_plane_near, clip_plane_far);
+
+	float left = 0.f;
+	float right = width;
+	float bottom = 0.f;
+	float top = height;
+
+	if (_coordinate_system == ok::graphics::CameraCoordinateSystem::Cartesian)
+	{
+		mProj = glm::orthoRH<float>(left, right, bottom, top, clip_plane_near, clip_plane_far);
+		mProj = glm::scale(mProj, glm::vec3(1.0f, -1.0f, 1.0f));
+		glFrontFace(GL_CW);
+	}
+	else if (_coordinate_system == ok::graphics::CameraCoordinateSystem::CartesianCenter)
+	{
+		mProj = glm::orthoRH<float>(left - (right - left) * .5f, left + (right - left) * .5f, bottom - (top - bottom) * .5f, bottom + (top - bottom) * .5f, clip_plane_near, clip_plane_far);
+		mProj = glm::scale(mProj, glm::vec3(1.0f, -1.0f, 1.0f));
+		glFrontFace(GL_CW);
+	}
+	else if (_coordinate_system == ok::graphics::CameraCoordinateSystem::Screen)
+	{
+		mProj = glm::orthoRH<float>(left, right, bottom - (top - bottom), top - (top - bottom), clip_plane_near, clip_plane_far);
+		glFrontFace(GL_CCW);
+	}
+	else if (_coordinate_system == ok::graphics::CameraCoordinateSystem::ScreenCenter)
+	{
+		mProj = glm::orthoRH<float>(left - (right - left) * .5f, left + (right - left) * .5f, bottom - (top - bottom) * .5f, bottom + (top - bottom) * .5f, clip_plane_near, clip_plane_far);
+		glFrontFace(GL_CCW);
+	}
+	
+	projection_width = width;
+	projection_height = height;
+
+	mP_dirty = true;
+	perspective_enabled = false;
+}
+
+void ok::graphics::Camera::SetProjectionPersp(float width, float height, float fov_degrees, float clip_plane_near, float clip_plane_far)
+{
+	std::swap(clip_plane_near, clip_plane_far);
+
+	mProj = glm::mat4(0.f);
+	float const tanHalfFovy = glm::tan((glm::radians(fov_degrees)) / 2.0f);
+
+	mProj[0][0] = 1.f / ((width / height) * tanHalfFovy);
+	mProj[1][1] = 1.f / (tanHalfFovy);
+	mProj[2][3] = -1.f;
+
+	mProj[2][2] = -(clip_plane_far + clip_plane_near) / (clip_plane_far - clip_plane_near);
+	mProj[3][2] = -(2.f * clip_plane_far * clip_plane_near) / (clip_plane_far - clip_plane_near);
+
+	if (
+		_coordinate_system == ok::graphics::CameraCoordinateSystem::Cartesian ||
+		_coordinate_system == ok::graphics::CameraCoordinateSystem::CartesianCenter
+		)
+	{
+		mProj = glm::scale(mProj, glm::vec3(1.0f, -1.0f, 1.0f));
+		glFrontFace(GL_CW);
+	}
+	else
+	{
+		glFrontFace(GL_CCW);
+	}
+
+	projection_width = width;
+	projection_height = height;
+
+	mP_dirty = true;
+	perspective_enabled = true;
+}
+
+void ok::graphics::Camera::BeginScissorTest(int px_x, int px_y, int px_w, int px_h)
+{
+	if (_scissorTest_stack.size() == 0)
+	{
+		glEnable(GL_SCISSOR_TEST);
+	}
+
+	float projection_to_viewport_scale_x = static_cast<float>(_viewport_w) / projection_width;
+	float projection_to_viewport_scale_y = static_cast<float>(_viewport_h) / projection_height;
+
+	if (_coordinate_system == ok::graphics::CameraCoordinateSystem::Cartesian)
+	{
+		px_x = _viewport_x + static_cast<int>(static_cast<float>(px_x)*projection_to_viewport_scale_x);
+		px_y = _viewport_y + static_cast<int>(static_cast<float>(px_y)*projection_to_viewport_scale_y);
+		px_w = static_cast<int>(static_cast<float>(px_w) * projection_to_viewport_scale_x);
+		px_h = static_cast<int>(static_cast<float>(px_h) * projection_to_viewport_scale_y);
+	}
+	else if (_coordinate_system == ok::graphics::CameraCoordinateSystem::CartesianCenter)
+	{
+		px_x = _viewport_x + static_cast<int>(glm::floor(static_cast<float>(_viewport_w) * 0.5f)) + static_cast<int>(static_cast<float>(px_x)*projection_to_viewport_scale_x);
+		px_y = _viewport_y + static_cast<int>(glm::floor(static_cast<float>(_viewport_h) * 0.5f)) + static_cast<int>(static_cast<float>(px_y)*projection_to_viewport_scale_y);
+		px_w = static_cast<int>(static_cast<float>(px_w) * projection_to_viewport_scale_x);
+		px_h = static_cast<int>(static_cast<float>(px_h) * projection_to_viewport_scale_y);
+	}
+	else if (_coordinate_system == ok::graphics::CameraCoordinateSystem::Screen)
+	{
+		px_x = _viewport_x + static_cast<int>(static_cast<float>(px_x)*projection_to_viewport_scale_x);
+		px_y = _viewport_y + (_viewport_h - static_cast<int>(static_cast<float>(px_y + px_h) * projection_to_viewport_scale_y));
+		px_w = static_cast<int>(static_cast<float>(px_w) * projection_to_viewport_scale_x);
+		px_h = static_cast<int>(static_cast<float>(px_h) * projection_to_viewport_scale_y);
+	}
+	else if (_coordinate_system == ok::graphics::CameraCoordinateSystem::ScreenCenter)
+	{
+		px_x = _viewport_x + static_cast<int>(glm::floor(static_cast<float>(_viewport_w) * 0.5f)) + static_cast<int>(static_cast<float>(px_x)*projection_to_viewport_scale_x);
+		px_y = _viewport_y + static_cast<int>(glm::floor(static_cast<float>(_viewport_h) * 0.5f)) - static_cast<int>(static_cast<float>(px_y + px_h) * projection_to_viewport_scale_y);
+		px_w = static_cast<int>(static_cast<float>(px_w) * projection_to_viewport_scale_x);
+		px_h = static_cast<int>(static_cast<float>(px_h) * projection_to_viewport_scale_y);
+	}
+
+	_scissorTest_stack.push(glm::ivec4(px_x, px_y, px_w, px_h));
+	
+	glScissor(px_x, px_y, px_w, px_h);
+}
+
+void ok::graphics::Camera::EndScissorTest()
+{
+	_scissorTest_stack.pop();
+
+	if (_scissorTest_stack.size() == 0)
+	{
+		glDisable(GL_SCISSOR_TEST);
+	}
+	else
+	{
+		glm::ivec4& rect = _scissorTest_stack.top();
+		glScissor(rect.x, rect.y, rect.z, rect.w);
+	}
+}
+
+void ok::graphics::Camera::Update(float dt)
+{
+}
+
+void ok::graphics::Camera::_SetCurrent()
+{
+	_currentCamera = this;
+}
+
+ok::graphics::Camera * ok::graphics::Camera::GetCurrent()
+{
+	return _currentCamera;
+}
+
+void ok::graphics::Camera::_ResetCurrent()
+{
+	_currentCamera = nullptr;
+}
+
+void ok::graphics::Camera::PushCamera(ok::graphics::Camera * camera)
+{
+	_currentCamera_stack.push(camera);
+	_currentCamera_stack.top()->_SetCurrent();
+}
+
+void ok::graphics::Camera::PopCamera()
+{
+	_currentCamera_stack.pop();
+	if (_currentCamera_stack.size() > 0)
+		_currentCamera_stack.top()->_SetCurrent();
+	else
+		ok::graphics::Camera::_ResetCurrent();
+}
+
+glm::mat4 ok::graphics::Camera::GetProjectionMatrix()
+{
+	return mProj;
+}
+
+glm::mat4 ok::graphics::Camera::GetViewMatrix()
+{
+	if (mV_dirty)
+	{
+		BeginTransform(ok::TransformSpace::WorldSpace);
+
+		mView = glm::lookAtRH(GetPosition(), GetPosition() + GetForward(), -GetUp());
+
+		EndTransform();
+
+		mV_dirty = false;
+	}
+
+	return mView;
+}
+
+glm::mat4 ok::graphics::Camera::GetVPMatrix()
+{
+	if (mP_dirty || mV_dirty)
+	{
+		mVP = GetProjectionMatrix() * GetViewMatrix();
+		mP_dirty = false;
+		mV_dirty = false;
+	}
+	return mVP;
+}
+
+void ok::graphics::Camera::OnChange()
+{
+	mP_dirty = true;
+	mV_dirty = true;
+}
+
+ok::GameObject * ok::graphics::Camera::Duplicate(ok::GameObject * _clone)
+{
+	_clone = new ok::graphics::Camera(_coordinate_system);
+	ok::GameObject::Duplicate(_clone);
+
+	return _clone;
+}

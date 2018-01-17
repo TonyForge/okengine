@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8A73AEE6-FFF4-42D0-B690-09B761D39F48}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>engine</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)app\</OutDir>
+    <TargetName>engine</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)app\</OutDir>
+    <TargetName>engine</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>GLEW_STATIC;SFML_STATIC;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>$(ProjectDir)glm\include;$(ProjectDir)easylogging\include;$(ProjectDir)glew\include;$(ProjectDir)sfml\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;winmm.lib;ws2_32.lib;$(ProjectDir)sfml\lib\freetype.lib;$(ProjectDir)sfml\lib\flac.lib;$(ProjectDir)sfml\lib\jpeg.lib;$(ProjectDir)sfml\lib\ogg.lib;$(ProjectDir)sfml\lib\openal32.lib;$(ProjectDir)sfml\lib\vorbis.lib;$(ProjectDir)sfml\lib\vorbisenc.lib;$(ProjectDir)sfml\lib\vorbisfile.lib;$(ProjectDir)sfml\lib\sfml-system-s-d.lib;$(ProjectDir)sfml\lib\sfml-window-s-d.lib;$(ProjectDir)sfml\lib\sfml-graphics-s-d.lib;$(ProjectDir)sfml\lib\sfml-audio-s-d.lib;$(ProjectDir)sfml\lib\sfml-network-s-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>GLEW_STATIC;SFML_STATIC;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>$(ProjectDir)glm\include;$(ProjectDir)easylogging\include;$(ProjectDir)glew\include;$(ProjectDir)sfml\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;winmm.lib;ws2_32.lib;$(ProjectDir)sfml\lib\freetype.lib;$(ProjectDir)sfml\lib\flac.lib;$(ProjectDir)sfml\lib\jpeg.lib;$(ProjectDir)sfml\lib\ogg.lib;$(ProjectDir)sfml\lib\openal32.lib;$(ProjectDir)sfml\lib\vorbis.lib;$(ProjectDir)sfml\lib\vorbisenc.lib;$(ProjectDir)sfml\lib\vorbisfile.lib;$(ProjectDir)sfml\lib\sfml-system-s.lib;$(ProjectDir)sfml\lib\sfml-window-s.lib;$(ProjectDir)sfml\lib\sfml-graphics-s.lib;$(ProjectDir)sfml\lib\sfml-audio-s.lib;$(ProjectDir)sfml\lib\sfml-network-s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Assets.cpp" />
+    <ClCompile Include="AssetsBasic.cpp" />
+    <ClCompile Include="Automator.cpp" />
+    <ClCompile Include="Behaviour.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Color.cpp" />
+    <ClCompile Include="easylogging\include\easylogging++.cc" />
+    <ClCompile Include="engine.cpp" />
+    <ClCompile Include="Font.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GLBufferObject.cpp" />
+    <ClCompile Include="glew\include\GL\glew.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshRenderer.cpp" />
+    <ClCompile Include="pystring.cpp" />
+    <ClCompile Include="Quad.cpp" />
+    <ClCompile Include="LayeredRenderer.cpp" />
+    <ClCompile Include="Rect2D.cpp" />
+    <ClCompile Include="RenderTarget.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="SpriteBatch.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="String.cpp" />
+    <ClCompile Include="TextBatch.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="tinyxml\tinyxml2.cpp" />
+    <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="TransformAnimation.cpp" />
+    <ClCompile Include="VertexAnimation.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Animation.h" />
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="Assets.h" />
+    <ClInclude Include="AssetsBasic.h" />
+    <ClInclude Include="Automator.h" />
+    <ClInclude Include="Behaviour.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Color.h" />
+    <ClInclude Include="Font.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GLBufferObject.h" />
+    <ClInclude Include="glew\include\GL\glew.h" />
+    <ClInclude Include="Input.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshRenderer.h" />
+    <ClInclude Include="pystring.h" />
+    <ClInclude Include="Quad.h" />
+    <ClInclude Include="LayeredRenderer.h" />
+    <ClInclude Include="Rect2D.h" />
+    <ClInclude Include="RenderTarget.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="SpriteBatch.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="String.h" />
+    <ClInclude Include="TextBatch.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="tinyxml\tinyxml2.h" />
+    <ClInclude Include="Transform.h" />
+    <ClInclude Include="TransformAnimation.h" />
+    <ClInclude Include="VertexAnimation.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
