@@ -10,6 +10,7 @@
 #include "LayeredRenderer.h"
 #include "MeshRenderer.h"
 #include "TextBatch.h"
+#include "Automator.h"
 
 namespace ok {
 	class Application
@@ -17,6 +18,7 @@ namespace ok {
 	public:
 		Application();
 		void Run();
+		void Init();
 		void Update(float dt);
 	protected:
 		sf::Window* window;
