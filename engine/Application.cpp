@@ -437,7 +437,7 @@ void ok::Application::Run()
 		//text_batch.SetLineSpacingScale(1.0f);
 		text_batch.SetBrushSize(180);
 		text_batch.SetBrushAlignVertical(ok::graphics::TextAlign::Bottom);
-		text_batch.SetBrushPosition(glm::vec2(100.f, 100.f));
+		text_batch.SetBrushPosition(glm::vec2(100.f, 50.f));
 
 		//text_batch.SetBrushColor(ok::Color(1.f, 0, 0, 1.f));
 		//text_batch.SetBrushBold(0.0);
