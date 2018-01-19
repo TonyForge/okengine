@@ -260,6 +260,10 @@ void ok::Application::Run()
 }
 
 
+ok::graphics::TextCache* my_cache;
+ok::graphics::Font* my_font;
+ok::graphics::TextBatch2D* my_text_batch;
+
 ok::graphics::SpriteBatch* my_sprite_batch;
 ok::graphics::TextureRect my_sprite_batch_texrect;
 ok::graphics::Camera my_camera(ok::graphics::CameraCoordinateSystem::ScreenCenter);
@@ -280,6 +284,22 @@ void ok::Application::Init()
 	my_sprite_batch_texrect.width = 100;
 	my_sprite_batch_texrect.height = 100;
 	my_sprite_batch_texrect.uv_rect = glm::vec4(0.f, 0.f, 1.f, 1.f);
+
+	my_font = ok::Assets::instance().GetFont("font001");
+	my_font->SetInternalFont(ok::Assets::instance().GetInternalFont("consola.font.xml"));
+
+	my_text_batch = new ok::graphics::TextBatch2D(screen_width, screen_height, 100);
+
+	my_font->SetBrushColor(ok::Color(1.f, 0.5f, 0.25f, 1.f));
+	my_font->SetBrushOuterShadow(ok::Color(0.f, 0.f, 0.f, 0.5f), 0.2f, 0.2f, 0.1f, 0.1f);
+
+	my_text_batch->SetBrushFont(my_font);
+	my_text_batch->SetBrushScale(1.f, 1.f);
+	my_text_batch->SetBrushPosition(glm::vec2(0.f, 0.f));
+
+	my_text_batch->CacheBegin();
+	my_text_batch->Draw(ok::String("Hello world!"));
+	my_cache = my_text_batch->CacheEnd();
 }
 
 void ok::Application::Update(float dt)
@@ -375,6 +395,16 @@ void ok::Application::Update(float dt)
 	ok::graphics::LayeredRenderer::instance().Flush();
 	
 
+	my_text_batch->SetBrushScale(2.f, 2.f);
+	my_text_batch->SetBrushPosition(glm::vec2(100.f, 0.f));
+	my_text_batch->Draw(my_cache);
+	//my_text_batch->SetBrushPosition(glm::vec2(100.f, 150.f));
+	my_text_batch->Draw(my_cache);
+
+	//delete cache;
+	/*my_text_batch->BatchBegin();
+	my_text_batch->Draw(ok::String("Hello world!"));
+	my_text_batch->BatchEnd();*/
 }
 
 

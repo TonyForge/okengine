@@ -58,11 +58,40 @@ ok::graphics::TextBatch2D::TextBatch2D(int screen_width, int screen_height, int 
 	_custom_brush_size_proportions_enabled = false;
 	_line_spacing_scale = 1.f;
 	_clip_rect_enabled = false;
+
+	_shader_settings_data.resize(_shader_settings_data_size);
+
+	SetBrushSize(32);
+	SetBrushScale(1.f, 1.f);
 }
 
 ok::graphics::TextBatch2D::~TextBatch2D()
 {
 	delete glBO;
+}
+
+void ok::graphics::TextBatch2D::CacheBegin()
+{
+	batch_quads_in_use = 0;
+	
+	_cache = new ok::graphics::TextCache();
+	_cache->_brush_advance = _brush_position;
+}
+
+ok::graphics::TextCache * ok::graphics::TextBatch2D::CacheEnd()
+{
+	if (batch_quads_in_use != 0)
+		CacheFlush();
+
+	_cache->_cached_font = *_font;
+	_cache->_brush_advance = _brush_position - _cache->_brush_advance;
+
+	ok::graphics::TextCache* _result = _cache;
+	_cache = nullptr;
+
+	batch_quads_in_use = 0;
+
+	return _result;
 }
 
 void ok::graphics::TextBatch2D::BatchBegin()
@@ -193,11 +222,18 @@ void ok::graphics::TextBatch2D::SetBrushFont(ok::graphics::Font * font)
 void ok::graphics::TextBatch2D::SetBrushColor(ok::Color color)
 {
 	_brush_color = color;
+
+	_shader_settings_data[0] = _brush_color.r;
+	_shader_settings_data[1] = _brush_color.g;
+	_shader_settings_data[2] = _brush_color.b;
+	_shader_settings_data[3] = _brush_color.a;
 }
 
 void ok::graphics::TextBatch2D::SetBrushBold(float power)
 {
 	_brush_bold_power = power;
+
+	_shader_settings_data[4] = _brush_bold_power;
 }
 
 void ok::graphics::TextBatch2D::SetBrushItalic(float power)
@@ -214,6 +250,8 @@ void ok::graphics::TextBatch2D::SetBrushItalic(float power)
 	}
 
 	_brush_italic_shift = _font->GetGlyphMaxWidth() * rescale_x * power;
+
+	_shader_settings_data[5] = _brush_italic_shift;
 }
 
 void ok::graphics::TextBatch2D::SetBrushOuterGlow(ok::Color color, float radius, float blur)
@@ -224,6 +262,13 @@ void ok::graphics::TextBatch2D::SetBrushOuterGlow(ok::Color color, float radius,
 
 	_brush_outer_glow_min_range = 1.0f - glm::clamp(radius, 0.f, 1.f);
 	_brush_outer_glow_max_range = glm::clamp(_brush_outer_glow_min_range + blur, 0.f, 1.f);
+
+	_shader_settings_data[14] = _brush_outer_glow_color.r;
+	_shader_settings_data[15] = _brush_outer_glow_color.g;
+	_shader_settings_data[16] = _brush_outer_glow_color.b;
+	_shader_settings_data[17] = _brush_outer_glow_color.a;
+	_shader_settings_data[18] = _brush_outer_glow_min_range;
+	_shader_settings_data[19] = _brush_outer_glow_max_range;
 }
 
 void ok::graphics::TextBatch2D::SetBrushInnerGlow(ok::Color color, float radius, float blur)
@@ -235,6 +280,13 @@ void ok::graphics::TextBatch2D::SetBrushInnerGlow(ok::Color color, float radius,
 
 	_brush_inner_glow_min_range = glm::clamp(radius, 0.f, 1.f);
 	_brush_inner_glow_max_range = glm::clamp(_brush_inner_glow_min_range + glm::clamp(blur, 0.f, 1.f),0.f,1.f);
+
+	_shader_settings_data[20] = _brush_inner_glow_color.r;
+	_shader_settings_data[21] = _brush_inner_glow_color.g;
+	_shader_settings_data[22] = _brush_inner_glow_color.b;
+	_shader_settings_data[23] = _brush_inner_glow_color.a;
+	_shader_settings_data[24] = _brush_inner_glow_min_range;
+	_shader_settings_data[25] = _brush_inner_glow_max_range;
 }
 
 void ok::graphics::TextBatch2D::SetBrushOuterShadow(ok::Color color, float radius, float blur, float shift_x_power, float shift_y_power)
@@ -248,6 +300,15 @@ void ok::graphics::TextBatch2D::SetBrushOuterShadow(ok::Color color, float radiu
 
 	_brush_outer_shadow_shift_x_power = -shift_x_power * (_font->GetGlyphMaxWidth() / static_cast<float>(_tex->GetSize().x));
 	_brush_outer_shadow_shift_y_power = -shift_y_power * (_font->GetGlyphMaxHeight() / static_cast<float>(_tex->GetSize().y));
+
+	_shader_settings_data[34] = _brush_outer_shadow_color.r;
+	_shader_settings_data[35] = _brush_outer_shadow_color.g;
+	_shader_settings_data[36] = _brush_outer_shadow_color.b;
+	_shader_settings_data[37] = _brush_outer_shadow_color.a;
+	_shader_settings_data[38] = _brush_outer_shadow_min_range;
+	_shader_settings_data[39] = _brush_outer_shadow_max_range;
+	_shader_settings_data[40] = _brush_outer_shadow_shift_x_power;
+	_shader_settings_data[41] = _brush_outer_shadow_shift_y_power;
 }
 
 void ok::graphics::TextBatch2D::SetBrushInnerShadow(ok::Color color, float radius, float blur, float shift_x_power, float shift_y_power)
@@ -262,12 +323,30 @@ void ok::graphics::TextBatch2D::SetBrushInnerShadow(ok::Color color, float radiu
 
 	_brush_inner_shadow_shift_x_power = -shift_x_power * (_font->GetGlyphMaxWidth() / static_cast<float>(_tex->GetSize().x));
 	_brush_inner_shadow_shift_y_power = -shift_y_power * (_font->GetGlyphMaxHeight() / static_cast<float>(_tex->GetSize().y));
+
+	_shader_settings_data[26] = _brush_inner_shadow_color.r;
+	_shader_settings_data[27] = _brush_inner_shadow_color.g;
+	_shader_settings_data[28] = _brush_inner_shadow_color.b;
+	_shader_settings_data[29] = _brush_inner_shadow_color.a;
+	_shader_settings_data[30] = _brush_inner_shadow_min_range;
+	_shader_settings_data[31] = _brush_inner_shadow_max_range;
+	_shader_settings_data[32] = _brush_inner_shadow_shift_x_power;
+	_shader_settings_data[33] = _brush_inner_shadow_shift_y_power;
 }
 
 void ok::graphics::TextBatch2D::SetBrushGradient(ok::Color color_up, ok::Color color_down)
 {
 	_brush_gradient_colors[0] = color_up;
 	_brush_gradient_colors[1] = color_down;
+
+	_shader_settings_data[6] = _brush_gradient_colors[0].r;
+	_shader_settings_data[7] = _brush_gradient_colors[0].g;
+	_shader_settings_data[8] = _brush_gradient_colors[0].b;
+	_shader_settings_data[9] = _brush_gradient_colors[0].a;
+	_shader_settings_data[10] = _brush_gradient_colors[1].r;
+	_shader_settings_data[11] = _brush_gradient_colors[1].g;
+	_shader_settings_data[12] = _brush_gradient_colors[1].b;
+	_shader_settings_data[13] = _brush_gradient_colors[1].a;
 }
 
 void ok::graphics::TextBatch2D::SetBrushAlignVertical(ok::graphics::TextAlign align)
@@ -545,8 +624,15 @@ void ok::graphics::TextBatch2D::Draw(ok::String & text, int from, int to)
 				if (batch_quads_in_use == batch_size)
 				{
 					_early_batch_flush = true;
-					BatchEnd();
-					BatchBegin();
+					if (_cache == nullptr)
+					{
+						BatchEnd();
+						BatchBegin();
+					}
+					else
+					{
+						CacheFlush();
+					}
 					_early_batch_flush = false;
 				}
 
@@ -597,114 +683,114 @@ void ok::graphics::TextBatch2D::Draw(ok::String & text, int from, int to)
 	}
 }
 
+void ok::graphics::TextBatch2D::Draw(ok::graphics::TextCache * cache)
+{
+	ok::graphics::Font* prev_font = _font;
+
+	SetBrushFont(&cache->_cached_font);
+
+	ok::graphics::Camera::PushCamera(_camera);
+
+	_camera->BeginTransform();
+	_camera->SetPosition(glm::vec3(-_brush_position.x, -_brush_position.y, -1.f));
+	_camera->EndTransform();
+
+	if (_clip_rect_enabled)
+	{
+		_camera->BeginScissorTest(static_cast<int>(_clip_rect.GetX()), static_cast<int>(_clip_rect.GetY()), static_cast<int>(_clip_rect.GetWidth()), static_cast<int>(_clip_rect.GetHeight()));
+	}
+
+	_mat->SetTexture(0, _tex);
+	_mat->Bind(this);
+
+	int cache_position = 0;
+	int cache_chunk_size;
+	int cache_quads_count = cache->_cached_positions_and_texcoords.size() / quad_xyuv_data_size;
+	float* vbo = glBO->GetVertexBuffer(0).vertices;
+
+	while (cache_quads_count > 0)
+	{
+		cache_chunk_size = batch_size;
+		cache_quads_count -= batch_size;
+		if (cache_quads_count < 0) { cache_chunk_size += cache_quads_count; cache_quads_count = 0; }
+
+		batch_quads_in_use = cache_chunk_size;
+
+		memcpy(vbo, &(cache->_cached_positions_and_texcoords[cache_position * quad_xyuv_data_size]), sizeof(float) * cache_chunk_size * quad_xyuv_data_size);
+
+		cache_position += cache_chunk_size;
+
+		glBO->ReloadVertexBuffer(0);
+
+		glBO->Bind();
+
+		//reset filters
+		for (int i = 0; i < ok::graphics::TextBatch2D_ShaderFiltersIndexes::FiltersLimit; i++)
+		{
+			_filters_enabled[i] = _filters_indexes.Undefined;
+		}
+
+		//outer shadow filter
+		if (_brush_outer_shadow_color.a != 0.f)
+		{
+			_filters_enabled[0] = _filters_indexes.OuterShadow;
+			_mat->BindSubroutines(this);
+			glDrawElements(GL_TRIANGLES, batch_quads_in_use * 6, GL_UNSIGNED_INT, 0);
+		}
+
+		//outer glow filter
+		if (_brush_outer_glow_color.a != 0.f)
+		{
+			_filters_enabled[0] = _filters_indexes.OuterGlow;
+			_mat->BindSubroutines(this);
+			glDrawElements(GL_TRIANGLES, batch_quads_in_use * 6, GL_UNSIGNED_INT, 0);
+		}
+
+		//color, bold, gradient, inner shadow, inner glow filters
+		_filters_enabled[0] = _filters_indexes.Default;
+		if (_brush_gradient_colors[0].a != 0.f && _brush_gradient_colors[1].a != 0.f) _filters_enabled[1] = _filters_indexes.Gradient;
+		if (_brush_inner_shadow_color.a != 0.f) _filters_enabled[2] = _filters_indexes.InnerShadow;
+		if (_brush_inner_glow_color.a != 0.f) _filters_enabled[3] = _filters_indexes.InnerGlow;
+		_mat->BindSubroutines(this);
+		glDrawElements(GL_TRIANGLES, batch_quads_in_use * 6, GL_UNSIGNED_INT, 0);
+
+		glBO->Unbind();
+	}
+
+	if (_clip_rect_enabled)
+	{
+		_camera->EndScissorTest();
+	}
+
+	_camera->BeginTransform();
+	_camera->SetPosition(glm::vec3(0.f, 0.f, -1.f));
+	_camera->EndTransform();
+
+	ok::graphics::Camera::PopCamera();
+
+	_brush_position += cache->_brush_advance;
+	batch_quads_in_use = 0;
+
+	if (prev_font != nullptr)
+	SetBrushFont(prev_font);
+}
+
 glm::mat4 ok::graphics::TextBatch2D::DispatchAliasMat4(ok::graphics::ShaderAliasReference alias_type)
 {
 	switch (alias_type)
 	{
 		case ok::graphics::ShaderAliasReference::ModelViewProjectionMatrix :
 		{
-			return ok::graphics::Camera::GetCurrent()->GetVPMatrix();
-		}
-		break;
-		default:
-		{
+			glm::mat4 m = ok::graphics::Camera::GetCurrent()->GetVPMatrix();
+			m[0][0] *= _brush_scale.x;
+			m[1][1] *= _brush_scale.y;
 
+			return m;
 		}
 		break;
 	}
 
 	return glm::mat4();
-}
-
-glm::vec4 ok::graphics::TextBatch2D::DispatchAliasVec4(ok::graphics::ShaderAliasReference alias_type)
-{
-	switch (alias_type)
-	{
-		case ok::graphics::ShaderAliasReference::Callback :
-		{
-			if (*callback_name_ptr == "fx0") //brush_color
-			{
-				return _brush_color;
-			}
-			else if (*callback_name_ptr == "fx3") //brush_gradient_color_up
-			{
-				return _brush_gradient_colors[0];
-			}
-			else if (*callback_name_ptr == "fx4") //brush_gradient_color_down
-			{
-				return _brush_gradient_colors[1];
-			}
-			else if (*callback_name_ptr == "fx5") //brush_outer_glow_color
-			{
-				return _brush_outer_glow_color;
-			}
-			else if (*callback_name_ptr == "fx7") //brush_inner_glow_color
-			{
-				return _brush_inner_glow_color;
-			}
-			else if (*callback_name_ptr == "fx9") //brush_inner_shadow_color
-			{
-				return _brush_inner_shadow_color;
-			}
-			else if (*callback_name_ptr == "fx10") //brush_inner_glow
-			{
-				return glm::vec4(_brush_inner_shadow_min_range, _brush_inner_shadow_max_range, _brush_inner_shadow_shift_x_power, _brush_inner_shadow_shift_y_power);
-			}
-			else if (*callback_name_ptr == "fx11") //brush_inner_glow
-			{
-				return _brush_outer_shadow_color;
-			}
-			else if (*callback_name_ptr == "fx12") //brush_inner_glow
-			{
-				return glm::vec4(_brush_outer_shadow_min_range, _brush_outer_shadow_max_range, _brush_outer_shadow_shift_x_power, _brush_outer_shadow_shift_y_power);
-			}
-		}
-		break;
-	}
-
-	return glm::vec4();
-}
-
-glm::vec2 ok::graphics::TextBatch2D::DispatchAliasVec2(ok::graphics::ShaderAliasReference alias_type)
-{
-	switch (alias_type)
-	{
-	case ok::graphics::ShaderAliasReference::Callback:
-	{
-		if (*callback_name_ptr == "fx6") //brush_outer_glow
-		{
-			return glm::vec2(_brush_outer_glow_min_range, _brush_outer_glow_max_range);
-		}
-		else if (*callback_name_ptr == "fx8") //brush_inner_glow
-		{
-			return glm::vec2(_brush_inner_glow_min_range, _brush_inner_glow_max_range);
-		}
-	}
-	break;
-	}
-
-	return glm::vec2();
-}
-
-float ok::graphics::TextBatch2D::DispatchAliasFloat(ok::graphics::ShaderAliasReference alias_type)
-{
-	switch (alias_type)
-	{
-	case ok::graphics::ShaderAliasReference::Callback:
-	{
-		if (*callback_name_ptr == "fx1") //brush_bold_power
-		{
-			return _brush_bold_power;
-		}
-		else if (*callback_name_ptr == "fx2") //brush_italic_power
-		{
-			return _brush_italic_shift;
-		}
-	}
-	break;
-	}
-
-	return 0.0f;
 }
 
 std::pair<unsigned int*, int> ok::graphics::TextBatch2D::DispatchAliasSubroutineArray(ok::graphics::ShaderAliasReference alias_type)
@@ -722,6 +808,34 @@ std::pair<unsigned int*, int> ok::graphics::TextBatch2D::DispatchAliasSubroutine
 	}
 
 	return std::pair<unsigned int*, int>(nullptr, 0);
+}
+
+std::pair<float*, int> ok::graphics::TextBatch2D::DispatchAliasFloatArray(ok::graphics::ShaderAliasReference alias_type)
+{
+	switch (alias_type)
+	{
+	case ok::graphics::ShaderAliasReference::Callback:
+	{
+		if (*callback_name_ptr == "fx[0]")
+		{
+			return std::pair<float*, int>(_shader_settings_data.data(), _shader_settings_data_size);
+		}
+	}
+	break;
+	}
+
+	return std::pair<float*, int>();
+}
+
+void ok::graphics::TextBatch2D::CacheFlush()
+{
+	int _cache_position = _cache->_cached_positions_and_texcoords.size() - 1;
+	if (_cache_position < 0) _cache_position = 0;
+
+	_cache->_cached_positions_and_texcoords.resize(_cache->_cached_positions_and_texcoords.size() + batch_quads_in_use * quad_xyuv_data_size);
+	memcpy(&(_cache->_cached_positions_and_texcoords.data()[_cache_position]), positions_and_texcoords, sizeof(float) * batch_quads_in_use * quad_xyuv_data_size);
+
+	batch_quads_in_use = 0;
 }
 
 void ok::graphics::TextBatch2D::PushQuad()

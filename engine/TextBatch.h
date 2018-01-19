@@ -32,11 +32,27 @@ namespace ok
 			static const int FiltersLimit = 4;
 		};
 
+		class TextBatch2D;
+			
+		class TextCache
+		{
+		public:
+		protected:
+		private:
+			friend class ok::graphics::TextBatch2D;
+			ok::graphics::Font _cached_font;
+			std::vector<float> _cached_positions_and_texcoords;
+			glm::vec2 _brush_advance;
+		};
+
 		class TextBatch2D : public ok::graphics::ShaderAliasDispatcher
 		{
 		public:
 			TextBatch2D(int screen_width, int screen_height, int size = 1000);
 			~TextBatch2D();
+
+			void CacheBegin();
+			ok::graphics::TextCache* CacheEnd();
 
 			void BatchBegin();
 			void BatchEnd();
@@ -75,14 +91,14 @@ namespace ok
 			void SetClipRect(ok::Rect2Df rect);
 
 			void Draw(ok::String& text, int from = 0, int to = -1);
+			void Draw(ok::graphics::TextCache* cache);
 
 			glm::mat4 DispatchAliasMat4(ok::graphics::ShaderAliasReference alias_type);
-			glm::vec4 DispatchAliasVec4(ok::graphics::ShaderAliasReference alias_type);
-			glm::vec2 DispatchAliasVec2(ok::graphics::ShaderAliasReference alias_type);
-			float DispatchAliasFloat(ok::graphics::ShaderAliasReference alias_type);
 			std::pair<unsigned int*, int> DispatchAliasSubroutineArray(ok::graphics::ShaderAliasReference alias_type);
+			std::pair<float*, int> DispatchAliasFloatArray(ok::graphics::ShaderAliasReference alias_type);
 		protected:
 		private:
+			void CacheFlush();
 			void PushQuad();
 
 			static ok::Quad quad;
@@ -138,6 +154,9 @@ namespace ok
 
 			ok::Color _brush_gradient_colors[2];
 
+			static const int _shader_settings_data_size = 42;
+			std::vector<float> _shader_settings_data;
+
 			ok::graphics::TextAlign _brush_align_horizontal;
 			ok::graphics::TextAlign _brush_align_vertical;
 
@@ -148,6 +167,7 @@ namespace ok
 			float _line_spacing_scale;
 
 			ok::graphics::Camera* _camera;
+			ok::graphics::TextCache* _cache;
 		};
 		/*
 		class TextBatch3D : public ok::graphics::ShaderAliasDispatcher
