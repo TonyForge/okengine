@@ -59,6 +59,38 @@ void ok::Application::Run()
 	float time_delta = 0.f;
 	float seconds_per_tick = 1.f / framerate;
 
+	//Simulate Window Resized Event At Startup
+	window_width = window->getSize().x;
+	window_height = window->getSize().y;
+
+	if (keep_aspect_ratio)
+	{
+		float screen_to_window_scale = glm::min(static_cast<float>(window_width) / static_cast<float>(screen_width), static_cast<float>(window_height) / static_cast<float>(screen_height));
+
+		viewport_w = static_cast<float>(screen_width) * screen_to_window_scale;
+		viewport_h = static_cast<float>(screen_height) * screen_to_window_scale;
+
+		viewport_x = (static_cast<float>(window_width) - viewport_w) * 0.5f;
+		viewport_y = (static_cast<float>(window_height) - viewport_h) * 0.5f;
+
+		glViewport((GLint)viewport_x, (GLint)viewport_y, (GLint)viewport_w, (GLint)viewport_h);
+
+		ok::graphics::Camera::_viewport_x = static_cast<int>(viewport_x);
+		ok::graphics::Camera::_viewport_y = static_cast<int>(viewport_y);
+		ok::graphics::Camera::_viewport_w = static_cast<int>(viewport_w);
+		ok::graphics::Camera::_viewport_h = static_cast<int>(viewport_h);
+	}
+	else
+	{
+		glViewport((GLint)0, (GLint)0, (GLint)window_width, (GLint)window_height);
+
+		ok::graphics::Camera::_viewport_x = 0;
+		ok::graphics::Camera::_viewport_y = 0;
+		ok::graphics::Camera::_viewport_w = static_cast<int>(window_width);
+		ok::graphics::Camera::_viewport_h = static_cast<int>(window_height);
+	}
+
+	//Application Loop
 	while (running)
 	{
 		sf::Event e;
@@ -227,6 +259,7 @@ void ok::Application::Run()
 	delete window;
 }
 
+
 ok::graphics::SpriteBatch* my_sprite_batch;
 ok::graphics::TextureRect my_sprite_batch_texrect;
 ok::graphics::Camera my_camera(ok::graphics::CameraCoordinateSystem::ScreenCenter);
@@ -343,6 +376,7 @@ void ok::Application::Update(float dt)
 	
 
 }
+
 
 void ok::Application::LoadSettings()
 {
