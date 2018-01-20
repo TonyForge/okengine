@@ -87,6 +87,7 @@ namespace ok
 
 			ok::Rect2Df& font_bounds = font->GetFontBounds();
 			font_bounds.SetXYWH(0, 0, 0, 0);
+			font_bounds.ResetMerge();
 
 			int data4i[4];
 			float data4f[4];

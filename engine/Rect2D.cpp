@@ -103,7 +103,7 @@ glm::tvec2<T, glm::packed_highp> ok::Rect2D<T>::GetSize()
 }
 
 template <class T>
-ok::Rect2D<T>::Rect2D()
+ok::Rect2D<T>::Rect2D() : yup(false), merge_empty(false)
 {
 	x = 0;
 	y = 0;
@@ -112,7 +112,7 @@ ok::Rect2D<T>::Rect2D()
 }
 
 template <class T>
-ok::Rect2D<T>::Rect2D(T _x, T _y, T _w, T _h)
+ok::Rect2D<T>::Rect2D(T _x, T _y, T _w, T _h, bool _yup) : yup(_yup), merge_empty(false)
 {
 	x = _x;
 	y = _y;
@@ -164,49 +164,79 @@ void ok::Rect2D<T>::ResizeFromCenter(T new_width, T new_height)
 	h = new_height;
 }
 
+template<class T>
+void ok::Rect2D<T>::ResetMerge()
+{
+	merge_empty = true;
+}
+
 template <class T>
 void ok::Rect2D<T>::Merge(ok::Rect2D<int>& rect)
 {
-	if (rect.yup != yup)
+	if (merge_empty)
 	{
-		SetXYWH(
-			glm::min(x, static_cast<T>(rect.x)),
-			glm::min(y, static_cast<T>(rect.y)),
-			glm::max(w, static_cast<T>(rect.w)),
-			glm::max(h, -static_cast<T>(rect.h))
-		);
+		x = static_cast<T>(rect.x);
+		y = static_cast<T>(rect.y);
+		w = static_cast<T>(rect.w);
+		h = static_cast<T>(rect.h);
+
+		merge_empty = false;
 	}
 	else
 	{
-		SetXYWH(
-			glm::min(x, static_cast<T>(rect.x)),
-			glm::min(y, static_cast<T>(rect.y)),
-			glm::max(w, static_cast<T>(rect.w)),
-			glm::max(h, static_cast<T>(rect.h))
-		);
+		if (yup)
+		{
+			SetLTRB(
+				glm::min(GetLeft(), static_cast<T>(rect.GetLeft())),
+				glm::max(GetTop(), static_cast<T>(rect.GetTop())),
+				glm::max(GetRight(), static_cast<T>(rect.GetRight())),
+				glm::min(GetBottom(), static_cast<T>(rect.GetBottom()))
+			);
+		}
+		else
+		{
+			SetLTRB(
+				glm::min(GetLeft(), static_cast<T>(rect.GetLeft())),
+				glm::min(GetTop(), static_cast<T>(rect.GetTop())),
+				glm::max(GetRight(), static_cast<T>(rect.GetRight())),
+				glm::max(GetBottom(), static_cast<T>(rect.GetBottom()))
+			);
+		}
 	}
 }
 
 template <class T>
 void ok::Rect2D<T>::Merge(ok::Rect2D<float>& rect)
 {
-	if (rect.yup != yup)
+	if (merge_empty)
 	{
-		SetXYWH(
-			glm::min(x, static_cast<T>(rect.x)),
-			glm::min(y, static_cast<T>(rect.y)),
-			glm::max(w, static_cast<T>(rect.w)),
-			glm::max(h, -static_cast<T>(rect.h))
-		);
+		x = static_cast<T>(rect.x);
+		y = static_cast<T>(rect.y);
+		w = static_cast<T>(rect.w);
+		h = static_cast<T>(rect.h);
+
+		merge_empty = false;
 	}
 	else
 	{
-		SetXYWH(
-			glm::min(x, static_cast<T>(rect.x)),
-			glm::min(y, static_cast<T>(rect.y)),
-			glm::max(w, static_cast<T>(rect.w)),
-			glm::max(h, static_cast<T>(rect.h))
-		);
+		if (yup)
+		{
+			SetLTRB(
+				glm::min(GetLeft(), static_cast<T>(rect.GetLeft())),
+				glm::max(GetTop(), static_cast<T>(rect.GetTop())),
+				glm::max(GetRight(), static_cast<T>(rect.GetRight())),
+				glm::min(GetBottom(), static_cast<T>(rect.GetBottom()))
+			);
+		}
+		else
+		{
+			SetLTRB(
+				glm::min(GetLeft(), static_cast<T>(rect.GetLeft())),
+				glm::min(GetTop(), static_cast<T>(rect.GetTop())),
+				glm::max(GetRight(), static_cast<T>(rect.GetRight())),
+				glm::max(GetBottom(), static_cast<T>(rect.GetBottom()))
+			);
+		}
 	}
 }
 

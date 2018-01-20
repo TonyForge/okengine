@@ -40,9 +40,10 @@ namespace ok
 		protected:
 		private:
 			friend class ok::graphics::TextBatch2D;
-			ok::graphics::Font _cached_font;
+			std::vector<float> _cached_shader_settings_data;
 			std::vector<float> _cached_positions_and_texcoords;
 			glm::vec2 _brush_advance;
+			ok::Rect2Df _total_rect;
 		};
 
 		class TextBatch2D : public ok::graphics::ShaderAliasDispatcher
@@ -56,6 +57,9 @@ namespace ok
 
 			void BatchBegin();
 			void BatchEnd();
+
+			void ResetTotalRect();
+			ok::Rect2Df GetTotalRect();
 
 			//this settings can not be changed inside BatchBegin BatchEnd block (because they are uniforms)
 			void SetBrushFont(ok::graphics::Font* font);
@@ -80,12 +84,6 @@ namespace ok
 			void SetBrushSize(float px_width, float px_height);
 			void SetBrushSize(float px_height);
 			void SetLineSpacingScale(float scale);
-
-			void SetBrushScale(float scale_x, float scale_y);
-			void SetBrushScale(glm::vec2 scale);
-			void GetBrushScale(float& out_scale_x, float& out_scale_y);
-			void GetBrushScale(glm::vec2& out_scale);
-			glm::vec2 GetBrushScale();
 
 			void SetClipRectEnabled(bool enabled);
 			void SetClipRect(ok::Rect2Df rect);
@@ -121,7 +119,7 @@ namespace ok
 
 			std::vector<std::pair<int, int>> _newline_ranges;
 			bool _early_batch_flush;
-			//ok::Rect2Df _batch_total_rect;
+			ok::Rect2Df _total_rect;
 			ok::Rect2Df _clip_rect;
 
 			bool _clip_rect_enabled;
@@ -161,7 +159,6 @@ namespace ok
 			ok::graphics::TextAlign _brush_align_vertical;
 
 			glm::vec2 _brush_position;
-			glm::vec2 _brush_scale;
 			glm::vec2 _brush_px_size;
 			bool _custom_brush_size_proportions_enabled;
 			float _line_spacing_scale;
@@ -169,26 +166,5 @@ namespace ok
 			ok::graphics::Camera* _camera;
 			ok::graphics::TextCache* _cache;
 		};
-		/*
-		class TextBatch3D : public ok::graphics::ShaderAliasDispatcher
-		{
-		public:
-			TextBatch3D(int size = 1000);
-			~TextBatch3D();
-
-			void BatchBegin();
-			void BatchEnd();
-
-			glm::mat4 DispatchAliasMat4(ok::graphics::ShaderAliasReference alias_type);
-			glm::vec4 DispatchAliasVec4(ok::graphics::ShaderAliasReference alias_type);
-			glm::vec3 DispatchAliasVec3(ok::graphics::ShaderAliasReference alias_type);
-			glm::vec2 DispatchAliasVec2(ok::graphics::ShaderAliasReference alias_type);
-			float DispatchAliasFloat(ok::graphics::ShaderAliasReference alias_type);
-			std::pair<float*, int> DispatchAliasFloatArray(ok::graphics::ShaderAliasReference alias_type);
-			std::pair<glm::mat4*, int> DispatchAliasMat4Array(ok::graphics::ShaderAliasReference alias_type);
-		protected:
-		private:
-			GLBufferObject* glBO;
-		};*/
 	}
 }

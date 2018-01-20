@@ -294,7 +294,6 @@ void ok::Application::Init()
 	my_font->SetBrushOuterShadow(ok::Color(0.f, 0.f, 0.f, 0.5f), 0.2f, 0.2f, 0.1f, 0.1f);
 
 	my_text_batch->SetBrushFont(my_font);
-	my_text_batch->SetBrushScale(1.f, 1.f);
 	my_text_batch->SetBrushPosition(glm::vec2(0.f, 0.f));
 
 	my_text_batch->CacheBegin();
@@ -395,7 +394,7 @@ void ok::Application::Update(float dt)
 	ok::graphics::LayeredRenderer::instance().Flush();
 	
 
-	my_text_batch->SetBrushScale(2.f, 2.f);
+	my_text_batch->ResetTotalRect();
 	my_text_batch->SetBrushPosition(glm::vec2(100.f, 0.f));
 	my_text_batch->Draw(my_cache);
 	//my_text_batch->SetBrushPosition(glm::vec2(100.f, 150.f));

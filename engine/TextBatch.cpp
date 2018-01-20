@@ -61,8 +61,10 @@ ok::graphics::TextBatch2D::TextBatch2D(int screen_width, int screen_height, int 
 
 	_shader_settings_data.resize(_shader_settings_data_size);
 
+	SetBrushPosition(0.f, 0.f);
 	SetBrushSize(32);
-	SetBrushScale(1.f, 1.f);
+
+	ResetTotalRect();
 }
 
 ok::graphics::TextBatch2D::~TextBatch2D()
@@ -76,6 +78,8 @@ void ok::graphics::TextBatch2D::CacheBegin()
 	
 	_cache = new ok::graphics::TextCache();
 	_cache->_brush_advance = _brush_position;
+
+	ResetTotalRect();
 }
 
 ok::graphics::TextCache * ok::graphics::TextBatch2D::CacheEnd()
@@ -83,8 +87,9 @@ ok::graphics::TextCache * ok::graphics::TextBatch2D::CacheEnd()
 	if (batch_quads_in_use != 0)
 		CacheFlush();
 
-	_cache->_cached_font = *_font;
+	_cache->_cached_shader_settings_data = _shader_settings_data;
 	_cache->_brush_advance = _brush_position - _cache->_brush_advance;
+	_cache->_total_rect = _total_rect;
 
 	ok::graphics::TextCache* _result = _cache;
 	_cache = nullptr;
@@ -100,12 +105,6 @@ void ok::graphics::TextBatch2D::BatchBegin()
 	{
 		BatchEnd();
 	}
-
-	/*if (!_early_batch_flush)
-	{
-		_batch_total_rect.SetXYWH(0, 0, 0, 0);
-	}*/
-	
 }
 
 void ok::graphics::TextBatch2D::BatchEnd()
@@ -173,6 +172,16 @@ void ok::graphics::TextBatch2D::BatchEnd()
 
 	batch_quads_in_use = 0;
 	ok::graphics::Camera::PopCamera();
+}
+
+void ok::graphics::TextBatch2D::ResetTotalRect()
+{
+	_total_rect.ResetMerge();
+}
+
+ok::Rect2Df ok::graphics::TextBatch2D::GetTotalRect()
+{
+	return _total_rect;
 }
 
 void ok::graphics::TextBatch2D::SetBrushFont(ok::graphics::Font * font)
@@ -404,33 +413,6 @@ void ok::graphics::TextBatch2D::SetLineSpacingScale(float scale)
 	_line_spacing_scale = scale;
 }
 
-void ok::graphics::TextBatch2D::SetBrushScale(float scale_x, float scale_y)
-{
-	_brush_scale.x = scale_x;
-	_brush_scale.y = scale_y;
-}
-
-void ok::graphics::TextBatch2D::SetBrushScale(glm::vec2 scale)
-{
-	_brush_scale = scale;
-}
-
-void ok::graphics::TextBatch2D::GetBrushScale(float & out_scale_x, float & out_scale_y)
-{
-	out_scale_x = _brush_scale.x;
-	out_scale_y = _brush_scale.y;
-}
-
-void ok::graphics::TextBatch2D::GetBrushScale(glm::vec2 & out_scale)
-{
-	out_scale = _brush_scale;
-}
-
-glm::vec2 ok::graphics::TextBatch2D::GetBrushScale()
-{
-	return _brush_scale;
-}
-
 void ok::graphics::TextBatch2D::SetClipRectEnabled(bool enabled)
 {
 	_clip_rect_enabled = enabled;
@@ -603,12 +585,14 @@ void ok::graphics::TextBatch2D::Draw(ok::String & text, int from, int to)
 
 			if (charcode == 32) //space
 			{
-
+				_total_rect.Merge(ok::Rect2Df(_brush_position.x + glyph.bounds.GetLeft()*rescale_x, _brush_position.y - (glyph.bounds.GetHeight() + glyph.bounds.GetBottom())*rescale_y, glyph.bounds.GetWidth()*rescale_x, glyph.bounds.GetHeight()*rescale_y));
 			}
 			else if (charcode == 9) //tab
 			{
-				_brush_position.x -= glyph.advance*rescale_x; //remove tab shift
-				_brush_position.x += _font->GetGlyphByCharCode(32).advance*rescale_x * 4; //add four space shifts
+				glyph = _font->GetGlyphByCharCode(32);
+				_total_rect.Merge(ok::Rect2Df(_brush_position.x + glyph.bounds.GetLeft()*rescale_x, _brush_position.y - (glyph.bounds.GetHeight() + glyph.bounds.GetBottom())*rescale_y, glyph.bounds.GetWidth()*rescale_x*4.f, glyph.bounds.GetHeight()*rescale_y));
+
+				_brush_position.x += glyph.advance * rescale_x * 3;
 			}
 			else
 			{
@@ -620,6 +604,8 @@ void ok::graphics::TextBatch2D::Draw(ok::String & text, int from, int to)
 				quad.SetUVRect(glyph.texture_rect.GetXY(), glyph.texture_rect.GetSize(), _tex->GetSize());
 
 				quad.SetTransform(glm::vec2(_brush_position.x, _brush_position.y), glm::vec2(rescale_x, rescale_y));
+
+				_total_rect.Merge(ok::Rect2Df(_brush_position.x+glyph.bounds.GetLeft()*rescale_x, _brush_position.y - (glyph.bounds.GetHeight()+glyph.bounds.GetBottom())*rescale_y, glyph.bounds.GetWidth()*rescale_x, glyph.bounds.GetHeight()*rescale_y));
 
 				if (batch_quads_in_use == batch_size)
 				{
@@ -685,10 +671,6 @@ void ok::graphics::TextBatch2D::Draw(ok::String & text, int from, int to)
 
 void ok::graphics::TextBatch2D::Draw(ok::graphics::TextCache * cache)
 {
-	ok::graphics::Font* prev_font = _font;
-
-	SetBrushFont(&cache->_cached_font);
-
 	ok::graphics::Camera::PushCamera(_camera);
 
 	_camera->BeginTransform();
@@ -701,7 +683,10 @@ void ok::graphics::TextBatch2D::Draw(ok::graphics::TextCache * cache)
 	}
 
 	_mat->SetTexture(0, _tex);
-	_mat->Bind(this);
+
+	_cache = cache;
+		_mat->Bind(this);
+	_cache = nullptr;
 
 	int cache_position = 0;
 	int cache_chunk_size;
@@ -768,11 +753,9 @@ void ok::graphics::TextBatch2D::Draw(ok::graphics::TextCache * cache)
 
 	ok::graphics::Camera::PopCamera();
 
+	_total_rect.Merge(ok::Rect2Df(cache->_total_rect.GetX() + _brush_position.x, cache->_total_rect.GetY() + _brush_position.y, cache->_total_rect.GetWidth(), cache->_total_rect.GetHeight()));
 	_brush_position += cache->_brush_advance;
 	batch_quads_in_use = 0;
-
-	if (prev_font != nullptr)
-	SetBrushFont(prev_font);
 }
 
 glm::mat4 ok::graphics::TextBatch2D::DispatchAliasMat4(ok::graphics::ShaderAliasReference alias_type)
@@ -781,11 +764,7 @@ glm::mat4 ok::graphics::TextBatch2D::DispatchAliasMat4(ok::graphics::ShaderAlias
 	{
 		case ok::graphics::ShaderAliasReference::ModelViewProjectionMatrix :
 		{
-			glm::mat4 m = ok::graphics::Camera::GetCurrent()->GetVPMatrix();
-			m[0][0] *= _brush_scale.x;
-			m[1][1] *= _brush_scale.y;
-
-			return m;
+			return ok::graphics::Camera::GetCurrent()->GetVPMatrix();
 		}
 		break;
 	}
@@ -818,7 +797,10 @@ std::pair<float*, int> ok::graphics::TextBatch2D::DispatchAliasFloatArray(ok::gr
 	{
 		if (*callback_name_ptr == "fx[0]")
 		{
+			if (_cache == nullptr)
 			return std::pair<float*, int>(_shader_settings_data.data(), _shader_settings_data_size);
+			else
+			return std::pair<float*, int>(_cache->_cached_shader_settings_data.data(), _shader_settings_data_size);
 		}
 	}
 	break;

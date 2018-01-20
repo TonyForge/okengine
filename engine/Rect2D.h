@@ -10,11 +10,12 @@ namespace ok
 		friend class ok::Rect2D<float>;
 
 		Rect2D();
-		Rect2D(T _x, T _y, T _w, T _h);
+		Rect2D(T _x, T _y, T _w, T _h, bool _yup = false);
 		void SetXYWH(T _x, T _y, T _w, T _h);
 		void SetLTRB(T _l, T _t, T _r, T _b);
 		void GetCenter(T& out_x, T& out_y);
 		void ResizeFromCenter(T new_width, T new_height);
+		void ResetMerge();
 		void Merge(ok::Rect2D<int>& rect);
 		void Merge(ok::Rect2D<float>& rect);
 		T GetWidth();
@@ -38,6 +39,7 @@ namespace ok
 	private:
 		T x, y, w, h;
 		bool yup;
+		bool merge_empty;
 	};
 
 	typedef Rect2D<int> Rect2Di;
