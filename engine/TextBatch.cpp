@@ -778,7 +778,7 @@ std::pair<unsigned int*, int> ok::graphics::TextBatch2D::DispatchAliasSubroutine
 	{
 	case ok::graphics::ShaderAliasReference::Callback:
 	{
-		if (*callback_name_ptr == "current_filters[0]")
+		if (*callback_name_ptr == "filters[0]")
 		{
 			return std::pair<unsigned int*, int>(_filters_enabled, ok::graphics::TextBatch2D_ShaderFiltersIndexes::FiltersLimit);
 		}

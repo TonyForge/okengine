@@ -14,7 +14,7 @@
   </aliases>
   
   <aliases_subroutines>
-	<alias uniform="current_filters[0]" type="px_subroutine_array" ref="Callback" />
+	<alias uniform="filters[0]" type="px_subroutine_array" ref="Callback" />
   </aliases_subroutines>
   
   <vertex>
@@ -59,7 +59,7 @@
 	
 	subroutine vec4 FilterSubroutine(vec4 color);
 	
-	subroutine uniform FilterSubroutine current_filters[4];
+	subroutine uniform FilterSubroutine filters[4];
 	
 	subroutine ( FilterSubroutine ) vec4 FilterUndefined(vec4 color)
 	{
@@ -129,10 +129,10 @@
     {
 		vec4 color;
 		
-		color = current_filters[0](color);
-		color = current_filters[1](color);
-		color = current_filters[2](color);
-		color = current_filters[3](color);
+		color = filters[0](color);
+		color = filters[1](color);
+		color = filters[2](color);
+		color = filters[3](color);
 		
 		FragColor = color;
     }
