@@ -19,6 +19,7 @@
 #include "SFML\Window.hpp"
 #include "GL\glew.h"
 #include "SFML\Graphics.hpp"
+#include "SFML\Audio.hpp"
 #include "SFML\OpenGL.hpp"
 #include "tinyxml\tinyxml2.h"
 #include "easylogging++.h"

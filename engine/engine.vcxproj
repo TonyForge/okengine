@@ -177,6 +177,7 @@
     <ClCompile Include="Rect2D.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Sound.cpp" />
     <ClCompile Include="SpriteBatch.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -207,12 +208,14 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshRenderer.h" />
+    <ClInclude Include="Pool.h" />
     <ClInclude Include="pystring.h" />
     <ClInclude Include="Quad.h" />
     <ClInclude Include="LayeredRenderer.h" />
     <ClInclude Include="Rect2D.h" />
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Sound.h" />
     <ClInclude Include="SpriteBatch.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="String.h" />

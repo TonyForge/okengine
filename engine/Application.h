@@ -11,6 +11,7 @@
 #include "MeshRenderer.h"
 #include "TextBatch.h"
 #include "Automator.h"
+#include "Pool.h"
 
 namespace ok {
 	class Application
