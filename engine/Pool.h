@@ -31,7 +31,7 @@ namespace ok
 			std::function<T*()> custom_allocator = nullptr,
 			std::function<void(T&)> on_inject = nullptr,
 			std::function<void(T&)> on_eject = nullptr,
-			std::function<void(T&, float)> on_update = nullptr
+			std::function<bool(T&, float)> on_update = nullptr
 			);
 		~Pool();
 
@@ -48,7 +48,7 @@ namespace ok
 
 		std::function<void(T&)> _event_on_inject;
 		std::function<void(T&)> _event_on_eject;
-		std::function<void(T&, float)> _event_on_update;
+		std::function<bool(T&, float)> _event_on_update;
 		std::function<T*()> _custom_allocator;
 
 		int _limit;
@@ -154,7 +154,10 @@ namespace ok
 		
 		if (_event_on_update) for (ok::PoolContainer<T>& container : _items)
 		{
-			_event_on_update(*container, dt);
+			if (_event_on_update(*container, dt) == false)
+			{
+				Inject(container);
+			}
 		}
 	}
 

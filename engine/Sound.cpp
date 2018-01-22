@@ -40,7 +40,45 @@ glm::vec3 ok::sound::SoundRoom::GetRoomCoordinates(ok::Transform & listener, ok:
 	return source_location;
 }
 
-void ok::sound::SoundRoom::Listen(sf::Sound & sound, glm::vec3 room_coordinates)
+float ok::sound::SoundRoom::GetSoundSourceRoomRadius(float listener_radius, float sound_source_radius)
 {
-	//sound.setp
+	return sound_source_radius / listener_radius;
+}
+
+void ok::sound::SoundRoom::Listen(sf::Sound & sound, glm::vec3 room_coordinates, float sound_source_room_radius)
+{
+	sound.setRelativeToListener(false);
+	sound.setMinDistance(1.f);
+	sound.setAttenuation(1.f);
+
+	float room_to_sfml_scale = 1000.f*(room_coordinates.length() / glm::clamp(sound_source_room_radius, 0.001f,1000.0f));
+
+	sound.setPosition(room_coordinates.x * room_to_sfml_scale, room_coordinates.y * room_to_sfml_scale, room_coordinates.z * room_to_sfml_scale);
+}
+
+void ok::sound::SoundRoom::Listen(sf::Music & music, glm::vec3 room_coordinates, float sound_source_room_radius)
+{
+	music.setRelativeToListener(false);
+	music.setMinDistance(1.f);
+	music.setAttenuation(1.f);
+
+	float room_to_sfml_scale = 1000.f*(room_coordinates.length() / glm::clamp(sound_source_room_radius, 0.001f, 1000.0f));
+
+	music.setPosition(room_coordinates.x * room_to_sfml_scale, room_coordinates.y * room_to_sfml_scale, room_coordinates.z * room_to_sfml_scale);
+}
+
+void ok::sound::SoundRoom::Listen(sf::Sound & sound)
+{
+	sound.setRelativeToListener(true);
+	sound.setPosition(0, 0, 0);
+	sound.setMinDistance(1.f);
+	sound.setAttenuation(1.f);
+}
+
+void ok::sound::SoundRoom::Listen(sf::Music & music)
+{
+	music.setRelativeToListener(true);
+	music.setPosition(0, 0, 0);
+	music.setMinDistance(1.f);
+	music.setAttenuation(1.f);
 }
