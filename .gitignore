@@ -243,3 +243,14 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+
+!engine/sfml/sfml-audio-d.pdb
+!engine/sfml/sfml-audio-s-d.pdb
+!engine/sfml/sfml-graphics-d.pdb
+!engine/sfml/sfml-graphics-s-d.pdb
+!engine/sfml/sfml-network-d.pdb
+!engine/sfml/sfml-network-s-d.pdb
+!engine/sfml/sfml-system-d.pdb
+!engine/sfml/sfml-system-s-d.pdb
+!engine/sfml/sfml-window-d.pdb
+!engine/sfml/sfml-window-s-d.pdb
