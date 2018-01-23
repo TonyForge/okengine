@@ -23,6 +23,20 @@ bool ok::sound::SoundID::operator==(const ok::sound::SoundID & right)
 	return id == right.id;
 }
 
+glm::vec3 ok::sound::SoundRoom::GetRoomCoordinates(ok::Transform & listener, glm::vec3 sound_source_world_position, float listener_radius)
+{
+	listener.BeginTransform(ok::TransformSpace::WorldSpace);
+
+	glm::vec3 source_location = sound_source_world_position - listener.GetPosition();
+
+	source_location = glm::vec3(glm::dot(source_location, listener.GetRight()), glm::dot(source_location, listener.GetUp()), glm::dot(source_location, listener.GetForward()));
+	source_location /= listener_radius;
+
+	listener.EndTransform();
+
+	return source_location;
+}
+
 glm::vec3 ok::sound::SoundRoom::GetRoomCoordinates(ok::Transform & listener, ok::Transform & sound_source, float listener_radius)
 {
 	listener.BeginTransform(ok::TransformSpace::WorldSpace);
@@ -81,4 +95,88 @@ void ok::sound::SoundRoom::Listen(sf::Music & music)
 	music.setPosition(0, 0, 0);
 	music.setMinDistance(1.f);
 	music.setAttenuation(1.f);
+}
+
+ok::sound::SFSoundWrapper::SFSoundWrapper() : sf::Sound()
+{
+	Unlink();
+}
+
+void ok::sound::SFSoundWrapper::LinktTo(ok::Transform * transform)
+{
+	_transform = transform;
+	_position = nullptr;
+}
+
+void ok::sound::SFSoundWrapper::LinktTo(glm::vec3 * position)
+{
+	_transform = nullptr;
+	_position = position;
+}
+
+void ok::sound::SFSoundWrapper::Unlink()
+{
+	_transform = nullptr;
+	_position = nullptr;
+}
+
+ok::sound::SFMusicWrapper::SFMusicWrapper() : sf::Music()
+{
+	Unlink();
+}
+
+void ok::sound::SFMusicWrapper::LinktTo(ok::Transform * transform)
+{
+	_transform = transform;
+	_position = nullptr;
+}
+
+void ok::sound::SFMusicWrapper::LinktTo(glm::vec3 * position)
+{
+	_transform = nullptr;
+	_position = position;
+}
+
+void ok::sound::SFMusicWrapper::Unlink()
+{
+	_transform = nullptr;
+	_position = nullptr;
+}
+
+ok::sound::SoundChannel::SoundChannel()
+{
+	_sound_ptr = nullptr;
+	_music_ptr = nullptr;
+}
+
+bool ok::sound::SoundChannel::IsValid()
+{
+	if (_sound_ptr != nullptr && _sound_ptr->_owner == this) return true;
+	if (_music_ptr != nullptr && _music_ptr->_owner == this) return true;
+	return false;
+}
+
+void ok::sound::SoundChannel::_Play()
+{
+	if (_sound_ptr) _sound_ptr->play();
+	if (_music_ptr) _music_ptr->play();
+}
+
+void ok::sound::SoundChannel::_Pause()
+{
+	if (_sound_ptr) _sound_ptr->pause();
+	if (_music_ptr) _music_ptr->pause();
+}
+
+void ok::sound::SoundChannel::_Stop()
+{
+	if (_sound_ptr) _sound_ptr->stop();
+	if (_music_ptr) _music_ptr->stop();
+}
+
+void ok::sound::Man::Update(float dt)
+{
+	_channels.Update(dt);
+	_sounds.Update(dt);
+	_musics.Update(dt);
 }

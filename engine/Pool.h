@@ -14,6 +14,7 @@ namespace ok
 		friend class ok::Pool<T>;
 		T* item;
 		typename std::deque<PoolContainer<T>*>::iterator _out_location;
+		//bool _is_out;
 	};
 
 	enum class PoolLimitGrabFrom
