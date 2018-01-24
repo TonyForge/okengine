@@ -40,6 +40,9 @@ namespace ok
 		ok::graphics::Mesh* GetMesh(ok::String path, bool prefer_hardware_skin = false);
 		ok::graphics::Material* GetMaterial(ok::String path);
 
+		ok::sound::SoundAsset* GetSoundSample(ok::String path);
+		ok::sound::SoundAsset* GetSoundStream(ok::String path);
+
 		ok::graphics::ShaderOptions* GetBlendTemplate(ok::String path);
 
 		GLenum GetAliasGL(ok::String alias);

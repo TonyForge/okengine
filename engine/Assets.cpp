@@ -772,6 +772,16 @@ namespace ok
 		return material;
 	}
 
+	ok::sound::SoundAsset * Assets::GetSoundSample(ok::String path)
+	{
+		return nullptr;
+	}
+
+	ok::sound::SoundAsset * Assets::GetSoundStream(ok::String path)
+	{
+		return nullptr;
+	}
+
 	ok::graphics::ShaderOptions * ok::Assets::GetBlendTemplate(ok::String path)
 	{
 		ok::String alias_name = GetAliasName(path);

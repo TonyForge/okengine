@@ -10,11 +10,12 @@ namespace ok
 	{
 	public:
 		T& operator*();
+		bool IsOut();
 	private:
 		friend class ok::Pool<T>;
 		T* item;
 		typename std::deque<PoolContainer<T>*>::iterator _out_location;
-		//bool _is_out;
+		bool _is_out;
 	};
 
 	enum class PoolLimitGrabFrom
@@ -33,7 +34,7 @@ namespace ok
 			std::function<void(T&)> on_inject = nullptr,
 			std::function<void(T&)> on_eject = nullptr,
 			std::function<bool(T&, float)> on_update = nullptr
-			);
+		);
 		~Pool();
 
 		PoolContainer<T>& Eject();
@@ -57,7 +58,7 @@ namespace ok
 	};
 
 	template<class T>
-	inline Pool<T>::Pool(int limit, std::function<T*()> custom_allocator, std::function<void(T&)> on_inject, std::function<void(T&)> on_eject, std::function<void(T&, float)> on_update)
+	inline Pool<T>::Pool(int limit, std::function<T*()> custom_allocator, std::function<void(T&)> on_inject, std::function<void(T&)> on_eject, std::function<bool(T&, float)> on_update)
 	{
 		_event_on_inject = on_inject;
 		_event_on_eject = on_eject;
@@ -100,6 +101,8 @@ namespace ok
 				if (_event_on_inject) _event_on_inject(**container);
 				if (_event_on_eject) _event_on_eject(**container);
 
+				container->_is_out = true;
+
 				return *container;
 			}
 			else
@@ -125,6 +128,8 @@ namespace ok
 
 		if (_event_on_eject) _event_on_eject(**container);
 
+		container->_is_out = true;
+
 		return *container;
 	}
 
@@ -135,6 +140,8 @@ namespace ok
 
 		_items_out.erase(container._out_location);
 		_items_in.push(&container);
+
+		container->_is_out = false;
 	}
 
 	template<class T>
@@ -152,10 +159,10 @@ namespace ok
 	template<class T>
 	inline void Pool<T>::Update(float dt)
 	{
-		
+
 		if (_event_on_update) for (ok::PoolContainer<T>& container : _items)
 		{
-			if (_event_on_update(*container, dt) == false)
+			if (container->_is_out && _event_on_update(*container, dt) == false)
 			{
 				Inject(container);
 			}
@@ -166,5 +173,11 @@ namespace ok
 	inline T & PoolContainer<T>::operator*()
 	{
 		return *item;
+	}
+
+	template<class T>
+	inline bool PoolContainer<T>::IsOut()
+	{
+		return _is_out;
 	}
 }
