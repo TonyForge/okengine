@@ -141,7 +141,7 @@ namespace ok
 		_items_out.erase(container._out_location);
 		_items_in.push(&container);
 
-		container->_is_out = false;
+		container._is_out = false;
 	}
 
 	template<class T>

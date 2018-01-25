@@ -56,7 +56,13 @@ namespace ok
 
 	private:
 		Assets() { basic_instance = this; }
-		~Assets() {}
+		~Assets() 
+		{
+			for (auto& sound_stream : sound_streams)
+			{
+				delete sound_stream.second->_stream_resource;
+			}
+		}
 		ok::Assets(ok::Assets const&) { basic_instance = this; }
 		ok::Assets& operator= (ok::Assets const&) { basic_instance = this; }
 	protected:
@@ -76,6 +82,9 @@ namespace ok
 		std::unordered_map<std::string, ok::GameObject*> skeletons;
 		std::unordered_map<std::string, std::vector<int>*> mesh_to_skeleton_mapping_tables;
 		std::unordered_map<std::string, std::vector<std::string>*> mesh_to_skeleton_bones_names;
+
+		std::unordered_map<std::string, ok::sound::SoundAsset*> sound_samples;
+		std::unordered_map<std::string, ok::sound::SoundAsset*> sound_streams;
 
 		std::unordered_map<std::string, GLenum> _glname_alias;
 		std::unordered_map<std::string, ok::String> _name_alias;

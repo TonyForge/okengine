@@ -774,12 +774,70 @@ namespace ok
 
 	ok::sound::SoundAsset * Assets::GetSoundSample(ok::String path)
 	{
-		return nullptr;
+		ok::String alias_name = GetAliasName(path);
+		if (!alias_name.isEmpty())
+		{
+			path = assets_root_folder + alias_name;
+		}
+		else
+		{
+			path = assets_root_folder + path;
+		}
+
+		std::unordered_map<std::string, ok::sound::SoundAsset*>::iterator it = sound_samples.find(path);
+
+		ok::sound::SoundAsset* sound_asset = nullptr;
+
+		if (it == sound_samples.end())
+		{
+			sound_asset = new ok::sound::SoundAsset();
+			sound_asset->_sample_resource = new sf::SoundBuffer();
+			sound_asset->_sample_resource->loadFromFile(path);
+
+			sound_samples[path] = sound_asset;
+		}
+		else
+		{
+			sound_asset = it->second;
+		}
+
+		return sound_asset;
 	}
 
 	ok::sound::SoundAsset * Assets::GetSoundStream(ok::String path)
 	{
-		return nullptr;
+		ok::String alias_name = GetAliasName(path);
+		if (!alias_name.isEmpty())
+		{
+			path = assets_root_folder + alias_name;
+		}
+		else
+		{
+			path = assets_root_folder + path;
+		}
+
+		std::unordered_map<std::string, ok::sound::SoundAsset*>::iterator it = sound_streams.find(path);
+
+		ok::sound::SoundAsset* sound_asset = nullptr;
+
+		if (it == sound_streams.end())
+		{
+			sound_asset = new ok::sound::SoundAsset();
+			sound_streams[path] = sound_asset;
+		}
+		else
+		{
+			sound_asset = it->second;
+		}
+
+		if (sound_asset->_stream_resource == nullptr)
+		{
+			sf::FileInputStream* stream = new sf::FileInputStream();
+			stream->open(path);
+			sound_asset->_stream_resource = stream;
+		}
+
+		return sound_asset;
 	}
 
 	ok::graphics::ShaderOptions * ok::Assets::GetBlendTemplate(ok::String path)
