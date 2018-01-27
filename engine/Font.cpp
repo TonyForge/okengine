@@ -34,7 +34,7 @@ ok::graphics::FontGlyph& ok::graphics::InternalFont::GetGlyph(unsigned int charc
 	{
 		return unknown_glyph;
 	}
-	return _glyphs[std::distance(_glyphs_charcodes.begin(), char_pos)];
+	return _glyphs[static_cast<size_t>(char_pos - _glyphs_charcodes.begin())/*std::distance(_glyphs_charcodes.begin(), char_pos)*/];
 }
 
 ok::Rect2Df & ok::graphics::InternalFont::GetFontBounds()

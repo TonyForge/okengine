@@ -823,6 +823,7 @@ namespace ok
 		if (it == sound_streams.end())
 		{
 			sound_asset = new ok::sound::SoundAsset();
+			sound_asset->_stream_resource = path;
 			sound_streams[path] = sound_asset;
 		}
 		else
@@ -830,12 +831,12 @@ namespace ok
 			sound_asset = it->second;
 		}
 
-		if (sound_asset->_stream_resource == nullptr)
+		/*if (sound_asset->_stream_resource == nullptr)
 		{
-			sf::FileInputStream* stream = new sf::FileInputStream();
+			std::shared_ptr<sf::FileInputStream> stream = std::make_shared<sf::FileInputStream>();
 			stream->open(path);
 			sound_asset->_stream_resource = stream;
-		}
+		}*/
 
 		return sound_asset;
 	}
@@ -1327,7 +1328,7 @@ namespace ok
 				else
 				{
 					//bone found
-					mapping_table->push_back(static_cast<int>(std::distance(skeleton_bones.begin(), ptr)));
+					mapping_table->push_back(static_cast<int>(ptr - skeleton_bones.begin()/*std::distance(skeleton_bones.begin(), ptr)*/));
 				}
 			}
 		}

@@ -53,11 +53,11 @@ namespace ok
 			friend class ok::sound::Sound;
 			friend class ok::sound::SoundRoom;
 
-			ok::PoolContainer<ok::sound::SampleWrapper>* _sample_slot;
-			ok::PoolContainer<ok::sound::StreamWrapper>* _stream_slot;
+			std::shared_ptr<ok::PoolContainer<ok::sound::SampleWrapper>> _sample_slot;
+			std::shared_ptr<ok::PoolContainer<ok::sound::StreamWrapper>> _stream_slot;
 
 			ok::Pool<ok::sound::SoundInstance>* _parent_pool;
-			ok::PoolContainer<ok::sound::SoundInstance>* _parent_pool_container;
+			std::shared_ptr<ok::PoolContainer<ok::sound::SoundInstance>> _parent_pool_container;
 			static ok::sound::SoundInstance* _injection_safety_lock;
 
 			bool _mute_enabled;
@@ -123,6 +123,12 @@ namespace ok
 			void Update(float dt);
 		protected:
 		private:
+			bool _setup_paused;
+			bool _setup_stopped;
+			bool _setup_looped;
+			bool _setup_muted;
+			float _setup_volume;
+
 			ok::sound::SoundInstance* _setup_instance;
 
 			ok::sound::SoundAsset* _asset;

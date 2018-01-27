@@ -274,8 +274,12 @@ float camera_shift_z = -500;
 float near_plane_z = 1.0f;
 float far_plane_z = 1000.0f;
 
+ok::sound::Sound* my_sound;
+
 void ok::Application::Init()
 {
+	my_sound = new ok::sound::Sound(ok::Assets::instance().GetSoundStream("music.wav"));
+
 	my_sprite_batch = new ok::graphics::SpriteBatch(10);
 
 	my_sprite_batch_texrect.texture = ok::Assets::instance().GetTexture("test.png");
@@ -400,6 +404,22 @@ void ok::Application::Update(float dt)
 	//my_text_batch->SetBrushPosition(glm::vec2(100.f, 150.f));
 	my_text_batch->Draw(my_cache);
 
+	if (ok::Input::o().KeyPressed(ok::KKey::Q))
+	{
+		my_sound->Play();
+	}
+	
+	if (ok::Input::o().KeyPressed(ok::KKey::Z))
+	{
+		my_sound->EnableMute();
+	}
+
+	if (ok::Input::o().KeyPressed(ok::KKey::X))
+	{
+		my_sound->DisableMute();
+	}
+
+	my_sound->Update(dt);
 	//delete cache;
 	/*my_text_batch->BatchBegin();
 	my_text_batch->Draw(ok::String("Hello world!"));

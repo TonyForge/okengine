@@ -343,7 +343,7 @@ GLint ok::graphics::Shader::GetSampler(const std::string& sampler_name)
 GLint ok::graphics::Shader::GetSampler(const std::string& sampler_name, int & texture_channel_index)
 {
 	GLint result = samplers[sampler_name];
-	texture_channel_index = std::distance(sampler_to_channel_linkage_table.begin(), std::find(sampler_to_channel_linkage_table.begin(), sampler_to_channel_linkage_table.end(), result));
+	texture_channel_index = static_cast<int>(std::find(sampler_to_channel_linkage_table.begin(), sampler_to_channel_linkage_table.end(), result) - sampler_to_channel_linkage_table.begin());//std::distance(sampler_to_channel_linkage_table.begin(), std::find(sampler_to_channel_linkage_table.begin(), sampler_to_channel_linkage_table.end(), result));
 	return result;
 }
 

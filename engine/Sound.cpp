@@ -50,12 +50,12 @@ ok::sound::Sound::Sound(ok::sound::SoundAsset* asset, int instances_limit) :
 				if (input._sample_slot != nullptr)
 				{
 					(**input._sample_slot).instance = nullptr;
-					ok::sound::Sound::_sample_slots.Inject(*input._sample_slot);
+					ok::sound::Sound::_sample_slots.Inject(input._sample_slot);
 				}
 				if (input._stream_slot != nullptr)
 				{
 					(**input._stream_slot).instance = nullptr;
-					ok::sound::Sound::_stream_slots.Inject(*input._stream_slot);
+					ok::sound::Sound::_stream_slots.Inject(input._stream_slot);
 				}
 			}
 
@@ -66,6 +66,12 @@ ok::sound::Sound::Sound(ok::sound::SoundAsset* asset, int instances_limit) :
 {
 	_asset = asset;
 	_setup_instance = nullptr;
+
+	_setup_paused = false;
+	_setup_stopped = false;
+	_setup_looped = false;
+	_setup_muted = false;
+	_setup_volume = 1.f;
 }
 
 void ok::sound::Sound::SetupBegin(ok::sound::SoundInstance * instance)
@@ -80,27 +86,43 @@ void ok::sound::Sound::SetupEnd()
 
 ok::sound::SoundInstance * ok::sound::Sound::Play()
 {
-	ok::PoolContainer<ok::sound::SoundInstance>& instance_container = _instances.Eject();
-	ok::sound::SoundInstance& instance = *instance_container;
+	std::shared_ptr<ok::PoolContainer<ok::sound::SoundInstance>> instance_container = _instances.Eject();
+	ok::sound::SoundInstance& instance = **instance_container;
 
 	if (_asset->IsSample())
 	{
-		instance._sample_slot = &_sample_slots.Eject();
+		instance._sample_slot = _sample_slots.Eject();
 		ok::sound::Sample& sample = *(**instance._sample_slot).sample;
 		_asset->Apply(sample);
-		sample.play();
+
+		if (_setup_paused || _setup_stopped)
+		{
+			//do nothing
+		}
+		else sample.play();
 	}
 
 	if (_asset->IsStream())
 	{
-		instance._stream_slot = &_stream_slots.Eject();
+		instance._stream_slot = _stream_slots.Eject();
 		ok::sound::Stream& stream = *(**instance._stream_slot).stream;
 		_asset->Apply(stream);
-		stream.play();
+
+		if (_setup_paused || _setup_stopped)
+		{
+			//do nothing
+		}
+		else stream.play();
 	}
 
 	instance._parent_pool = &_instances;
-	instance._parent_pool_container = &instance_container;
+	instance._parent_pool_container = instance_container;
+
+	SetupBegin(&instance);
+		if (_setup_looped) EnableLoop();
+		if (_setup_muted) EnableMute();
+		SetVolume(_setup_volume);
+	SetupEnd();
 
 	return &instance;
 }
@@ -109,13 +131,15 @@ void ok::sound::Sound::Pause()
 {
 	if (_setup_instance == nullptr)
 	{
-		auto items = _instances.Items();
+		_setup_paused = true;
 
-		for (auto item : items)
+		auto& items = _instances.Items();
+
+		for (auto& item : items)
 		{
-			if (item.IsOut())
+			if (item->IsOut())
 			{
-				ok::sound::SoundInstance& instance = *item;
+				ok::sound::SoundInstance& instance = **item;
 				if (instance._sample_slot) (**instance._sample_slot).sample->pause();
 				if (instance._stream_slot) (**instance._stream_slot).stream->pause();
 			}
@@ -133,13 +157,16 @@ void ok::sound::Sound::Resume()
 {
 	if (_setup_instance == nullptr)
 	{
-		auto items = _instances.Items();
+		_setup_paused = false;
+		_setup_stopped = false;
 
-		for (auto item : items)
+		auto& items = _instances.Items();
+
+		for (auto& item : items)
 		{
-			if (item.IsOut())
+			if (item->IsOut())
 			{
-				ok::sound::SoundInstance& instance = *item;
+				ok::sound::SoundInstance& instance = **item;
 				if (instance._sample_slot) (**instance._sample_slot).sample->play();
 				if (instance._stream_slot) (**instance._stream_slot).stream->play();
 			}
@@ -157,13 +184,15 @@ void ok::sound::Sound::Stop()
 {
 	if (_setup_instance == nullptr)
 	{
-		auto items = _instances.Items();
+		_setup_stopped = true;
 
-		for (auto item : items)
+		auto& items = _instances.Items();
+
+		for (auto& item : items)
 		{
-			if (item.IsOut())
+			if (item->IsOut())
 			{
-				ok::sound::SoundInstance& instance = *item;
+				ok::sound::SoundInstance& instance = **item;
 				if (instance._sample_slot) (**instance._sample_slot).sample->stop();
 				if (instance._stream_slot) (**instance._stream_slot).stream->stop();
 			}
@@ -181,13 +210,15 @@ void ok::sound::Sound::EnableLoop()
 {
 	if (_setup_instance == nullptr)
 	{
-		auto items = _instances.Items();
+		_setup_looped = true;
 
-		for (auto item : items)
+		auto& items = _instances.Items();
+
+		for (auto& item : items)
 		{
-			if (item.IsOut())
+			if (item->IsOut())
 			{
-				ok::sound::SoundInstance& instance = *item;
+				ok::sound::SoundInstance& instance = **item;
 				if (instance._sample_slot) (**instance._sample_slot).sample->setLoop(true);
 				if (instance._stream_slot) (**instance._stream_slot).stream->setLoop(true);
 			}
@@ -205,13 +236,15 @@ void ok::sound::Sound::DisableLoop()
 {
 	if (_setup_instance == nullptr)
 	{
-		auto items = _instances.Items();
+		_setup_looped = false;
 
-		for (auto item : items)
+		auto& items = _instances.Items();
+
+		for (auto& item : items)
 		{
-			if (item.IsOut())
+			if (item->IsOut())
 			{
-				ok::sound::SoundInstance& instance = *item;
+				ok::sound::SoundInstance& instance = **item;
 				if (instance._sample_slot) (**instance._sample_slot).sample->setLoop(false);
 				if (instance._stream_slot) (**instance._stream_slot).stream->setLoop(false);
 			}
@@ -229,13 +262,15 @@ void ok::sound::Sound::EnableMute()
 {
 	if (_setup_instance == nullptr)
 	{
-		auto items = _instances.Items();
+		_setup_muted = true;
 
-		for (auto item : items)
+		auto& items = _instances.Items();
+
+		for (auto& item : items)
 		{
-			if (item.IsOut())
+			if (item->IsOut())
 			{
-				ok::sound::SoundInstance& instance = *item;
+				ok::sound::SoundInstance& instance = **item;
 				instance._mute_enabled = true;
 				if (instance._sample_slot) (**instance._sample_slot).sample->setVolume(0.f);
 				if (instance._stream_slot) (**instance._stream_slot).stream->setVolume(0.f);
@@ -255,13 +290,15 @@ void ok::sound::Sound::DisableMute()
 {
 	if (_setup_instance == nullptr)
 	{
-		auto items = _instances.Items();
+		_setup_muted = false;
 
-		for (auto item : items)
+		auto& items = _instances.Items();
+
+		for (auto& item : items)
 		{
-			if (item.IsOut())
+			if (item->IsOut())
 			{
-				ok::sound::SoundInstance& instance = *item;
+				ok::sound::SoundInstance& instance = **item;
 				instance._mute_enabled = false;
 				if (instance._sample_slot) (**instance._sample_slot).sample->setVolume(instance._volume*100.f);
 				if (instance._stream_slot) (**instance._stream_slot).stream->setVolume(instance._volume*100.f);
@@ -281,13 +318,15 @@ void ok::sound::Sound::SetVolume(float volume)
 {
 	if (_setup_instance == nullptr)
 	{
-		auto items = _instances.Items();
+		_setup_volume = volume;
 
-		for (auto item : items)
+		auto& items = _instances.Items();
+
+		for (auto& item : items)
 		{
-			if (item.IsOut())
+			if (item->IsOut())
 			{
-				ok::sound::SoundInstance& instance = *item;
+				ok::sound::SoundInstance& instance = **item;
 				instance._volume = volume;
 				if (instance._mute_enabled)
 				{
@@ -321,13 +360,14 @@ void ok::sound::Sound::LinkToSpatialController(ok::Transform * transform, float*
 {
 	if (_setup_instance == nullptr)
 	{
-		auto items = _instances.Items();
+		auto& items = _instances.Items();
 
-		for (auto item : items)
+		for (auto& item : items)
 		{
-			if (item.IsOut())
+			if (item->IsOut())
 			{
-				ok::sound::SoundInstance& instance = *item;
+				ok::sound::SoundInstance& instance = **item;
+				instance._spatial_enabled = true;
 				instance._spatial_controller_transform = transform;
 				instance._spatial_controller_position = nullptr;
 				instance._spatial_controller_radius = radius;
@@ -337,6 +377,7 @@ void ok::sound::Sound::LinkToSpatialController(ok::Transform * transform, float*
 	else
 	{
 		ok::sound::SoundInstance& instance = *_setup_instance;
+		instance._spatial_enabled = true;
 		instance._spatial_controller_transform = transform;
 		instance._spatial_controller_position = nullptr;
 		instance._spatial_controller_radius = radius;
@@ -347,13 +388,14 @@ void ok::sound::Sound::LinkToSpatialController(glm::vec3 * position, float* radi
 {
 	if (_setup_instance == nullptr)
 	{
-		auto items = _instances.Items();
+		auto& items = _instances.Items();
 
-		for (auto item : items)
+		for (auto& item : items)
 		{
-			if (item.IsOut())
+			if (item->IsOut())
 			{
-				ok::sound::SoundInstance& instance = *item;
+				ok::sound::SoundInstance& instance = **item;
+				instance._spatial_enabled = true;
 				instance._spatial_controller_transform = nullptr;
 				instance._spatial_controller_position = position;
 				instance._spatial_controller_radius = radius;
@@ -363,6 +405,7 @@ void ok::sound::Sound::LinkToSpatialController(glm::vec3 * position, float* radi
 	else
 	{
 		ok::sound::SoundInstance& instance = *_setup_instance;
+		instance._spatial_enabled = true;
 		instance._spatial_controller_transform = nullptr;
 		instance._spatial_controller_position = position;
 		instance._spatial_controller_radius = radius;
@@ -373,13 +416,14 @@ void ok::sound::Sound::UnlinkFromSpatialController()
 {
 	if (_setup_instance == nullptr)
 	{
-		auto items = _instances.Items();
+		auto& items = _instances.Items();
 
-		for (auto item : items)
+		for (auto& item : items)
 		{
-			if (item.IsOut())
+			if (item->IsOut())
 			{
-				ok::sound::SoundInstance& instance = *item;
+				ok::sound::SoundInstance& instance = **item;
+				instance._spatial_enabled = false;
 				instance._spatial_controller_transform = nullptr;
 				instance._spatial_controller_position = nullptr;
 				instance._spatial_controller_radius = nullptr;
@@ -389,6 +433,7 @@ void ok::sound::Sound::UnlinkFromSpatialController()
 	else
 	{
 		ok::sound::SoundInstance& instance = *_setup_instance;
+		instance._spatial_enabled = false;
 		instance._spatial_controller_transform = nullptr;
 		instance._spatial_controller_position = nullptr;
 		instance._spatial_controller_radius = nullptr;
@@ -399,13 +444,13 @@ void ok::sound::Sound::EnableSpatial()
 {
 	if (_setup_instance == nullptr)
 	{
-		auto items = _instances.Items();
+		auto& items = _instances.Items();
 
-		for (auto item : items)
+		for (auto& item : items)
 		{
-			if (item.IsOut())
+			if (item->IsOut())
 			{
-				ok::sound::SoundInstance& instance = *item;
+				ok::sound::SoundInstance& instance = **item;
 				instance._spatial_enabled = true;
 			}
 		}
@@ -421,13 +466,13 @@ void ok::sound::Sound::DisableSpatial()
 {
 	if (_setup_instance == nullptr)
 	{
-		auto items = _instances.Items();
+		auto& items = _instances.Items();
 
-		for (auto item : items)
+		for (auto& item : items)
 		{
-			if (item.IsOut())
+			if (item->IsOut())
 			{
-				ok::sound::SoundInstance& instance = *item;
+				ok::sound::SoundInstance& instance = **item;
 				instance._spatial_enabled = false;
 			}
 		}
@@ -441,13 +486,13 @@ void ok::sound::Sound::DisableSpatial()
 
 void ok::sound::Sound::Update(float dt)
 {
-	auto items = _instances.Items();
+	auto& items = _instances.Items();
 
-	for (auto item : items)
+	for (auto& item : items)
 	{
-		if (item.IsOut())
+		if (item->IsOut())
 		{
-			ok::sound::SoundInstance& instance = *item;
+			ok::sound::SoundInstance& instance = **item;
 
 			if (instance.IsStopped() == true && instance.IsLooped() == false)
 			{
@@ -469,6 +514,7 @@ ok::sound::SoundInstance::SoundInstance()
 	_spatial_enabled = false;
 	_spatial_controller_transform = nullptr;
 	_spatial_controller_position = nullptr;
+	_spatial_controller_radius = nullptr;
 
 	_mute_enabled = false;
 	_volume = 1.f;
@@ -493,7 +539,7 @@ bool ok::sound::SoundInstance::IsLooped()
 void ok::sound::SoundInstance::_Inject()
 {
 	ok::sound::SoundInstance::_injection_safety_lock = this;
-	_parent_pool->Inject(*(_parent_pool_container));
+	_parent_pool->Inject(_parent_pool_container);
 	ok::sound::SoundInstance::_injection_safety_lock = nullptr;
 }
 
@@ -511,7 +557,13 @@ ok::sound::SampleWrapper::SampleWrapper()
 
 ok::sound::SampleWrapper::~SampleWrapper()
 {
-	if (sample != nullptr) delete sample;
+	if (sample != nullptr)
+	{
+		sample->stop();
+		sample->resetBuffer();
+		delete sample;
+	}
+		
 }
 
 ok::sound::SampleWrapper & ok::sound::SampleWrapper::operator=(const ok::sound::SampleWrapper & right)
@@ -544,7 +596,11 @@ ok::sound::StreamWrapper & ok::sound::StreamWrapper::operator=(const ok::sound::
 
 ok::sound::StreamWrapper::~StreamWrapper()
 {
-	if (stream != nullptr) delete stream;
+	if (stream != nullptr)
+	{
+		stream->stop();
+		delete stream;
+	}
 }
 
 ok::sound::SoundRoom & ok::sound::SoundRoom::instance()

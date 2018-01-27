@@ -5,6 +5,7 @@
 #include "MeshRenderer.h"
 #include "VertexAnimation.h"
 #include "TransformAnimation.h"
+#include "Sound.h"
 
 namespace ok
 {
@@ -56,13 +57,7 @@ namespace ok
 
 	private:
 		Assets() { basic_instance = this; }
-		~Assets() 
-		{
-			for (auto& sound_stream : sound_streams)
-			{
-				delete sound_stream.second->_stream_resource;
-			}
-		}
+		~Assets() {}
 		ok::Assets(ok::Assets const&) { basic_instance = this; }
 		ok::Assets& operator= (ok::Assets const&) { basic_instance = this; }
 	protected:

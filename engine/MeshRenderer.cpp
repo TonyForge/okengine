@@ -65,7 +65,7 @@ void ok::graphics::MeshRenderer::Render()
 		axis_weights.push_back(-axis_weights[1]);
 		axis_weights.push_back(-axis_weights[2]);
 
-		_mesh->SwitchIndices(std::distance(axis_weights.begin(), std::min_element(axis_weights.begin(), axis_weights.end())));
+		_mesh->SwitchIndices(static_cast<int>(std::min_element(axis_weights.begin(), axis_weights.end()) - axis_weights.begin())/*std::distance(axis_weights.begin(), std::min_element(axis_weights.begin(), axis_weights.end()))*/);
 	}
 
 	_material->Bind(this);

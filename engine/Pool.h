@@ -13,9 +13,11 @@ namespace ok
 		bool IsOut();
 	private:
 		friend class ok::Pool<T>;
+
 		T* item;
-		typename std::deque<PoolContainer<T>*>::iterator _out_location;
+		typename std::list<int>::iterator _out_location;
 		bool _is_out;
+		int _index;
 	};
 
 	enum class PoolLimitGrabFrom
@@ -37,16 +39,16 @@ namespace ok
 		);
 		~Pool();
 
-		PoolContainer<T>& Eject();
-		void Inject(PoolContainer<T>& container);
-		std::vector<PoolContainer<T>>& Items();
+		std::shared_ptr<PoolContainer<T>> Eject();
+		void Inject(std::shared_ptr<PoolContainer<T>> container);
+		std::vector<std::shared_ptr<PoolContainer<T>>>& Items();
 		void SetLimitGrabFrom(ok::PoolLimitGrabFrom limit_grab_from);
 
 		void Update(float dt);
 	private:
-		std::vector<PoolContainer<T>> _items;
-		std::stack<PoolContainer<T>*> _items_in;
-		std::deque<PoolContainer<T>*> _items_out;
+		std::vector<std::shared_ptr<PoolContainer<T>>> _items;
+		std::stack<int> _items_in;
+		std::list<int> _items_out;
 
 		std::function<void(T&)> _event_on_inject;
 		std::function<void(T&)> _event_on_eject;
@@ -71,16 +73,16 @@ namespace ok
 	template<class T>
 	inline Pool<T>::~Pool()
 	{
-		for (ok::PoolContainer<T>& container : _items)
+		for (std::shared_ptr<ok::PoolContainer<T>>& container : _items)
 		{
-			delete container.item;
+			delete container->item;
 		}
 	}
 
 	template<class T>
-	inline PoolContainer<T>& Pool<T>::Eject()
+	inline std::shared_ptr<PoolContainer<T>> Pool<T>::Eject()
 	{
-		PoolContainer<T>* container;
+		std::shared_ptr<PoolContainer<T>> container;
 
 		if (_items_in.size() == 0)
 		{
@@ -88,14 +90,16 @@ namespace ok
 			{
 				if (_limit_grab_from == ok::PoolLimitGrabFrom::End)
 				{
-					container = _items_out.back();
+					container = _items[_items_out.back()];
 				}
 				else if (_limit_grab_from == ok::PoolLimitGrabFrom::Begin)
 				{
-					container = _items_out.front();
+					int index = _items_out.front();
+					container = _items[index];
 					_items_out.pop_front();
-					_items_out.push_back(container);
+					_items_out.push_back(index);
 					container->_out_location = _items_out.end();
+					container->_out_location--;
 				}
 
 				if (_event_on_inject) _event_on_inject(**container);
@@ -103,12 +107,13 @@ namespace ok
 
 				container->_is_out = true;
 
-				return *container;
+				return container;
 			}
 			else
 			{
-				_items.push_back(PoolContainer<T>());
-				container = &_items[_items.size() - 1];
+				_items.push_back(std::make_shared<PoolContainer<T>>());
+				container = _items[_items.size() - 1];
+				container->_index = _items.size() - 1;
 
 				if (_custom_allocator)
 					container->item = _custom_allocator();
@@ -118,34 +123,35 @@ namespace ok
 		}
 		else
 		{
-			container = _items_in.top();
+			container = _items[_items_in.top()];
 			_items_in.pop();
 		}
 
-		_items_out.push_back(container);
+		_items_out.push_back(container->_index);
 
 		container->_out_location = _items_out.end();
+		container->_out_location--;
 
 		if (_event_on_eject) _event_on_eject(**container);
 
 		container->_is_out = true;
 
-		return *container;
+		return container;
 	}
 
 	template<class T>
-	inline void Pool<T>::Inject(PoolContainer<T>& container)
+	inline void Pool<T>::Inject(std::shared_ptr<PoolContainer<T>> container)
 	{
-		if (_event_on_inject) _event_on_inject(*container);
+		if (_event_on_inject) _event_on_inject(**container);
 
-		_items_out.erase(container._out_location);
-		_items_in.push(&container);
+		_items_out.erase(container->_out_location);
+		_items_in.push(container->_index);
 
-		container._is_out = false;
+		container->_is_out = false;
 	}
 
 	template<class T>
-	inline std::vector<PoolContainer<T>>& Pool<T>::Items()
+	inline std::vector<std::shared_ptr<PoolContainer<T>>>& Pool<T>::Items()
 	{
 		return _items;
 	}
@@ -160,9 +166,9 @@ namespace ok
 	inline void Pool<T>::Update(float dt)
 	{
 
-		if (_event_on_update) for (ok::PoolContainer<T>& container : _items)
+		if (_event_on_update) for (std::shared_ptr<ok::PoolContainer<T>>& container : _items)
 		{
-			if (container->_is_out && _event_on_update(*container, dt) == false)
+			if (container->_is_out && _event_on_update(**container, dt) == false)
 			{
 				Inject(container);
 			}

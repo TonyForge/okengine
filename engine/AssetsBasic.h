@@ -30,7 +30,7 @@ namespace ok
 			bool IsSample();
 			bool IsStream();
 			sf::SoundBuffer* _sample_resource;
-			sf::InputStream* _stream_resource;
+			std::string _stream_resource; //just file name :)
 		};
 	}
 }

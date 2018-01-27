@@ -10,7 +10,7 @@ ok::AssetsBasic & ok::AssetsBasic::instance()
 ok::sound::SoundAsset::SoundAsset()
 {
 	_sample_resource = nullptr;
-	_stream_resource = nullptr;
+	_stream_resource = "";
 }
 
 void ok::sound::SoundAsset::Apply(ok::sound::Sample & sample)
@@ -20,7 +20,7 @@ void ok::sound::SoundAsset::Apply(ok::sound::Sample & sample)
 
 void ok::sound::SoundAsset::Apply(ok::sound::Stream & stream)
 {
-	stream.openFromStream(*_stream_resource);
+	stream.openFromFile(_stream_resource);
 }
 
 bool ok::sound::SoundAsset::IsSample()
@@ -30,5 +30,5 @@ bool ok::sound::SoundAsset::IsSample()
 
 bool ok::sound::SoundAsset::IsStream()
 {
-	return _stream_resource != nullptr;
+	return _stream_resource.size() != 0;
 }
