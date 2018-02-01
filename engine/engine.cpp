@@ -1,3 +1,5 @@
+#ifdef OKENGINE
+
 #include "Application.h"
 #include "Assets.h"
 #include "Quad.h"
@@ -14,3 +16,5 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	return 0;
 }
+
+#endif

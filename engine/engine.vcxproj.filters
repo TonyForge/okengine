@@ -13,11 +13,14 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="projects">
+      <UniqueIdentifier>{e59d570f-479c-4c47-8c07-8940a37c98d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="projects\Kripta">
+      <UniqueIdentifier>{85fbe099-b058-4ccb-b416-9c5b3957857a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="engine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -116,6 +119,15 @@
     </ClCompile>
     <ClCompile Include="Sound.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Kripta.cpp">
+      <Filter>projects\Kripta</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\Kripta\Floor.cpp">
+      <Filter>projects\Kripta</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -217,6 +229,12 @@
     </ClInclude>
     <ClInclude Include="Pool.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Kripta.h">
+      <Filter>projects\Kripta</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Kripta\Floor.h">
+      <Filter>projects\Kripta</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

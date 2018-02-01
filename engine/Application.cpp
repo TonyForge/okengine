@@ -2,6 +2,7 @@
 
 ok::Application::Application()
 {
+	_settings_file_name = "settings.xml";
 }
 
 
@@ -259,178 +260,19 @@ void ok::Application::Run()
 	delete window;
 }
 
-
-ok::graphics::TextCache* my_cache;
-ok::graphics::Font* my_font;
-ok::graphics::TextBatch2D* my_text_batch;
-
-ok::graphics::SpriteBatch* my_sprite_batch;
-ok::graphics::TextureRect my_sprite_batch_texrect;
-ok::graphics::Camera my_camera(ok::graphics::CameraCoordinateSystem::ScreenCenter);
-float camera_shift_x = 0;
-float camera_shift_y = 0;
-float camera_shift_z = -500;
-
-float near_plane_z = 1.0f;
-float far_plane_z = 1000.0f;
-
-ok::sound::Sound* my_sound;
-
 void ok::Application::Init()
 {
-	my_sound = new ok::sound::Sound(ok::Assets::instance().GetSoundStream("music.wav"));
-
-	my_sprite_batch = new ok::graphics::SpriteBatch(10);
-
-	my_sprite_batch_texrect.texture = ok::Assets::instance().GetTexture("test.png");
-	my_sprite_batch_texrect.left = 0;
-	my_sprite_batch_texrect.top = 0;
-	my_sprite_batch_texrect.width = 100;
-	my_sprite_batch_texrect.height = 100;
-	my_sprite_batch_texrect.uv_rect = glm::vec4(0.f, 0.f, 1.f, 1.f);
-
-	my_font = ok::Assets::instance().GetFont("font001");
-	my_font->SetInternalFont(ok::Assets::instance().GetInternalFont("consola.font.xml"));
-
-	my_text_batch = new ok::graphics::TextBatch2D(screen_width, screen_height, 100);
-
-	my_font->SetBrushColor(ok::Color(1.f, 0.5f, 0.25f, 1.f));
-	my_font->SetBrushOuterShadow(ok::Color(0.f, 0.f, 0.f, 0.5f), 0.2f, 0.2f, 0.1f, 0.1f);
-
-	my_text_batch->SetBrushFont(my_font);
-	my_text_batch->SetBrushPosition(glm::vec2(0.f, 0.f));
-
-	my_text_batch->CacheBegin();
-	my_text_batch->Draw(ok::String("Hello world!"));
-	my_cache = my_text_batch->CacheEnd();
 }
 
 void ok::Application::Update(float dt)
 {
-	ok::graphics::SpriteBatch& sprite_batch = *my_sprite_batch;
-
-	float speed = 150.0f*dt;
-
-	if (ok::Input::instance().KeyDown(ok::KKey::W))
-	{
-		camera_shift_z += speed;
-	}
-
-	if (ok::Input::instance().KeyDown(ok::KKey::S))
-	{
-		camera_shift_z -= speed;
-	}
-
-	if (ok::Input::instance().KeyDown(ok::KKey::D))
-	{
-		camera_shift_x += speed;
-	}
-
-	if (ok::Input::instance().KeyDown(ok::KKey::A))
-	{
-		camera_shift_x -= speed;
-	}
-
-	if (ok::Input::instance().KeyDown(ok::KKey::Q))
-	{
-		camera_shift_y += speed;
-	}
-
-	if (ok::Input::instance().KeyDown(ok::KKey::Z))
-	{
-		camera_shift_y -= speed;
-	}
-
-	if (ok::Input::instance().KeyDown(ok::KKey::F))
-	{
-		if (ok::Input::instance().KeyDown(ok::KKey::G))
-		{
-			far_plane_z += 1.0f;
-		}
-
-		if (ok::Input::instance().KeyDown(ok::KKey::B))
-		{
-			far_plane_z -= 1.0f;
-		}
-	}
-
-	if (ok::Input::instance().KeyDown(ok::KKey::N))
-	{
-		if (ok::Input::instance().KeyDown(ok::KKey::J))
-		{
-			near_plane_z += 1.0f;
-		}
-
-		if (ok::Input::instance().KeyDown(ok::KKey::M))
-		{
-			near_plane_z -= 1.0f;
-		}
-	}
-
-	if (far_plane_z > 2000.0f) far_plane_z = 2000.0f;
-	if (far_plane_z < 0.0) far_plane_z = 0.0f;
-	if (near_plane_z > far_plane_z) near_plane_z = far_plane_z;
-	if (near_plane_z < 0) near_plane_z = 0.0f;
-
-	my_camera.SetProjectionPersp((float)(screen_width), (float)(screen_height), 45.0f, near_plane_z, far_plane_z);
-	//cam.SetProjectionOrtho((float)(screen_width), (float)(screen_height), near_plane_z, far_plane_z);
-
-	my_camera.BeginTransform(ok::TransformSpace::WorldSpace);
-	my_camera.SetPosition(glm::vec3(camera_shift_x, camera_shift_y, camera_shift_z));
-	//cam.SetRotation(glm::vec3(sh1*360.0f, 0.0f, 0.0f));
-	//cam.SetForward(glm::vec3(1.0f,0.0f,1.0f));
-	my_camera.SetForward((glm::vec3(0.0f, 0.0f, 0.0f) - my_camera.GetPosition()));
-	my_camera.EndTransform();
-
-
-	ok::graphics::Camera::PushCamera(&my_camera);
-
-
-	sprite_batch.BatchBegin(-1.0f);
-
-	sprite_batch.Draw(&my_sprite_batch_texrect, glm::vec2(0.f, 0.f), 0.f*360.0f, glm::vec2(1.0f, 1.0f)*(1.0f + 0.f), true);
-	sprite_batch.Draw(&my_sprite_batch_texrect, glm::vec2(100.0f*0.f, 0.f), 0.f, glm::vec2(1.0f, 1.0f)*(1.0f + 1.0f*0.f), true);
-
-
-	sprite_batch.BatchEnd();
-
-
-	ok::graphics::LayeredRenderer::instance().Flush();
-	
-
-	my_text_batch->ResetTotalRect();
-	my_text_batch->SetBrushPosition(glm::vec2(100.f, 0.f));
-	my_text_batch->Draw(my_cache);
-	//my_text_batch->SetBrushPosition(glm::vec2(100.f, 150.f));
-	my_text_batch->Draw(my_cache);
-
-	if (ok::Input::o().KeyPressed(ok::KKey::Q))
-	{
-		my_sound->Play();
-	}
-	
-	if (ok::Input::o().KeyPressed(ok::KKey::Z))
-	{
-		my_sound->EnableMute();
-	}
-
-	if (ok::Input::o().KeyPressed(ok::KKey::X))
-	{
-		my_sound->DisableMute();
-	}
-
-	my_sound->Update(dt);
-	//delete cache;
-	/*my_text_batch->BatchBegin();
-	my_text_batch->Draw(ok::String("Hello world!"));
-	my_text_batch->BatchEnd();*/
 }
 
 
 void ok::Application::LoadSettings()
 {
 	tinyxml2::XMLDocument doc;
-	doc.LoadFile("settings.xml");
+	doc.LoadFile(_settings_file_name.c_str());
 
 	tinyxml2::XMLElement* elem;
 	elem = doc.FirstChildElement("settings")->FirstChildElement("application");

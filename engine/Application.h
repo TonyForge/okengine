@@ -20,8 +20,8 @@ namespace ok {
 	public:
 		Application();
 		void Run();
-		void Init();
-		void Update(float dt);
+		virtual void Init();
+		virtual void Update(float dt);
 	protected:
 		sf::Window* window;
 
@@ -46,6 +46,7 @@ namespace ok {
 
 		ok::graphics::RenderTarget* fixed_resolution_framebuffer;
 
+		std::string _settings_file_name;
 		void LoadSettings();
 	private:
 	};
