@@ -3,7 +3,7 @@
 #ifdef KRIPTA
 
 #include "Application.h"
-#include "projects\Kripta\Floor.h"
+#include "projects\Kripta\Maze.h"
 
 namespace Kripta
 {

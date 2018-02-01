@@ -308,7 +308,7 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
-    <ClCompile Include="projects\Kripta\Floor.cpp" />
+    <ClCompile Include="projects\Kripta\Maze.cpp" />
     <ClCompile Include="pystring.cpp" />
     <ClCompile Include="Quad.cpp" />
     <ClCompile Include="LayeredRenderer.cpp" />
@@ -350,7 +350,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="Pool.h" />
-    <ClInclude Include="projects\Kripta\Floor.h" />
+    <ClInclude Include="projects\Kripta\Maze.h" />
     <ClInclude Include="pystring.h" />
     <ClInclude Include="Quad.h" />
     <ClInclude Include="LayeredRenderer.h" />

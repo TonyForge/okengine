@@ -126,7 +126,7 @@
     <ClCompile Include="Kripta.cpp">
       <Filter>projects\Kripta</Filter>
     </ClCompile>
-    <ClCompile Include="projects\Kripta\Floor.cpp">
+    <ClCompile Include="projects\Kripta\Maze.cpp">
       <Filter>projects\Kripta</Filter>
     </ClCompile>
   </ItemGroup>
@@ -230,10 +230,10 @@
     <ClInclude Include="Pool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Kripta.h">
+    <ClInclude Include="projects\Kripta\Maze.h">
       <Filter>projects\Kripta</Filter>
     </ClInclude>
-    <ClInclude Include="projects\Kripta\Floor.h">
+    <ClInclude Include="Kripta.h">
       <Filter>projects\Kripta</Filter>
     </ClInclude>
   </ItemGroup>
