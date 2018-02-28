@@ -1,5 +1,9 @@
 #include "Behaviour.h"
 
+ok::Behaviour::Behaviour() : enabled(true)
+{
+}
+
 void ok::Behaviour::Update(float dt)
 {
 }

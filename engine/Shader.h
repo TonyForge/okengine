@@ -139,7 +139,7 @@ namespace ok
 
 		protected:
 		private:
-			bool isBound;
+			static ok::graphics::Shader* currentlyBoundShader;
 			int samplersUsed;
 
 			std::unordered_map<std::string, GLint> uniforms;

@@ -18,6 +18,7 @@ namespace ok
 			void SetMesh(ok::String mesh_asset, bool prefer_hardware_skin = false);
 			void SetMaterial(ok::graphics::Material* material);
 			void SetMaterial(ok::String material_asset);
+			ok::graphics::Material* GetMaterial();
 
 			void Update(float dt);
 			void Render();

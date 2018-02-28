@@ -1,12 +1,12 @@
 #include "Shader.h"
 
 std::vector<unsigned int> ok::graphics::Shader::binded_textures;
+ok::graphics::Shader* ok::graphics::Shader::currentlyBoundShader = nullptr;
 
 ok::graphics::Shader::Shader()
 {
 	isValid = false;
 	shader_program_id = 0;
-	isBound = false;
 	samplersUsed = 0;
 
 	if (binded_textures.size() == 0)
@@ -173,7 +173,7 @@ void ok::graphics::Shader::RegisterAliasSubroutine(const std::string& uniform_na
 void ok::graphics::Shader::Bind(ok::graphics::ShaderAliasDispatcher* dispatcher)
 {
 	glUseProgram(shader_program_id);
-	isBound = true;
+	currentlyBoundShader = this;
 
 	if (options.isBlendEnabled)
 	{
@@ -327,12 +327,12 @@ void ok::graphics::Shader::BindSubroutines(ok::graphics::ShaderAliasDispatcher *
 void ok::graphics::Shader::Unbind()
 {
 	glUseProgram(0);
-	isBound = false;
+	if (currentlyBoundShader == this) currentlyBoundShader = nullptr;
 }
 
 bool ok::graphics::Shader::IsBound()
 {
-	return isBound;
+	return (currentlyBoundShader == this);
 }
 
 GLint ok::graphics::Shader::GetSampler(const std::string& sampler_name)
@@ -440,14 +440,14 @@ void ok::graphics::Shader::SetUniform(std::string name, glm::vec4 value)
 {
 	GLint location = uniforms[name];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniform4fv(location, 1, glm::value_ptr(value));
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -457,14 +457,14 @@ void ok::graphics::Shader::SetUniform(std::string name, glm::vec3 value)
 {
 	GLint location = uniforms[name];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniform3fv(location, 1, glm::value_ptr(value));
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -474,14 +474,14 @@ void ok::graphics::Shader::SetUniform(std::string name, glm::vec2 value)
 {
 	GLint location = uniforms[name];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniform2fv(location, 1, glm::value_ptr(value));
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -491,14 +491,14 @@ void ok::graphics::Shader::SetUniform(std::string name, float value)
 {
 	GLint location = uniforms[name];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniform1f(location, value);
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -508,14 +508,14 @@ void ok::graphics::Shader::SetUniform(std::string name, int value)
 {
 	GLint location = uniforms[name];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniform1i(location, value);
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -525,14 +525,14 @@ void ok::graphics::Shader::SetUniform(std::string name, unsigned int value)
 {
 	GLint location = uniforms[name];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniform1ui(location, value);
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -542,14 +542,14 @@ void ok::graphics::Shader::SetUniform(std::string name, bool value)
 {
 	GLint location = uniforms[name];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniform1i(location, (int)value);
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -559,14 +559,14 @@ void ok::graphics::Shader::SetUniform(std::string name, glm::mat4 value, bool tr
 {
 	GLint location = uniforms[name];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniformMatrix4fv(location, 1, transpose, glm::value_ptr(value));
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -576,14 +576,14 @@ void ok::graphics::Shader::SetUniform(std::string name, glm::mat3 value, bool tr
 {
 	GLint location = uniforms[name];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniformMatrix3fv(location, 1, transpose, glm::value_ptr(value));
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -593,14 +593,14 @@ void ok::graphics::Shader::SetUniform(std::string name, glm::mat2 value, bool tr
 {
 	GLint location = uniforms[name];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniformMatrix2fv(location, 1, transpose, glm::value_ptr(value));
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -610,14 +610,14 @@ void ok::graphics::Shader::SetUniform(int index, glm::vec4 value)
 {
 	GLint location = uniforms_table[index];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniform4fv(location, 1, glm::value_ptr(value));
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -627,14 +627,14 @@ void ok::graphics::Shader::SetUniform(int index, glm::vec3 value)
 {
 	GLint location = uniforms_table[index];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniform3fv(location, 1, glm::value_ptr(value));
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -644,14 +644,14 @@ void ok::graphics::Shader::SetUniform(int index, glm::vec2 value)
 {
 	GLint location = uniforms_table[index];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniform2fv(location, 1, glm::value_ptr(value));
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -661,14 +661,14 @@ void ok::graphics::Shader::SetUniform(int index, float value)
 {
 	GLint location = uniforms_table[index];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniform1f(location, value);
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -678,14 +678,14 @@ void ok::graphics::Shader::SetUniform(int index, int value)
 {
 	GLint location = uniforms_table[index];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniform1i(location, value);
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -695,14 +695,14 @@ void ok::graphics::Shader::SetUniform(int index, unsigned int value)
 {
 	GLint location = uniforms_table[index];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniform1ui(location, value);
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -712,14 +712,14 @@ void ok::graphics::Shader::SetUniform(int index, bool value)
 {
 	GLint location = uniforms_table[index];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniform1i(location, (int)value);
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -729,14 +729,14 @@ void ok::graphics::Shader::SetUniform(int index, glm::mat4 value, bool transpose
 {
 	GLint location = uniforms_table[index];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniformMatrix4fv(location, 1, transpose, glm::value_ptr(value));
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -746,14 +746,14 @@ void ok::graphics::Shader::SetUniform(int index, glm::mat3 value, bool transpose
 {
 	GLint location = uniforms_table[index];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniformMatrix3fv(location, 1, transpose, glm::value_ptr(value));
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -763,14 +763,14 @@ void ok::graphics::Shader::SetUniform(int index, glm::mat2 value, bool transpose
 {
 	GLint location = uniforms_table[index];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniformMatrix2fv(location, 1, transpose, glm::value_ptr(value));
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -780,14 +780,14 @@ void ok::graphics::Shader::SetUniform(std::string name, glm::mat4 * value, int c
 {
 	GLint location = uniforms[name];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniformMatrix4fv(location, count, transpose, glm::value_ptr(*value));
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -797,14 +797,14 @@ void ok::graphics::Shader::SetUniform(int index, glm::mat4 * value, int count, b
 {
 	GLint location = uniforms_table[index];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniformMatrix4fv(location, count, transpose, glm::value_ptr(*value));
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -814,7 +814,7 @@ void ok::graphics::Shader::SetUniform(std::string name, float * value, int count
 {
 	GLint location = uniforms[name];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
@@ -843,7 +843,7 @@ void ok::graphics::Shader::SetUniform(std::string name, float * value, int count
 		break;
 	}
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -853,7 +853,7 @@ void ok::graphics::Shader::SetUniform(int index, float * value, int count, int s
 {
 	GLint location = uniforms_table[index];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
@@ -882,7 +882,7 @@ void ok::graphics::Shader::SetUniform(int index, float * value, int count, int s
 		break;
 	}
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -892,7 +892,7 @@ void ok::graphics::Shader::SetUniform(std::string name, int * value, int count, 
 {
 	GLint location = uniforms[name];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
@@ -921,7 +921,7 @@ void ok::graphics::Shader::SetUniform(std::string name, int * value, int count, 
 	break;
 	}
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -931,7 +931,7 @@ void ok::graphics::Shader::SetUniform(int index, int * value, int count, int str
 {
 	GLint location = uniforms_table[index];
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
@@ -960,7 +960,7 @@ void ok::graphics::Shader::SetUniform(int index, int * value, int count, int str
 	break;
 	}
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -980,14 +980,14 @@ void ok::graphics::Shader::SetSubroutineUniform(std::string name, GLenum shadert
 		location = px_subroutines_uniforms[name];
 	}
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniformSubroutinesuiv(shadertype, (GLsizei)count, (const GLuint*)value);
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -1007,14 +1007,14 @@ void ok::graphics::Shader::SetSubroutineUniform(int index, GLenum shadertype, un
 		location = px_subroutines_uniforms_table[index];
 	}
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
 
 	glUniformSubroutinesuiv(shadertype, (GLsizei)count, (const GLuint*)value);
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}
@@ -1022,7 +1022,7 @@ void ok::graphics::Shader::SetSubroutineUniform(int index, GLenum shadertype, un
 
 void ok::graphics::Shader::_LinkSamplerToTextureChannelIndex(GLint sampler_location, int texture_channel_index)
 {
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(shader_program_id);
 	}
@@ -1032,7 +1032,7 @@ void ok::graphics::Shader::_LinkSamplerToTextureChannelIndex(GLint sampler_locat
 
 	glUniform1i(sampler_location, texture_channel_index);
 
-	if (!isBound)
+	if (!IsBound())
 	{
 		glUseProgram(0);
 	}

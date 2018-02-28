@@ -20,6 +20,8 @@ namespace ok
 	{
 	public:
 		bool enabled;
+		Behaviour();
+
 		virtual void Update(float dt);
 		virtual ok::Behaviour* Duplicate(ok::Behaviour * _clone = nullptr);
 		virtual void OnGameObjectDuplicateEnd();

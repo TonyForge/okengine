@@ -37,6 +37,11 @@ void ok::graphics::MeshRenderer::SetMaterial(ok::String material_asset)
 	SetMaterial(ok::AssetsBasic::instance().GetMaterial(material_asset));
 }
 
+ok::graphics::Material * ok::graphics::MeshRenderer::GetMaterial()
+{
+	return _material;
+}
+
 void ok::graphics::MeshRenderer::Update(float dt)
 {
 	ok::graphics::LayeredRenderer::instance().Render(_renderer_request);
@@ -44,12 +49,6 @@ void ok::graphics::MeshRenderer::Update(float dt)
 
 void ok::graphics::MeshRenderer::Render()
 {
-	/*ok::graphics::Animator* animator = gameObject().GetComponent<ok::graphics::Animator>();
-	if (animator != nullptr)
-	{
-		//apply morph/skin animations to mesh
-	}*/
-
 	if (_material->GetTransparent())
 	{
 		//select right sorted triangles group
@@ -69,8 +68,6 @@ void ok::graphics::MeshRenderer::Render()
 	}
 
 	_material->Bind(this);
-	//if (_mesh-)
-
 	_mesh->Bind();
 
 	glDrawElements(GL_TRIANGLES, _mesh->GetTrianglesCount()*3, GL_UNSIGNED_INT, 0);

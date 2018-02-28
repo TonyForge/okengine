@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shader name="KriptaWallShader">
+
+  <properties>
+    <transparent enabled="false" />
+    <blend enabled="false" template_file=""/>
+    <cull enabled="true" face="GL_BACK" />
+    <depth enabled="true" depth_mask="GL_TRUE" depth_func="GL_GREATER"/>
+  </properties>
+  
+  <aliases>
+    <alias uniform="mvp0" type="mat4" ref="ModelViewProjectionMatrix" />
+  </aliases>
+  
+  <vertex>
+    <![CDATA[
+    #version 330 core
+	
+    layout (location = 0) in vec3 pos0;
+    layout (location = 1) in vec2 uv0;
+	layout (location = 2) in vec3 nrm0;
+
+    out vec2 uv0_out;
+    uniform mat4 mvp0;
+	uniform vec3 eye_pos;
+	
+    void main()
+    {
+		float height = pos0.z / 1.5;
+		vec3 pos_ext = pos0 - vec3(normalize(pos0.xy - eye_pos.xy) * height, 0.0)*0.5;
+		gl_Position = mvp0 * vec4(pos_ext, 1.0);
+		uv0_out = vec2(uv0.x, 1.0 - uv0.y);
+    }
+    ]]>
+  </vertex>
+  
+  <fragment>
+    <![CDATA[
+    #version 330 core
+    out vec4 FragColor;
+    
+    in vec2 uv0_out;
+    uniform sampler2D tex0;
+    
+    void main()
+    {
+      FragColor = texture(tex0, uv0_out);
+    }
+    ]]>
+  </fragment>
+  
+  <geometry>
+    <![CDATA[]]>
+  </geometry>
+</shader>

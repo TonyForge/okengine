@@ -1,0 +1,5 @@
+<blueprints>
+	<blueprint name="igumen" file="ships/blueprints/igumen.xml"/>
+	<blueprint name="kosmotrak" file="ships/blueprints/kosmotrak.xml"/>
+	<blueprint name="nomad" file="ships/blueprints/nomad.xml"/>
+</blueprints>

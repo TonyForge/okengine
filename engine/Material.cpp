@@ -78,3 +78,8 @@ unsigned int ok::graphics::Material::GetSubroutineIndex(GLenum shadertype, const
 {
 	return _shader->GetSubroutine(shadertype, _shader->GetSubroutineDirectAccessIndex(shadertype, name));
 }
+
+ok::graphics::Shader * ok::graphics::Material::GetShader()
+{
+	return _shader;
+}

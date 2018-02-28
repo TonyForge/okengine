@@ -29,6 +29,7 @@ namespace ok
 			//void SetSubroutine(GLenum shadertype, int index, int id);
 			//std::vector<GLint>& GetSubroutines(GLenum shadertype);
 			//void ReloadSubroutines();
+			ok::graphics::Shader* GetShader();
 		protected:
 		private:
 			ok::graphics::Shader* _shader;

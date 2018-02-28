@@ -151,6 +151,7 @@ void ok::graphics::Camera::EndScissorTest()
 
 void ok::graphics::Camera::Update(float dt)
 {
+	GameObject::Update(dt);
 }
 
 void ok::graphics::Camera::_SetCurrent()

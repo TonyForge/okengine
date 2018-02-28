@@ -12,7 +12,7 @@ namespace ok
 
 		void AddComponent(ok::Behaviour* component);
 		void RemoveComponent(ok::Behaviour* component);
-		void Update(float dt);
+		virtual void Update(float dt);
 		void MoveComponentUp(ok::Behaviour* component);
 		void MoveComponentDown(ok::Behaviour* component);
 
