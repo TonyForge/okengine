@@ -2,6 +2,8 @@
 
 #include "Ship.h"
 #include "..\..\Assets.h"
+#include "..\..\GameObject.h"
+#include "..\..\MeshRenderer.h"
 
 namespace Starpom
 {
@@ -26,8 +28,10 @@ namespace Starpom
 		void End();
 	protected:
 	private:
+		ok::GameObject* LoadPart_Spaceship(tinyxml2::XMLElement* part_xml, ok::GameObject* parent = nullptr);
 		std::vector<std::unique_ptr<std::string>> _names;
 		std::vector<std::unique_ptr<std::string>> _files;
+		std::vector<std::unique_ptr<std::string>> _types;
 	};
 
 	//Создается когда нужно что-то загрузить и перехватывает program flow пока не закончит загрузку.

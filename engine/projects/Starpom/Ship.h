@@ -1,11 +1,39 @@
 #pragma once
 
+#include "..\..\Behaviour.h"
 #include "..\..\GameObject.h"
+#include "..\..\Texture.h"
+#include "..\..\MeshRenderer.h"
+#include "..\..\Material.h"
+#include "..\..\Shader.h"
+#include "..\..\Camera.h"
 #include "GameInfo.h"
 
 namespace Starpom
 {
 	//SS - Star System - режим звездной системы (локации с планетами и звездами)
+
+	class SS_ShipMaterial_Spaceship : public ok::Behaviour
+	{
+	public:
+		void Update(float dt);
+		ok::Behaviour* Duplicate(ok::Behaviour * _clone = nullptr);
+
+		ok::graphics::Texture* _Maps;
+		ok::graphics::Texture* _Normals;
+		ok::graphics::Texture* _Facture;
+
+		glm::vec4 _FactureTransform;
+		glm::vec4 _ColorMain_0;
+		glm::vec4 _ColorMain_1;
+		glm::vec4 _ColorMain_DarkMultiplier;
+		glm::vec4 _ColorSec_0;
+		glm::vec4 _ColorSec_1;
+		glm::vec4 _ColorSet3_0;
+		glm::vec4 _ColorSet3_1;
+	protected:
+	private:
+	};
 
 	/*
 	SS_ShipAgent - это агент, визуальное представление космических объектов в режиме звездной системы.

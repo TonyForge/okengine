@@ -54,3 +54,37 @@ ok::GameObject * Starpom::SS_ShipAgent::Duplicate(ok::GameObject * _clone)
 
 	return __clone;
 }
+
+void Starpom::SS_ShipMaterial_Spaceship::Update(float dt)
+{
+	ok::graphics::Material* material = gameObject().GetComponent<ok::graphics::MeshRenderer>()->GetMaterial();
+	ok::graphics::Shader* shader = material->GetShader();
+	
+	ok::graphics::Camera* camera = ok::graphics::Camera::GetCurrent();
+
+	shader->SetUniform("_CameraUp", camera->GetUp());
+	shader->SetUniform("_CameraRight", camera->GetRight());
+
+	material->SetTexture("_Maps", _Maps);
+	material->SetTexture("_Normals", _Normals);
+	material->SetTexture("_Facture", _Facture);
+
+	shader->SetUniform("_FactureTransform", _FactureTransform);
+	shader->SetUniform("_ColorMain_0", _ColorMain_0);
+	shader->SetUniform("_ColorMain_1", _ColorMain_1);
+	shader->SetUniform("_ColorMain_DarkMultiplier", _ColorMain_DarkMultiplier);
+	shader->SetUniform("_ColorSec_0", _ColorSec_0);
+	shader->SetUniform("_ColorSec_1", _ColorSec_1);
+	shader->SetUniform("_ColorSet3_0", _ColorSet3_0);
+	shader->SetUniform("_ColorSet3_1", _ColorSet3_1);
+}
+
+ok::Behaviour * Starpom::SS_ShipMaterial_Spaceship::Duplicate(ok::Behaviour * _clone)
+{
+	Starpom::SS_ShipMaterial_Spaceship* __clone = new Starpom::SS_ShipMaterial_Spaceship();
+
+	//copy _clone to __clone
+	*__clone = *static_cast<Starpom::SS_ShipMaterial_Spaceship*>(_clone);
+
+	return __clone;
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<material shader="ships\parts\shader0.xml">
+	<textures count="3">
+		<slot index="0" sampler="_Maps" asset = ""/>
+		<slot index="1" sampler="_Normals" asset = ""/>
+		<slot index="2" sampler="_Facture" asset = ""/>
+	</textures>
+</material>

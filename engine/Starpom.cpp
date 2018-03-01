@@ -28,7 +28,7 @@ void Starpom::App::Init()
 
 void Starpom::App::Update(float dt)
 {
-	if (Starpom::SS_ShipAgent::blueprints.size() == 0)
+	if (Starpom::Loading::_instance == nullptr && Starpom::SS_ShipAgent::blueprints.size() == 0)
 	{
 		//load blueprints
 		new Starpom::Loading(new Starpom::Task_SS_Blueprints());
