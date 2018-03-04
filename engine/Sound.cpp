@@ -636,8 +636,8 @@ void ok::sound::SoundRoom::Listen(ok::sound::SoundInstance & sound_instance)
 			room_coordinates = glm::vec3(glm::dot(room_coordinates, _listener_transform->GetRight()), glm::dot(room_coordinates, _listener_transform->GetUp()), glm::dot(room_coordinates, _listener_transform->GetForward()));
 			room_coordinates /= *_listener_radius;
 
-			_listener_transform->EndTransform();
-			sound_instance._spatial_controller_transform->EndTransform();
+			_listener_transform->EndTransform(false);
+			sound_instance._spatial_controller_transform->EndTransform(false);
 		}
 
 		if (sound_instance._spatial_controller_position)
@@ -649,7 +649,7 @@ void ok::sound::SoundRoom::Listen(ok::sound::SoundInstance & sound_instance)
 			room_coordinates = glm::vec3(glm::dot(room_coordinates, _listener_transform->GetRight()), glm::dot(room_coordinates, _listener_transform->GetUp()), glm::dot(room_coordinates, _listener_transform->GetForward()));
 			room_coordinates /= *_listener_radius;
 
-			_listener_transform->EndTransform();
+			_listener_transform->EndTransform(false);
 		}
 
 		float room_to_sfml_scale = 1000.f*(room_coordinates.length() / glm::clamp(*sound_instance._spatial_controller_radius / *_listener_radius, 0.001f, 1000.0f));

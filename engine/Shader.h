@@ -31,6 +31,15 @@ namespace ok
 			alias_px_subroutine_array
 		};
 
+		enum class ShaderUniformType
+		{
+			uniform_vec4 = 0,
+			uniform_vec3,
+			uniform_vec2,
+			uniform_float,
+			uniform_sampler2D
+		};
+
 		class ShaderAliasDispatcher
 		{
 		public:

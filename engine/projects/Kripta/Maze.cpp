@@ -24,7 +24,7 @@ Kripta::Maze::Maze(int x, int y, int w, int h)
 
 		block.decorations_root.BeginTransform();
 		block.decorations_root.SetPosition(glm::vec3(bx, by, 0.f));
-		block.decorations_root.EndTransform();
+		block.decorations_root.EndTransform(false);
 
 		bx++;
 		if (bx < bw)

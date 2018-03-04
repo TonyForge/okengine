@@ -416,7 +416,16 @@ fn MDP_ParseMesh nd parse_skin = (
 		skinModifier.enabled = false
 	)
 	
+	clearSelection()
+	select nd
+	
 	TurnToEditableMeshOn nd
+	
+	local eMod = EditNormals()
+	local vertexNormalsIndexes = #{}
+	local vertexNormalsIndexesArray = #()
+	local averageNormal = [0,0,0]
+	addModifier nd eMod
 	
 	local face_count = getNumFaces nd
 	local uv_channel_count = (meshop.GetNumMaps nd) - 1
@@ -481,9 +490,42 @@ fn MDP_ParseMesh nd parse_skin = (
 		append vertices_data (vert3[2])
 		append vertices_data (vert3[3])
 			
-		vert1 = (getNormal nd (mesh_face[1]))
-		vert2 = (getNormal nd (mesh_face[2]))
-		vert3 = (getNormal nd (mesh_face[3]))
+		--vert1 = (getNormal nd (mesh_face[1]))
+		--vert2 = (getNormal nd (mesh_face[2]))
+		--vert3 = (getNormal nd (mesh_face[3]))
+		
+		vertexNormalsIndexes = #{}
+		
+		eMod.EditNormalsMod.ConvertVertexSelection #{mesh_face[1]} vertexNormalsIndexes
+		vertexNormalsIndexesArray = (vertexNormalsIndexes as array)
+		averageNormal = [0,0,0]
+		for normal_index = 1 to vertexNormalsIndexesArray.count do (
+			averageNormal = (averageNormal + (eMod.GetNormal (vertexNormalsIndexesArray[normal_index])))
+		)
+
+		vert1 = averageNormal / vertexNormalsIndexesArray.count
+		
+		vertexNormalsIndexes = #{}
+		
+		eMod.EditNormalsMod.ConvertVertexSelection #{mesh_face[2]} vertexNormalsIndexes
+		vertexNormalsIndexesArray = (vertexNormalsIndexes as array)
+		averageNormal = [0,0,0]
+		for normal_index = 1 to vertexNormalsIndexesArray.count do (
+			averageNormal = (averageNormal + (eMod.GetNormal (vertexNormalsIndexesArray[normal_index])))
+		)
+		
+		vert2 = averageNormal / vertexNormalsIndexesArray.count
+		
+		vertexNormalsIndexes = #{}
+		
+		eMod.EditNormalsMod.ConvertVertexSelection #{mesh_face[3]} vertexNormalsIndexes
+		vertexNormalsIndexesArray = (vertexNormalsIndexes as array)
+		averageNormal = [0,0,0]
+		for normal_index = 1 to vertexNormalsIndexesArray.count do (
+			averageNormal = (averageNormal + (eMod.GetNormal (vertexNormalsIndexesArray[normal_index])))
+		)
+		
+		vert3 = averageNormal / vertexNormalsIndexesArray.count
 			
 		append normals_data (vert1[1])
 		append normals_data (vert1[2])
@@ -498,6 +540,7 @@ fn MDP_ParseMesh nd parse_skin = (
 		append normals_data (vert3[3])
 	)
 	
+	deleteModifier nd eMod
 	TurnToEditableMeshOff nd
 	
 	local result = #()
@@ -546,7 +589,16 @@ fn MDP_ParseMesh nd parse_skin = (
 
 fn MDP_ParseVertexAnimationFrame nd = (
 	
+	clearSelection()
+	select nd
+	
 	TurnToEditableMeshOn nd
+	
+	local eMod = EditNormals()
+	local vertexNormalsIndexes = #{}
+	local vertexNormalsIndexesArray = #()
+	local averageNormal = [0,0,0]
+	addModifier nd eMod
 	
 	local face_count = getNumFaces nd
 
@@ -575,9 +627,42 @@ fn MDP_ParseVertexAnimationFrame nd = (
 		append vertices_data (vert3[2])
 		append vertices_data (vert3[3])
 			
-		vert1 = (getNormal nd (mesh_face[1]))
-		vert2 = (getNormal nd (mesh_face[2]))
-		vert3 = (getNormal nd (mesh_face[3]))
+		--vert1 = (getNormal nd (mesh_face[1]))
+		--vert2 = (getNormal nd (mesh_face[2]))
+		--vert3 = (getNormal nd (mesh_face[3]))
+		
+		vertexNormalsIndexes = #{}
+		
+		eMod.EditNormalsMod.ConvertVertexSelection #{mesh_face[1]} vertexNormalsIndexes
+		vertexNormalsIndexesArray = (vertexNormalsIndexes as array)
+		averageNormal = [0,0,0]
+		for normal_index = 1 to vertexNormalsIndexesArray.count do (
+			averageNormal = (averageNormal + (eMod.GetNormal (vertexNormalsIndexesArray[normal_index])))
+		)
+
+		vert1 = averageNormal / vertexNormalsIndexesArray.count
+		
+		vertexNormalsIndexes = #{}
+		
+		eMod.EditNormalsMod.ConvertVertexSelection #{mesh_face[2]} vertexNormalsIndexes
+		vertexNormalsIndexesArray = (vertexNormalsIndexes as array)
+		averageNormal = [0,0,0]
+		for normal_index = 1 to vertexNormalsIndexesArray.count do (
+			averageNormal = (averageNormal + (eMod.GetNormal (vertexNormalsIndexesArray[normal_index])))
+		)
+		
+		vert2 = averageNormal / vertexNormalsIndexesArray.count
+		
+		vertexNormalsIndexes = #{}
+		
+		eMod.EditNormalsMod.ConvertVertexSelection #{mesh_face[3]} vertexNormalsIndexes
+		vertexNormalsIndexesArray = (vertexNormalsIndexes as array)
+		averageNormal = [0,0,0]
+		for normal_index = 1 to vertexNormalsIndexesArray.count do (
+			averageNormal = (averageNormal + (eMod.GetNormal (vertexNormalsIndexesArray[normal_index])))
+		)
+		
+		vert3 = averageNormal / vertexNormalsIndexesArray.count
 			
 		append normals_data (vert1[1])
 		append normals_data (vert1[2])
@@ -592,6 +677,7 @@ fn MDP_ParseVertexAnimationFrame nd = (
 		append normals_data (vert3[3])
 	)
 	
+	deleteModifier nd eMod
 	TurnToEditableMeshOff nd
 	
 	local result = #()

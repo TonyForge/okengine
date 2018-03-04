@@ -3,6 +3,7 @@
 #ifdef STARPOM
 
 #include "Application.h"
+#include "LayeredRenderer.h"
 #include "projects\Starpom\Ship.h"
 #include "projects\Starpom\Loading.h"
 

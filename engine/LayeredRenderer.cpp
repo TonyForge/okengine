@@ -92,7 +92,7 @@ float ok::graphics::LayeredRenderer::_GetDistanceToCamera(glm::vec3 world_space_
 	ok::graphics::Camera* camera = ok::graphics::Camera::GetCurrent();
 	camera->BeginTransform(ok::TransformSpace::WorldSpace);
 	glm::vec3 camera_world_space_position = camera->GetPosition();
-	camera->EndTransform();
+	camera->EndTransform(false);
 
 	return static_cast<float>((world_space_position - camera_world_space_position).length());
 }

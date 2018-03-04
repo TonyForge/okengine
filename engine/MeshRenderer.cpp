@@ -2,7 +2,7 @@
 
 ok::graphics::MeshRenderer::MeshRenderer() : _renderer_request(this)
 {
-	
+	OnMaterialBind = nullptr;
 }
 
 ok::graphics::Mesh * ok::graphics::MeshRenderer::GetMesh()
@@ -68,6 +68,7 @@ void ok::graphics::MeshRenderer::Render()
 	}
 
 	_material->Bind(this);
+	if (OnMaterialBind != nullptr) OnMaterialBind(*_material);
 	_mesh->Bind();
 
 	glDrawElements(GL_TRIANGLES, _mesh->GetTrianglesCount()*3, GL_UNSIGNED_INT, 0);
@@ -109,6 +110,8 @@ ok::Behaviour * ok::graphics::MeshRenderer::Duplicate(ok::Behaviour * _clone)
 	__clone->_renderer_request.stage = _renderer_request.stage;
 	__clone->_renderer_request.transparent = _renderer_request.transparent;
 	__clone->_renderer_request.world_space_position = _renderer_request.world_space_position;
+
+	__clone->OnMaterialBind = OnMaterialBind;
 
 	return __clone;
 }

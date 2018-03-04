@@ -78,6 +78,10 @@ namespace ok
 		friend  bool operator <(const ok::String& left, const ok::String& right);
 
 		std::basic_string<sf::Uint32> m_string;
+
+		#ifdef _DEBUG
+		std::string m_string_debug;
+		#endif
 	};
 
 	bool operator ==(const ok::String& left, const ok::String& right);

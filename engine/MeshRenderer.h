@@ -34,6 +34,7 @@ namespace ok
 			float DispatchAliasFloat(ok::graphics::ShaderAliasReference alias_type);
 			std::pair<glm::mat4*, int> DispatchAliasMat4Array(ok::graphics::ShaderAliasReference alias_type);
 
+			std::function<void(ok::graphics::Material& material)> OnMaterialBind;
 		protected:
 			ok::graphics::Mesh* _mesh;
 			ok::graphics::Material* _material;

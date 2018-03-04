@@ -17,6 +17,7 @@ namespace Starpom
 	{
 	public:
 		void Update(float dt);
+		void OnMaterialBind(ok::graphics::Material& material);
 		ok::Behaviour* Duplicate(ok::Behaviour * _clone = nullptr);
 
 		ok::graphics::Texture* _Maps;

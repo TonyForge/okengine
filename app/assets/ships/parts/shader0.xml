@@ -10,6 +10,7 @@
   
   <aliases>
     <alias uniform="mvp0" type="mat4" ref="ModelViewProjectionMatrix" />
+	<alias uniform="m0" type="mat4" ref="ModelMatrix" />
   </aliases>
   
   <vertex>
@@ -28,6 +29,7 @@
 	out vec4 materials;
 	
     uniform mat4 mvp0;
+	uniform mat4 m0;
 	uniform vec3 _CameraUp;
 	uniform vec3 _CameraRight;
 	
@@ -36,14 +38,14 @@
 		nrm_out = nrm0;
 		gl_Position = mvp0 * vec4(pos0.xyz, 1.0);
 		
-		float dt_v = dot(_CameraUp, normalize(mvp0 * vec4(nrm0.xyz, 0.0)).xyz);
-		float dt_h = dot(_CameraRight, normalize(mvp0 * vec4(nrm0.xyz, 0.0)).xyz);
+		float dt_v = dot(_CameraUp, normalize(m0 * vec4(nrm0.xyz, 0.0)).xyz);
+		float dt_h = dot(_CameraRight, normalize(m0 * vec4(nrm0.xyz, 0.0)).xyz);
 
-		uv0_out = vec2(uv0.x, 1.0 - uv0.y);
-		uv1_out = vec2(uv1.x, 1.0 - uv1.y);
+		uv0_out = vec2(uv0.x, -uv0.y);
+		uv1_out = vec2(uv1.x, -uv1.y);
 		
 		uv2_out = (vec2(dt_h,dt_v)+vec2(1,1))*0.5;
-		uv2_out = vec2(uv2_out.x, 1.0 - uv2_out.y);
+		uv2_out = vec2(uv2_out.x, -uv2_out.y);
 		
 		materials.w = step(25.0, uv1_out.x);
 		materials.z = step(15.0, uv1_out.x) * (1.0 - materials.w);
@@ -95,7 +97,7 @@
 			
     void main()
     {
-		vec3 facture = texture(_Facture, _FactureTransform.xy*0.01+uv0_out*_FactureTransform.z*0.01).rgb;
+		vec3 facture = texture(_Facture, vec2(_FactureTransform.x,-_FactureTransform.y)*0.01+uv0_out*_FactureTransform.z*0.01).rgb;
 		vec2 uv3 = texture(_Normals, uv2_out).rg;
 		vec3 maps = texture(_Maps, uv3).rgb;
 		float decmix = texture(_Maps, uv1_out).b;

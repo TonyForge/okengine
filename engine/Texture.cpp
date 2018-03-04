@@ -4,12 +4,16 @@ ok::graphics::Texture::Texture(sf::Texture * object_to_own)
 {
 	_owned_sf_texture = object_to_own;
 	_owned_rt = nullptr;
+	SetSmooth(true);
+	SetWrapping(GL_REPEAT);
 }
 
 ok::graphics::Texture::Texture(ok::graphics::RenderTarget * object_to_own)
 {
 	_owned_sf_texture = nullptr;
 	_owned_rt = object_to_own;
+	SetSmooth(true);
+	SetWrapping(GL_REPEAT);
 }
 
 glm::ivec2 ok::graphics::Texture::GetSize()
@@ -48,6 +52,25 @@ void ok::graphics::Texture::SetSmooth(bool smooth)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	}
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void ok::graphics::Texture::SetWrapping(GLenum wrapping)
+{
+	glBindTexture(GL_TEXTURE_2D, getNativeHandle());
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping));
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void ok::graphics::Texture::SetBackgroundColor(ok::Color color)
+{
+	glBindTexture(GL_TEXTURE_2D, getNativeHandle());
+
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(static_cast<glm::vec4>(color)));
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

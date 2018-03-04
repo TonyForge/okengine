@@ -109,7 +109,7 @@ ok::GameObject * Starpom::Task_SS_Blueprints::LoadPart_Spaceship(tinyxml2::XMLEl
 	part->SetPosition(glm::vec3(part_xml->FloatAttribute("tx"), part_xml->FloatAttribute("ty"), part_xml->FloatAttribute("tz")));
 	part->SetRotation(glm::vec3(part_xml->FloatAttribute("rx"), part_xml->FloatAttribute("ry"), part_xml->FloatAttribute("rz")));
 	part->SetScale(glm::vec3(part_xml->FloatAttribute("sx"), part_xml->FloatAttribute("sy"), part_xml->FloatAttribute("sz")));
-	part->EndTransform();
+	part->EndTransform(false);
 
 	std::string mesh_name = part_xml->Attribute("mesh");
 
@@ -128,6 +128,7 @@ ok::GameObject * Starpom::Task_SS_Blueprints::LoadPart_Spaceship(tinyxml2::XMLEl
 		mat->_Normals = ok::Assets::instance().GetTexture("ships\\parts\\normals.png");
 		mat->_Maps = ok::Assets::instance().GetTexture("ships\\parts\\maps.png");
 		mat->_Facture = ok::Assets::instance().GetTexture("ships\\parts\\" + std::string(part_xml->Attribute("tex")) + ".png");
+
 		mat->_FactureTransform = glm::vec4(part_xml->FloatAttribute("ft_x"), part_xml->FloatAttribute("ft_y"), part_xml->FloatAttribute("ft_z"), part_xml->FloatAttribute("ft_w"));
 		mat->_ColorMain_0 = glm::vec4(part_xml->FloatAttribute("cm0_r"), part_xml->FloatAttribute("cm0_g"), part_xml->FloatAttribute("cm0_b"), part_xml->FloatAttribute("cm0_a"));
 		mat->_ColorMain_1 = glm::vec4(part_xml->FloatAttribute("cm1_r"), part_xml->FloatAttribute("cm1_g"), part_xml->FloatAttribute("cm1_b"), part_xml->FloatAttribute("cm1_a"));
@@ -137,6 +138,8 @@ ok::GameObject * Starpom::Task_SS_Blueprints::LoadPart_Spaceship(tinyxml2::XMLEl
 		mat->_ColorSet3_0 = glm::vec4(part_xml->FloatAttribute("cs30_r"), part_xml->FloatAttribute("cs30_g"), part_xml->FloatAttribute("cs30_b"), part_xml->FloatAttribute("cs30_a"));
 		mat->_ColorSet3_1 = glm::vec4(part_xml->FloatAttribute("cs31_r"), part_xml->FloatAttribute("cs31_g"), part_xml->FloatAttribute("cs31_b"), part_xml->FloatAttribute("cs31_a"));
 		
+		mr->OnMaterialBind = [mat](ok::graphics::Material& value) { mat->OnMaterialBind(value); };
+
 		part->AddComponent(mat);
 	}
 

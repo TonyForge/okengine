@@ -197,7 +197,7 @@ glm::mat4 ok::graphics::Camera::GetViewMatrix()
 
 		mView = glm::lookAtRH(GetPosition(), GetPosition() + GetForward(), -GetUp());
 
-		EndTransform();
+		EndTransform(false);
 
 		mV_dirty = false;
 	}

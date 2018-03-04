@@ -747,19 +747,27 @@ namespace ok
 			doc.LoadFile(std_path.c_str());
 
 			tinyxml2::XMLElement* elem;
-			tinyxml2::XMLElement* inner_elem;
+			tinyxml2::XMLElement* inner_elem_textures;
 
 			elem = doc.FirstChildElement("material");
-			inner_elem = elem->FirstChildElement("textures");
+			inner_elem_textures = elem->FirstChildElement("textures");
 
 			shader = GetShader(elem->Attribute("shader"));
-			material = new ok::graphics::Material(shader, inner_elem->IntAttribute("count"));
+			material = new ok::graphics::Material(shader, inner_elem_textures->IntAttribute("count"));
 
-			for (tinyxml2::XMLElement* e = inner_elem->FirstChildElement("slot"); e != nullptr; e = e->NextSiblingElement("slot"))
+			ok::graphics::Texture* texture = nullptr;
+
+			for (tinyxml2::XMLElement* e = inner_elem_textures->FirstChildElement("slot"); e != nullptr; e = e->NextSiblingElement("slot"))
 			{
 				texture_slot_index = e->IntAttribute("index");
 				material->LinkSlotToSampler(e->Attribute("sampler"), texture_slot_index);
-				material->SetTexture(texture_slot_index, GetTexture(e->Attribute("asset")));
+				texture = GetTexture(e->Attribute("asset"));
+
+				texture->SetSmooth(e->BoolAttribute("smooth"));
+				texture->SetWrapping(GetAliasGL(e->Attribute("wrapping")));
+				texture->SetBackgroundColor(ok::Color(static_cast<unsigned char>(e->IntAttribute("r", 0)), static_cast<unsigned char>(e->IntAttribute("g", 0)), static_cast<unsigned char>(e->IntAttribute("b", 0)), static_cast<unsigned char>(255)));
+
+				material->SetTexture(texture_slot_index, texture);
 			}
 
 			materials[path] = material;
@@ -945,6 +953,10 @@ namespace ok
 			_glname_alias["GL_ALWAYS"] = GL_ALWAYS;
 			_glname_alias["GL_TRUE"] = GL_TRUE;
 			_glname_alias["GL_FALSE"] = GL_FALSE;
+			_glname_alias["GL_REPEAT"] = GL_REPEAT;
+			_glname_alias["GL_MIRRORED_REPEAT"] = GL_MIRRORED_REPEAT;
+			_glname_alias["GL_CLAMP_TO_EDGE"] = GL_CLAMP_TO_EDGE;
+			_glname_alias["GL_CLAMP_TO_BORDER"] = GL_CLAMP_TO_BORDER;
 		}
 
 		return _glname_alias[alias];
@@ -1172,7 +1184,7 @@ namespace ok
 				node->SetRotation(glm::vec3(trs[3], trs[4], trs[5]));
 				node->SetScale(glm::vec3(trs[6], trs[7], trs[8]));
 
-				node->EndTransform();
+				node->EndTransform(false);
 
 
 				char bracket;

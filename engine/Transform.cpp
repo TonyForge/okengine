@@ -214,12 +214,21 @@ void ok::Transform::BeginTransform(ok::TransformSpace space)
 	_transformSequenceNoChanges = true;
 }
 
-void ok::Transform::EndTransform()
+void ok::Transform::EndTransform(bool updateChildrens)
 {
 	if (false == _transformSequenceNoChanges)
 	{
 		_UpdateRelativeTransformMatrix();
-		_UpdateAbsoluteTransformMatrix();
+
+		if (updateChildrens)
+		{
+			UpdateAbsoluteTransform(true);
+		}
+		else
+		{
+			_UpdateAbsoluteTransformMatrix();
+		}
+
 		OnChange();
 	}
 
@@ -428,7 +437,7 @@ void ok::Transform::SetForward(glm::vec3 forward)
 	glm::mat4 orientationMatrix = glm::lookAtLH(glm::vec3(0.f, 0.f, 0.f), _forward, _up);
 	BeginTransform(ok::TransformSpace::WorldSpace);
 	SetRotation(-_ConvertMatToEulerAnglesXYZ(orientationMatrix));
-	EndTransform();
+	EndTransform(true);
 }
 
 glm::vec3 ok::Transform::GetUp()
@@ -450,7 +459,7 @@ void ok::Transform::SetUp(glm::vec3 up)
 	glm::mat4 orientationMatrix = glm::lookAtLH(glm::vec3(0.f, 0.f, 0.f), _forward, _up);
 	BeginTransform(ok::TransformSpace::WorldSpace);
 	SetRotation(-_ConvertMatToEulerAnglesXYZ(orientationMatrix));
-	EndTransform();
+	EndTransform(true);
 }
 
 glm::vec3 ok::Transform::GetRight()
@@ -472,11 +481,47 @@ void ok::Transform::SetRight(glm::vec3 right)
 	glm::mat4 orientationMatrix = glm::lookAtLH(glm::vec3(0.f, 0.f, 0.f), _forward, _up);
 	BeginTransform(ok::TransformSpace::WorldSpace);
 	SetRotation(-_ConvertMatToEulerAnglesXYZ(orientationMatrix));
-	EndTransform();
+	EndTransform(true);
+}
+
+void ok::Transform::LookAt(glm::vec3 target, glm::vec3 up)
+{
+	_forward = glm::normalize(target - _absolutePosition);
+	_up = up;
+	_right = glm::normalize(glm::cross(_up, _forward));
+
+	glm::mat4 orientationMatrix = glm::lookAtLH(glm::vec3(0.f, 0.f, 0.f), _forward, _up);
+	BeginTransform(ok::TransformSpace::WorldSpace);
+	SetRotation(-_ConvertMatToEulerAnglesXYZ(orientationMatrix));
+	EndTransform(true);
+}
+
+void ok::Transform::LookAt(glm::vec3 target)
+{
+	_forward = glm::normalize(target - _absolutePosition);
+	_right = glm::normalize(glm::cross(_up, _forward));
+
+	glm::mat4 orientationMatrix = glm::lookAtLH(glm::vec3(0.f, 0.f, 0.f), _forward, _up);
+	BeginTransform(ok::TransformSpace::WorldSpace);
+	SetRotation(-_ConvertMatToEulerAnglesXYZ(orientationMatrix));
+	EndTransform(true);
 }
 
 void ok::Transform::OnChange()
 {
+}
+
+void ok::Transform::CopyPaste(ok::Transform & copyFrom, ok::Transform & pasteTo, bool updateChildrens, ok::TransformSpace space)
+{
+	copyFrom.BeginTransform(space);
+	pasteTo.BeginTransform(space);
+
+	pasteTo.SetPosition(copyFrom.GetPosition());
+	pasteTo.SetRotation(copyFrom.GetRotation());
+	pasteTo.SetScale(copyFrom.GetScale());
+
+	copyFrom.EndTransform(false);
+	pasteTo.EndTransform(updateChildrens);
 }
 
 void ok::Transform::_UpdateRelativeTransformMatrix()

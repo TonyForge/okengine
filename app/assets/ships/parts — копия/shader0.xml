@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shader name="ships_parts_shader0">
+
+  <properties>
+    <transparent enabled="false" />
+    <blend enabled="false" template_file=""/>
+    <cull enabled="true" face="GL_BACK" />
+    <depth enabled="true" depth_mask="GL_TRUE" depth_func="GL_GREATER"/>
+  </properties>
+  
+  <aliases>
+    <alias uniform="mvp0" type="mat4" ref="ModelViewProjectionMatrix" />
+	<alias uniform="m0" type="mat4" ref="ModelMatrix" />
+  </aliases>
+  
+  <vertex>
+    <![CDATA[
+    #version 330 core
+	
+    layout (location = 0) in vec3 pos0;
+    layout (location = 1) in vec2 uv0;
+	layout (location = 2) in vec2 uv1;
+	layout (location = 3) in vec3 nrm0;
+
+    out vec2 uv0_out;
+	out vec2 uv1_out;
+	out vec2 uv2_out;
+	out vec3 nrm_out;
+	out vec4 materials;
+	
+    uniform mat4 mvp0;
+	uniform mat4 m0;
+	uniform vec3 _CameraUp;
+	uniform vec3 _CameraRight;
+	
+    void main()
+    {
+		nrm_out = normalize(nrm0);
+		gl_Position = mvp0 * vec4(pos0.xyz, 1.0);
+		
+		float dt_v = dot(vec3(_CameraUp.x,_CameraUp.y,_CameraUp.z), normalize(m0 * vec4(nrm0.xyz, 0.0)).xyz);
+		float dt_h = dot(vec3(_CameraRight.x,_CameraRight.y,_CameraRight.z), normalize(m0 * vec4(nrm0.xyz, 0.0)).xyz);
+
+		uv0_out = vec2(uv0.x, -uv0.y);
+		uv1_out = vec2(uv1.x, -uv1.y);
+		
+		uv2_out = (vec2(dt_h,dt_v)+vec2(1,1))*0.5;
+		//uv2_out = vec2(uv2_out.x, 1.0-uv2_out.y);
+		
+		materials.w = step(25.0, uv1_out.x);
+		materials.z = step(15.0, uv1_out.x) * (1.0 - materials.w);
+		materials.y = step(5.0, uv1_out.x) * (1.0 - materials.z) * (1.0 - materials.w);
+		materials.x = 1.0 - materials.y - materials.z - materials.w;
+    }
+    ]]>
+  </vertex>
+  
+  <fragment>
+    <![CDATA[
+    #version 330 core
+    out vec4 FragColor;
+    
+    in vec2 uv0_out;
+	in vec2 uv1_out;
+	in vec2 uv2_out;
+	in vec3 nrm_out;
+	in vec4 materials;
+	
+	uniform sampler2D _Maps;
+	uniform sampler2D _Normals;
+	uniform sampler2D _Facture;
+
+	uniform vec4 _FactureTransform;
+
+	uniform vec4 _CameraUp;
+	uniform vec4 _CameraRight;
+
+	uniform vec4 _ColorMain_0;
+	uniform vec4 _ColorMain_1;
+	uniform vec4 _ColorMain_DarkMultiplier;
+
+	uniform vec4 _ColorSec_0;
+	uniform vec4 _ColorSec_1;
+
+	uniform vec4 _ColorSet3_0;
+	uniform vec4 _ColorSet3_1;
+	
+	float blend_overlay_x(float bg, float fg)
+	{
+		return mix((2.0 * bg * fg),(1.0 - 2.0 * (1.0 - bg) * (1.0 - fg)), step(0.5, bg));
+	}
+
+	vec3 blend_overlay(vec3 bg, vec3 fg)
+	{
+		return vec3(blend_overlay_x(bg.r,fg.r), blend_overlay_x(bg.g,fg.g), blend_overlay_x(bg.b,fg.b));
+	}
+			
+    void main()
+    {
+		vec3 facture = texture(_Facture, vec2(_FactureTransform.x,-_FactureTransform.y)*0.01+uv0_out*_FactureTransform.z*0.01).rgb;
+		vec2 uv3 = texture(_Normals, uv2_out).rg;
+		vec3 maps = texture(_Maps, uv3).rgb;
+		float decmix = texture(_Maps, uv1_out).b;
+
+		vec3 material0 = mix(_ColorMain_0.rgb, _ColorMain_1.rgb, smoothstep(_ColorMain_DarkMultiplier.a,1,maps.r)) + smoothstep(clamp(_ColorMain_1.a*2.0, 1, 2)-1,clamp(_ColorMain_1.a*2.0, 0, 1),maps.g);
+		vec3 material1 = mix(_ColorSec_0.rgb, _ColorSec_1.rgb, smoothstep(_ColorMain_DarkMultiplier.a,1,maps.r)) + smoothstep(clamp(_ColorSec_1.a*2.0, 1, 2)-1,clamp(_ColorSec_1.a*2.0, 0, 1),maps.g);
+		vec3 material2 = mix(_ColorSet3_0.rgb, _ColorSet3_1.rgb, smoothstep(_ColorMain_DarkMultiplier.a,1,maps.r)) + smoothstep(clamp(_ColorSet3_1.a*2.0, 1, 2)-1,clamp(_ColorSet3_1.a*2.0, 0, 1),maps.g);
+
+		float facture_threshold =  step(_FactureTransform.w*0.01,(facture.r+facture.g+facture.b)*0.3333);
+
+		vec3 mat0_facture = mix(facture.rgb,vec3(0.5,0.5,0.5), _ColorMain_0.a*facture_threshold);
+		vec3 mat1_facture = mix(facture.rgb,vec3(0.5,0.5,0.5), _ColorSec_0.a*facture_threshold);
+
+		material0.rgb = mix(mat0_facture, blend_overlay(mat0_facture, material0.rgb), facture_threshold);
+		material1.rgb = mix(mat1_facture, blend_overlay(mat1_facture, material1.rgb), facture_threshold);
+
+		vec3 result = material0*decmix+material1*(1.0-decmix);
+
+		FragColor = vec4(nrm_out.rgb,1.0)+0.0*vec4((result*materials.x + mix(material0,material2, 1.0-decmix)*materials.y + mix(material0,material0*_ColorMain_DarkMultiplier, 1.0-decmix)*materials.z + material0*decmix*materials.w).rgb, 1.0);
+    }
+    ]]>
+  </fragment>
+  
+  <geometry>
+    <![CDATA[]]>
+  </geometry>
+</shader>

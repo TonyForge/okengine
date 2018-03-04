@@ -34,7 +34,7 @@ namespace ok
 		glm::mat4 GetAbsoluteTransformMatrix();
 
 		void BeginTransform(ok::TransformSpace space = ok::TransformSpace::LocalSpace);
-		void EndTransform();
+		void EndTransform(bool updateChildrens);
 
 		void SetPosition(glm::vec3 position);
 		glm::vec3 GetPosition();
@@ -54,7 +54,12 @@ namespace ok
 		glm::vec3 GetRight();
 		void SetRight(glm::vec3 right);
 
+		void LookAt(glm::vec3 target, glm::vec3 up);
+		void LookAt(glm::vec3 target);
+
 		virtual void OnChange();
+
+		static void CopyPaste(ok::Transform& copyFrom, ok::Transform& pasteTo, bool updateChildrens, ok::TransformSpace space = ok::TransformSpace::LocalSpace);
 
 	protected:
 		std::list<ok::Transform*> _childrens;
@@ -64,12 +69,12 @@ namespace ok
 		glm::mat4 _relativeRotationMatrix;
 		glm::mat4 _absoluteTransformMatrix;
 		glm::mat4 _absoluteRotationMatrix;
-
+	public://delme!
 		glm::vec3 _relativePosition;
 		glm::vec3 _relativeRotationEuler;
 		glm::quat _relativeRotationQuat;
 		glm::vec3 _relativeScale;
-
+	private://delme
 		glm::vec3 _forward;
 		glm::vec3 _up;
 		glm::vec3 _right;
@@ -84,10 +89,11 @@ namespace ok
 		void _UpdateOrientationVectors();
 		glm::vec3 _ConvertMatToEulerAnglesXYZ(const glm::mat3& mat);
 
+	public://delme!
 		glm::vec3 _absolutePosition;
 		glm::vec3 _absoluteRotationEuler;
 		glm::vec3 _absoluteScale;
-
+	private://delme
 		void _AddChild(ok::Transform* child, bool _keepWorldTransform);
 		void _SetParent(ok::Transform* parent, bool _keepWorldTransform);
 		void _RemoveChild(ok::Transform* child, bool _keepWorldTransform);

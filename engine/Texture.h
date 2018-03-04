@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RenderTarget.h"
+#include "Color.h"
 
 namespace ok
 {
@@ -15,6 +16,8 @@ namespace ok
 			glm::ivec2 GetSize();
 			unsigned int getNativeHandle();
 			void SetSmooth(bool smooth);
+			void SetWrapping(GLenum wrapping);
+			void SetBackgroundColor(ok::Color color);
 		private:
 			sf::Texture* _owned_sf_texture;
 			ok::graphics::RenderTarget* _owned_rt;

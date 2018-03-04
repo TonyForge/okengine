@@ -49,7 +49,7 @@ ok::graphics::TextBatch2D::TextBatch2D(int screen_width, int screen_height, int 
 	_camera->BeginTransform();
 	_camera->SetPosition(glm::vec3(0.f, 0.f, -1.f));
 	_camera->SetForward(glm::vec3(0.f, 0.f, 1.f));
-	_camera->EndTransform();
+	_camera->EndTransform(false);
 
 	_brush_align_horizontal = ok::graphics::TextAlign::Left;
 	_brush_align_vertical = ok::graphics::TextAlign::Top;
@@ -675,7 +675,7 @@ void ok::graphics::TextBatch2D::Draw(ok::graphics::TextCache * cache)
 
 	_camera->BeginTransform();
 	_camera->SetPosition(glm::vec3(-_brush_position.x, -_brush_position.y, -1.f));
-	_camera->EndTransform();
+	_camera->EndTransform(false);
 
 	if (_clip_rect_enabled)
 	{
@@ -749,7 +749,7 @@ void ok::graphics::TextBatch2D::Draw(ok::graphics::TextCache * cache)
 
 	_camera->BeginTransform();
 	_camera->SetPosition(glm::vec3(0.f, 0.f, -1.f));
-	_camera->EndTransform();
+	_camera->EndTransform(false);
 
 	ok::graphics::Camera::PopCamera();
 

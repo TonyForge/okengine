@@ -123,7 +123,7 @@ void ok::graphics::TransformAnimationSkeleton::AnimateBones(ok::graphics::Transf
 					right_frame->trs_frames[skeleton_bone_index * 9 + 8]
 				) * (frames_blend))
 		);
-		bone->EndTransform();
+		bone->EndTransform(false);
 
 		skeleton_bone_index++;
 	}
