@@ -62,7 +62,7 @@ void Starpom::App::Update(float dt)
 		//do nothing
 		if (ss_ship_agent_001 == nullptr)
 		{
-			Starpom::SS_ShipAgent* blueprint = Starpom::SS_ShipAgent::blueprints["nomad"];
+			Starpom::SS_ShipAgent* blueprint = Starpom::SS_ShipAgent::blueprints["ship"];
 			ss_ship_agent_001 = static_cast<Starpom::SS_ShipAgent*>(blueprint->Duplicate());
 			ss_ship_agent_001->UpdateAbsoluteTransform(true);
 		}

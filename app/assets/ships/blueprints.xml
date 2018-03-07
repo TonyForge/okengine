@@ -1,5 +1,3 @@
 <blueprints>
-	<blueprint name="igumen" file="igumen.xml" type="spaceship"/>
-	<blueprint name="kosmotrak" file="kosmotrak.xml" type="spaceship"/>
-	<blueprint name="nomad" file="nomad.xml" type="spaceship"/>
+	<blueprint name="ship" file="ship.xml" type="spaceship"/>
 </blueprints>

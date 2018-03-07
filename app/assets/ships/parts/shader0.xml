@@ -45,7 +45,7 @@
 		uv1_out = vec2(uv1.x, -uv1.y);
 		
 		uv2_out = (vec2(dt_h,dt_v)+vec2(1,1))*0.5;
-		uv2_out = vec2(uv2_out.x, -uv2_out.y);
+		uv2_out = vec2(uv2_out.x, 1.0-uv2_out.y);
 		
 		materials.w = step(25.0, uv1_out.x);
 		materials.z = step(15.0, uv1_out.x) * (1.0 - materials.w);
