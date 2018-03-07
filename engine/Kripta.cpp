@@ -38,7 +38,7 @@ void Kripta::App::Init()
 		go.SetPosition(glm::vec3(0.f, 0.f, 0.f));
 		go.SetScale(glm::vec3(100.f, 100.f, 100.f));
 	}
-	go.EndTransform();
+	go.EndTransform(true);
 }
 
 glm::vec3 eye_pos(0.0f,0.0f,0.0f);
@@ -72,7 +72,7 @@ void Kripta::App::Update(float dt)
 		camera.SetForward(glm::vec3(0.f, 0.f, 1.f));
 		camera.SetUp(glm::vec3(0.f, 1.f, 0.f));
 	}
-	camera.EndTransform();
+	camera.EndTransform(true);
 
 	ok::graphics::Camera::PushCamera(&camera);
 	{	

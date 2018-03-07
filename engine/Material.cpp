@@ -10,14 +10,17 @@ ok::graphics::Material::Material(ok::graphics::Shader* shader, int texture_slots
 	for (auto&& slot : _texture_slots)
 	{
 		slot.first = i;
-		slot.second = nullptr;
+		slot.second.texture = nullptr;
+		slot.second.smooth = true;
+		slot.second.wrapping = GL_REPEAT;
+		slot.second.background_color = ok::Color(0.f,0.f,0.f,1.f);
 		i++;
 	}
 }
 
 void ok::graphics::Material::SetTexture(int texture_slot_index, ok::graphics::Texture * texture)
 {
-	_texture_slots[texture_slot_index].second = texture;
+	_texture_slots[texture_slot_index].second.texture = texture;
 }
 
 void ok::graphics::Material::SetTexture(const std::string& sampler_name, ok::graphics::Texture* texture)
@@ -29,7 +32,7 @@ void ok::graphics::Material::SetTexture(const std::string& sampler_name, ok::gra
 	{
 		if (slot.first == texture_channel_index)
 		{
-			slot.second = texture;
+			slot.second.texture = texture;
 		}
 	}
 }
@@ -49,10 +52,14 @@ void ok::graphics::Material::Bind(ok::graphics::ShaderAliasDispatcher* dispatche
 
 	for (auto&& slot : _texture_slots)
 	{
-		if (slot.second == nullptr)
+		if (slot.second.texture == nullptr)
 		_shader->BindTexture((unsigned int)0, slot.first);
 		else
-		_shader->BindTexture(slot.second->getNativeHandle(), slot.first);
+		{
+			_shader->BindTexture(slot.second.texture->getNativeHandle(), slot.first);
+			slot.second.texture->SetProperties(slot.second.smooth, slot.second.wrapping, slot.second.background_color, true);
+		}
+		
 	}
 }
 
@@ -67,6 +74,15 @@ void ok::graphics::Material::LinkSlotToSampler(const std::string & sampler_name,
 	_shader->GetSampler(sampler_name, texture_channel_index);
 
 	_texture_slots[texture_slot_index].first = texture_channel_index;
+}
+
+void ok::graphics::Material::SetSlotProperties(int texture_slot_index, bool smooth, GLenum wrapping, ok::Color background_color)
+{
+	ok::graphics::MaterialTextureSlot& slot = _texture_slots[texture_slot_index].second;
+
+	slot.smooth = smooth;
+	slot.wrapping = wrapping;
+	slot.background_color = background_color;
 }
 
 void ok::graphics::Material::BindSubroutines(ok::graphics::ShaderAliasDispatcher * dispatcher)

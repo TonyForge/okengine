@@ -763,10 +763,7 @@ namespace ok
 				material->LinkSlotToSampler(e->Attribute("sampler"), texture_slot_index);
 				texture = GetTexture(e->Attribute("asset"));
 
-				texture->SetSmooth(e->BoolAttribute("smooth"));
-				texture->SetWrapping(GetAliasGL(e->Attribute("wrapping")));
-				texture->SetBackgroundColor(ok::Color(static_cast<unsigned char>(e->IntAttribute("r", 0)), static_cast<unsigned char>(e->IntAttribute("g", 0)), static_cast<unsigned char>(e->IntAttribute("b", 0)), static_cast<unsigned char>(255)));
-
+				material->SetSlotProperties(texture_slot_index, e->BoolAttribute("smooth"), GetAliasGL(e->Attribute("wrapping")), ok::Color(static_cast<unsigned char>(e->IntAttribute("r", 0)), static_cast<unsigned char>(e->IntAttribute("g", 0)), static_cast<unsigned char>(e->IntAttribute("b", 0)), static_cast<unsigned char>(255)));
 				material->SetTexture(texture_slot_index, texture);
 			}
 
@@ -957,6 +954,7 @@ namespace ok
 			_glname_alias["GL_MIRRORED_REPEAT"] = GL_MIRRORED_REPEAT;
 			_glname_alias["GL_CLAMP_TO_EDGE"] = GL_CLAMP_TO_EDGE;
 			_glname_alias["GL_CLAMP_TO_BORDER"] = GL_CLAMP_TO_BORDER;
+			_glname_alias["GL_CLAMP"] = GL_CLAMP;
 		}
 
 		return _glname_alias[alias];

@@ -28,10 +28,24 @@ void Starpom::App::Init()
 
 	camera->SetProjectionOrtho(static_cast<float>(screen_width), static_cast<float>(screen_height), 1.f, 10000.f);
 	camera->BeginTransform();
-	camera->SetPosition(glm::vec3(0.f,0.f,-1000.f));
+	camera->SetPosition(glm::vec3(0.f, 0.f, -1000.f));
 	camera->EndTransform(false);
 
 	camera->LookAt(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
+
+	/*ok::Transform transform;
+
+	transform.SetRotationOrder(ok::RotationOrder::ZXY);
+
+	transform.BeginTransform();
+	transform.SetRotation(glm::vec3(23.f, 71.f, 18.f));
+	transform.EndTransform(false);
+
+	
+
+	glm::vec3 rt1 = transform._ConvertMatToEulerAnglesXYZ(transform._relativeRotationMatrix);
+	
+	rt1 = rt1;*/
 }
 
 
@@ -58,7 +72,7 @@ void Starpom::App::Update(float dt)
 
 			ss_ship_agent_001->BeginTransform();
 			ss_ship_agent_001->SetScale(glm::vec3(2.0f, 2.0f, 2.0f));
-			ss_ship_agent_001->SetRotation(ss_ship_agent_001->GetRotation() + glm::vec3(dt*10.0f, dt*10.0f, dt*10.0f));
+			//ss_ship_agent_001->SetRotation(ss_ship_agent_001->GetRotation() + glm::vec3(dt*10.0f, dt*10.0f, dt*10.0f));
 			ss_ship_agent_001->EndTransform(true);
 			//ss_ship_agent_001->UpdateAbsoluteTransform();
 

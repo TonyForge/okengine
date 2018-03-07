@@ -2,6 +2,16 @@
 
 namespace ok
 {
+	enum class RotationOrder
+	{
+		XYZ,
+		XZY,
+		YXZ,
+		YZX,
+		ZXY,
+		ZYX
+	};
+
 	enum class TransformSpace
 	{
 		LocalSpace = 0,
@@ -54,8 +64,11 @@ namespace ok
 		glm::vec3 GetRight();
 		void SetRight(glm::vec3 right);
 
+		void SetOrientation(glm::vec3 forward, glm::vec3 up);
 		void LookAt(glm::vec3 target, glm::vec3 up);
 		void LookAt(glm::vec3 target);
+
+		void SetRotationOrder(ok::RotationOrder new_order);
 
 		virtual void OnChange();
 
@@ -65,6 +78,8 @@ namespace ok
 		std::list<ok::Transform*> _childrens;
 	private:
 		ok::Transform* _parent;
+		ok::RotationOrder _rotation_order;
+	public://delme!
 		glm::mat4 _relativeTransformMatrix;
 		glm::mat4 _relativeRotationMatrix;
 		glm::mat4 _absoluteTransformMatrix;
@@ -87,8 +102,13 @@ namespace ok
 		void _UpdateRelativeTransformMatrix();
 		void _UpdateAbsoluteTransformMatrix();
 		void _UpdateOrientationVectors();
+	public://delme!
 		glm::vec3 _ConvertMatToEulerAnglesXYZ(const glm::mat3& mat);
-
+		glm::vec3 _ConvertMatToEulerAnglesXZY(const glm::mat3 & mat);
+		glm::vec3 _ConvertMatToEulerAnglesYXZ(const glm::mat3 & mat);
+		glm::vec3 _ConvertMatToEulerAnglesYZX(const glm::mat3 & mat);
+		glm::vec3 _ConvertMatToEulerAnglesZXY(const glm::mat3 & mat);
+		glm::vec3 _ConvertMatToEulerAnglesZYX(const glm::mat3 & mat);
 	public://delme!
 		glm::vec3 _absolutePosition;
 		glm::vec3 _absoluteRotationEuler;

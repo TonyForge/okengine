@@ -18,7 +18,8 @@ ok::Transform::Transform() :
 	_absoluteScale(1.f, 1.f, 1.f),
 	_relativeRotationMatrix(1.0f),
 	_absoluteRotationMatrix(1.0f),
-	_parent(nullptr)
+	_parent(nullptr),
+	_rotation_order(ok::RotationOrder::XYZ)
 {
 
 }
@@ -484,6 +485,18 @@ void ok::Transform::SetRight(glm::vec3 right)
 	EndTransform(true);
 }
 
+void ok::Transform::SetOrientation(glm::vec3 forward, glm::vec3 up)
+{
+	_forward = forward;
+	_up = up;
+	_right = glm::normalize(glm::cross(_up, _forward));
+
+	glm::mat4 orientationMatrix = glm::lookAtLH(glm::vec3(0.f, 0.f, 0.f), _forward, _up);
+	BeginTransform(ok::TransformSpace::WorldSpace);
+	SetRotation(-_ConvertMatToEulerAnglesXYZ(orientationMatrix));
+	EndTransform(true);
+}
+
 void ok::Transform::LookAt(glm::vec3 target, glm::vec3 up)
 {
 	_forward = glm::normalize(target - _absolutePosition);
@@ -507,12 +520,57 @@ void ok::Transform::LookAt(glm::vec3 target)
 	EndTransform(true);
 }
 
+void ok::Transform::SetRotationOrder(ok::RotationOrder new_order)
+{
+	_rotation_order = new_order;
+
+	BeginTransform(ok::TransformSpace::LocalSpace);
+
+	switch (new_order)
+	{
+		case ok::RotationOrder::XYZ :
+		{
+			SetRotation(_ConvertMatToEulerAnglesXYZ(_relativeRotationMatrix));
+		}
+		break;
+		case ok::RotationOrder::XZY:
+		{
+			SetRotation(_ConvertMatToEulerAnglesXZY(_relativeRotationMatrix));
+		}
+		break;
+		case ok::RotationOrder::YXZ:
+		{
+			SetRotation(_ConvertMatToEulerAnglesYXZ(_relativeRotationMatrix));
+		}
+		break;
+		case ok::RotationOrder::YZX:
+		{
+			SetRotation(_ConvertMatToEulerAnglesYZX(_relativeRotationMatrix));
+		}
+		break;
+		case ok::RotationOrder::ZXY:
+		{
+			SetRotation(_ConvertMatToEulerAnglesZXY(_relativeRotationMatrix));
+		}
+		break;
+		case ok::RotationOrder::ZYX:
+		{
+			SetRotation(_ConvertMatToEulerAnglesZYX(_relativeRotationMatrix));
+		}
+		break;
+	}
+
+	EndTransform(true);
+}
+
 void ok::Transform::OnChange()
 {
 }
 
 void ok::Transform::CopyPaste(ok::Transform & copyFrom, ok::Transform & pasteTo, bool updateChildrens, ok::TransformSpace space)
 {
+	pasteTo.SetRotationOrder(copyFrom._rotation_order);
+
 	copyFrom.BeginTransform(space);
 	pasteTo.BeginTransform(space);
 
@@ -530,9 +588,51 @@ void ok::Transform::_UpdateRelativeTransformMatrix()
 	_relativeRotationMatrix = glm::mat4(1.0f);
 
 	//order is critically important here!
-	_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.x), glm::vec3(1.f, 0.f, 0.f));
-	_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.y), glm::vec3(0.f, 1.f, 0.f));
-	_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.z), glm::vec3(0.f, 0.f, 1.f));
+	switch (_rotation_order)
+	{
+	case ok::RotationOrder::XYZ:
+	{
+		_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.x), glm::vec3(1.f, 0.f, 0.f));
+		_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.y), glm::vec3(0.f, 1.f, 0.f));
+		_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.z), glm::vec3(0.f, 0.f, 1.f));
+	}
+	break;
+	case ok::RotationOrder::XZY:
+	{
+		_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.x), glm::vec3(1.f, 0.f, 0.f));
+		_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.z), glm::vec3(0.f, 0.f, 1.f));
+		_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.y), glm::vec3(0.f, 1.f, 0.f));	
+	}
+	break;
+	case ok::RotationOrder::YXZ:
+	{
+		_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.y), glm::vec3(0.f, 1.f, 0.f));
+		_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.x), glm::vec3(1.f, 0.f, 0.f));
+		_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.z), glm::vec3(0.f, 0.f, 1.f));
+	}
+	break;
+	case ok::RotationOrder::YZX:
+	{
+		_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.y), glm::vec3(0.f, 1.f, 0.f));
+		_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.z), glm::vec3(0.f, 0.f, 1.f));
+		_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.x), glm::vec3(1.f, 0.f, 0.f));
+	}
+	break;
+	case ok::RotationOrder::ZXY:
+	{
+		_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.z), glm::vec3(0.f, 0.f, 1.f));
+		_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.x), glm::vec3(1.f, 0.f, 0.f));
+		_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.y), glm::vec3(0.f, 1.f, 0.f));
+	}
+	break;
+	case ok::RotationOrder::ZYX:
+	{
+		_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.z), glm::vec3(0.f, 0.f, 1.f));
+		_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.y), glm::vec3(0.f, 1.f, 0.f));
+		_relativeRotationMatrix = glm::rotate(_relativeRotationMatrix, glm::radians(_relativeRotationEuler.x), glm::vec3(1.f, 0.f, 0.f));
+	}
+	break;
+	}
 
 	_relativeTransformMatrix = glm::translate(_relativeTransformMatrix, _relativePosition) * _relativeRotationMatrix * glm::scale(_relativeTransformMatrix, _relativeScale);
 
@@ -573,7 +673,7 @@ void ok::Transform::_UpdateOrientationVectors()
 	_orientation_dirty = false;
 }
 
-glm::vec3 ok::Transform::_ConvertMatToEulerAnglesXYZ(const glm::mat3 & mat)
+/*glm::vec3 ok::Transform::_ConvertMatToEulerAnglesXYZ(const glm::mat3 & mat)
 {
 	const float xEuler = std::atan2(mat[1].z, mat[2].z);
 	const float cosYangle = glm::sqrt(glm::pow(mat[0].x, 2) + glm::pow(mat[0].y, 2));
@@ -584,5 +684,76 @@ glm::vec3 ok::Transform::_ConvertMatToEulerAnglesXYZ(const glm::mat3 & mat)
 		sinXangle * mat[2].x - cosXangle * mat[1].x,
 		cosXangle * mat[1].y - sinXangle * mat[2].y);
 
+	return -glm::degrees(glm::vec3(xEuler, yEuler, zEuler));
+}*/
+/*
+glm::vec3 ok::Transform::_ConvertMatToEulerAnglesXYZ(const glm::mat3 & mat)
+{
+	const float xEuler = std::atan2(-mat[1].z, mat[2].z);
+	const float cosYangle = glm::sqrt(1.f - glm::pow(mat[0].z, 2));
+	const float yEuler = std::atan2(mat[0].z, cosYangle);
+	const float zEuler = std::atan2(-mat[0].y, mat[0].x);
+
+	return glm::degrees(glm::vec3(xEuler, yEuler, zEuler));
+}*/
+
+glm::vec3 ok::Transform::_ConvertMatToEulerAnglesXYZ(const glm::mat3 & mat)
+{
+	const float xEuler = std::atan2(-mat[2].y, mat[2].z);
+	const float cos_angle = glm::sqrt(1.f - glm::pow(mat[2].x, 2));
+	const float yEuler = std::atan2(mat[2].x, cos_angle);
+	const float zEuler = std::atan2(-mat[1].x, mat[0].x);
+
 	return glm::degrees(glm::vec3(xEuler, yEuler, zEuler));
 }
+
+glm::vec3 ok::Transform::_ConvertMatToEulerAnglesXZY(const glm::mat3 & mat)
+{
+	const float xEuler = std::atan2(mat[1].z, mat[1].y);
+	const float cos_angle = glm::sqrt(1.f - glm::pow(mat[1].x, 2));
+	const float zEuler = std::atan2(-mat[1].x, cos_angle);
+	const float yEuler = std::atan2(mat[2].x, mat[0].x);
+
+	return glm::degrees(glm::vec3(xEuler, yEuler, zEuler));
+}
+
+glm::vec3 ok::Transform::_ConvertMatToEulerAnglesYXZ(const glm::mat3 & mat)
+{
+	const float yEuler = std::atan2(mat[0].z, mat[2].z);
+	const float cos_angle = glm::sqrt(1.f - glm::pow(mat[2].y, 2));
+	const float xEuler = std::atan2(-mat[2].y, cos_angle);
+	const float zEuler = std::atan2(mat[0].x, mat[1].y);
+
+	return glm::degrees(glm::vec3(xEuler, yEuler, zEuler));
+}
+
+glm::vec3 ok::Transform::_ConvertMatToEulerAnglesYZX(const glm::mat3 & mat)
+{
+	const float yEuler = std::atan2(-mat[0].z, mat[0].x);
+	const float cos_angle = glm::sqrt(1.f - glm::pow(mat[0].y, 2));
+	const float zEuler = std::atan2(mat[0].y, cos_angle);
+	const float xEuler = std::atan2(-mat[2].y, mat[1].y);
+
+	return glm::degrees(glm::vec3(xEuler, yEuler, zEuler));
+}
+
+glm::vec3 ok::Transform::_ConvertMatToEulerAnglesZXY(const glm::mat3 & mat)
+{
+	const float zEuler = std::atan2(-mat[1].x, mat[1].y);
+	const float cos_angle = glm::sqrt(1.f - glm::pow(mat[1].z, 2));
+	const float xEuler = std::atan2(mat[1].z, cos_angle);
+	const float yEuler = std::atan2(-mat[0].z, mat[2].z);
+
+	return glm::degrees(glm::vec3(xEuler, yEuler, zEuler));
+}
+
+glm::vec3 ok::Transform::_ConvertMatToEulerAnglesZYX(const glm::mat3 & mat)
+{
+	const float zEuler = std::atan2(mat[0].y, mat[0].x);
+	const float cos_angle = glm::sqrt(1.f - glm::pow(mat[0].z, 2));
+	const float yEuler = std::atan2(-mat[0].z, cos_angle);
+	const float xEuler = std::atan2(mat[1].z, mat[2].z);
+
+	return glm::degrees(glm::vec3(xEuler, yEuler, zEuler));
+}
+

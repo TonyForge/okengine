@@ -74,3 +74,31 @@ void ok::graphics::Texture::SetBackgroundColor(ok::Color color)
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+void ok::graphics::Texture::SetProperties(bool smooth, GLenum wrapping, ok::Color background_color, bool already_binded)
+{
+	if (false == already_binded)
+	{
+		glBindTexture(GL_TEXTURE_2D, getNativeHandle());
+	}
+
+	if (smooth)
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+	else
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping));
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(static_cast<glm::vec4>(background_color)));
+
+	if (false == already_binded)
+	{
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+}

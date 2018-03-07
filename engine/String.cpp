@@ -10,7 +10,7 @@ ok::String::String(char ansiChar, const std::locale& locale)
 {
 	m_string += sf::Utf32::decodeAnsi(ansiChar, locale);
 
-	#ifdef _DEBUG
+	#ifdef _DEBUG_STRING
 		m_string_debug = *this;
 	#endif
 }
@@ -19,7 +19,7 @@ ok::String::String(wchar_t wideChar)
 {
 	m_string += sf::Utf32::decodeWide(wideChar);
 
-	#ifdef _DEBUG
+	#ifdef _DEBUG_STRING
 		m_string_debug = *this;
 	#endif
 }
@@ -28,7 +28,7 @@ ok::String::String(sf::Uint32 utf32Char)
 {
 	m_string += utf32Char;
 
-	#ifdef _DEBUG
+	#ifdef _DEBUG_STRING
 		m_string_debug = *this;
 	#endif
 }
@@ -45,7 +45,7 @@ ok::String::String(const char* ansiString, const std::locale& locale)
 		}
 	}
 
-	#ifdef _DEBUG
+	#ifdef _DEBUG_STRING
 		m_string_debug = *this;
 	#endif
 }
@@ -55,7 +55,7 @@ ok::String::String(const std::string& ansiString, const std::locale& locale)
 	m_string.reserve(ansiString.length() + 1);
 	sf::Utf32::fromAnsi(ansiString.begin(), ansiString.end(), std::back_inserter(m_string), locale);
 
-	#ifdef _DEBUG
+	#ifdef _DEBUG_STRING
 		m_string_debug = *this;
 	#endif
 }
@@ -72,7 +72,7 @@ ok::String::String(const wchar_t* wideString)
 		}
 	}
 
-	#ifdef _DEBUG
+	#ifdef _DEBUG_STRING
 		m_string_debug = *this;
 	#endif
 }
@@ -82,7 +82,7 @@ ok::String::String(const std::wstring& wideString)
 	m_string.reserve(wideString.length() + 1);
 	sf::Utf32::fromWide(wideString.begin(), wideString.end(), std::back_inserter(m_string));
 
-	#ifdef _DEBUG
+	#ifdef _DEBUG_STRING
 		m_string_debug = *this;
 	#endif
 }
@@ -92,7 +92,7 @@ ok::String::String(const sf::Uint32* utf32String)
 	if (utf32String)
 		m_string = utf32String;
 
-	#ifdef _DEBUG
+	#ifdef _DEBUG_STRING
 		m_string_debug = *this;
 	#endif
 }
@@ -100,7 +100,7 @@ ok::String::String(const sf::Uint32* utf32String)
 ok::String::String(const std::basic_string<sf::Uint32>& utf32String) :
 	m_string(utf32String)
 {
-	#ifdef _DEBUG
+	#ifdef _DEBUG_STRING
 		m_string_debug = *this;
 	#endif
 }
@@ -108,7 +108,7 @@ ok::String::String(const std::basic_string<sf::Uint32>& utf32String) :
 ok::String::String(const ok::String& copy) :
 	m_string(copy.m_string)
 {
-	#ifdef _DEBUG
+	#ifdef _DEBUG_STRING
 		m_string_debug = *this;
 	#endif
 }
@@ -297,7 +297,7 @@ ok::String& ok::String::operator =(const ok::String& right)
 {
 	m_string = right.m_string;
 
-	#ifdef _DEBUG
+	#ifdef _DEBUG_STRING
 		m_string_debug = *this;
 	#endif
 
@@ -308,7 +308,7 @@ ok::String& ok::String::operator +=(const ok::String& right)
 {
 	m_string += right.m_string;
 
-	#ifdef _DEBUG
+	#ifdef _DEBUG_STRING
 		m_string_debug = *this;
 	#endif
 
@@ -329,7 +329,7 @@ void ok::String::clear()
 {
 	m_string.clear();
 
-	#ifdef _DEBUG
+	#ifdef _DEBUG_STRING
 		m_string_debug = *this;
 	#endif
 }
@@ -348,7 +348,7 @@ void ok::String::erase(std::size_t position, std::size_t count)
 {
 	m_string.erase(position, count);
 
-	#ifdef _DEBUG
+	#ifdef _DEBUG_STRING
 		m_string_debug = *this;
 	#endif
 }
@@ -357,7 +357,7 @@ void ok::String::insert(std::size_t position, const ok::String& str)
 {
 	m_string.insert(position, str.m_string);
 
-	#ifdef _DEBUG
+	#ifdef _DEBUG_STRING
 		m_string_debug = *this;
 	#endif
 }
@@ -371,7 +371,7 @@ void ok::String::replace(std::size_t position, std::size_t length, const ok::Str
 {
 	m_string.replace(position, length, replaceWith.m_string);
 
-	#ifdef _DEBUG
+	#ifdef _DEBUG_STRING
 		m_string_debug = *this;
 	#endif
 }

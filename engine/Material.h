@@ -8,6 +8,17 @@ namespace ok
 {
 	namespace graphics
 	{
+		class MaterialTextureSlot
+		{
+		public:
+			ok::graphics::Texture* texture;
+			GLenum wrapping;
+			bool smooth;
+			ok::Color background_color;
+		protected:
+		private:
+		};
+
 		class Material
 		{
 		public:
@@ -19,13 +30,14 @@ namespace ok
 			void Bind(ok::graphics::ShaderAliasDispatcher* dispatcher = nullptr);
 			bool GetTransparent();
 			void LinkSlotToSampler(const std::string & sampler_name, int texture_slot_index);
+			void SetSlotProperties(int texture_slot_index, bool smooth, GLenum wrapping, ok::Color background_color);
 			void BindSubroutines(ok::graphics::ShaderAliasDispatcher* dispatcher = nullptr);
 			unsigned int GetSubroutineIndex(GLenum shadertype, const std::string& name);
 			ok::graphics::Shader* GetShader();
 		protected:
 		private:
 			ok::graphics::Shader* _shader;
-			std::vector<std::pair<int, ok::graphics::Texture*>> _texture_slots;
+			std::vector<std::pair<int, ok::graphics::MaterialTextureSlot>> _texture_slots;
 		};
 	}
 }

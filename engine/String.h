@@ -7,6 +7,10 @@
 #include <cstring>
 #include "pystring.h"
 
+#ifdef _DEBUG
+#define _DEBUG_STRING
+#endif
+
 namespace ok
 {
 	class  String
@@ -79,7 +83,7 @@ namespace ok
 
 		std::basic_string<sf::Uint32> m_string;
 
-		#ifdef _DEBUG
+		#ifdef _DEBUG_STRING
 		std::string m_string_debug;
 		#endif
 	};
