@@ -1,4 +1,4 @@
-global MDP_PATH = "D:/ProjectsII/ok/app/tools/"
+global MDP_PATH = "D:/ProjectsII/okengine/app/tools/"
 
 MDP_Plugin_Node_UI = attributes "MDP_Plugin_Node" (
 	parameters mdp_params rollout:mdp_params_ui
