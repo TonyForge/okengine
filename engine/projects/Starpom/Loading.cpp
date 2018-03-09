@@ -105,8 +105,6 @@ ok::GameObject * Starpom::Task_SS_Blueprints::LoadPart_Spaceship(tinyxml2::XMLEl
 
 	part->Rename(part_xml->Attribute("name"));
 
-	//glm::eu
-	//part->SetRotationOrder(ok::RotationOrder::ZXY);
 	part->BeginTransform();
 	part->SetPosition(glm::vec3(part_xml->FloatAttribute("tx"), part_xml->FloatAttribute("ty"), part_xml->FloatAttribute("tz")));
 
@@ -115,10 +113,9 @@ ok::GameObject * Starpom::Task_SS_Blueprints::LoadPart_Spaceship(tinyxml2::XMLEl
 		glm::normalize(glm::vec3(part_xml->FloatAttribute("up_x"), part_xml->FloatAttribute("up_y"), part_xml->FloatAttribute("up_z")))
 	);
 
-	//part->SetRotation(glm::vec3(part_xml->FloatAttribute("rx"), part_xml->FloatAttribute("ry"), part_xml->FloatAttribute("rz")));
 	part->SetScale(glm::vec3(part_xml->FloatAttribute("sx"), part_xml->FloatAttribute("sy"), part_xml->FloatAttribute("sz")));
 	part->EndTransform(false);
-	//part->SetRotationOrder(ok::RotationOrder::XYZ);
+
 
 	std::string mesh_name = part_xml->Attribute("mesh");
 

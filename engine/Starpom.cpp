@@ -21,6 +21,7 @@ Starpom::App::App()
 
 Starpom::SS_ShipAgent* ss_ship_agent_001 = nullptr;
 ok::graphics::Camera* camera;
+ok::Transform* camera_transform;
 
 void Starpom::App::Init()
 {
@@ -31,21 +32,8 @@ void Starpom::App::Init()
 	camera->SetPosition(glm::vec3(0.f, 0.f, -1000.f));
 	camera->EndTransform(false);
 
-	camera->LookAt(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
-
-	/*ok::Transform transform;
-
-	transform.SetRotationOrder(ok::RotationOrder::ZXY);
-
-	transform.BeginTransform();
-	transform.SetRotation(glm::vec3(23.f, 71.f, 18.f));
-	transform.EndTransform(false);
-
-	
-
-	glm::vec3 rt1 = transform._ConvertMatToEulerAnglesXYZ(transform._relativeRotationMatrix);
-	
-	rt1 = rt1;*/
+	camera_transform = new ok::Transform();
+	camera_transform->AddChild(camera);
 }
 
 
@@ -62,7 +50,7 @@ void Starpom::App::Update(float dt)
 		//do nothing
 		if (ss_ship_agent_001 == nullptr)
 		{
-			Starpom::SS_ShipAgent* blueprint = Starpom::SS_ShipAgent::blueprints["ship"];
+			Starpom::SS_ShipAgent* blueprint = Starpom::SS_ShipAgent::blueprints["nomad"];
 			ss_ship_agent_001 = static_cast<Starpom::SS_ShipAgent*>(blueprint->Duplicate());
 			ss_ship_agent_001->UpdateAbsoluteTransform(true);
 		}
@@ -71,10 +59,9 @@ void Starpom::App::Update(float dt)
 			ok::graphics::Camera::PushCamera(camera);
 
 			ss_ship_agent_001->BeginTransform();
-			ss_ship_agent_001->SetScale(glm::vec3(2.0f, 2.0f, 2.0f));
-			//ss_ship_agent_001->SetRotation(ss_ship_agent_001->GetRotation() + glm::vec3(dt*10.0f, dt*10.0f, dt*10.0f));
+			ss_ship_agent_001->SetScale(glm::vec3(3.5f, 3.5f, 3.5f));
+			ss_ship_agent_001->SetRotation(ss_ship_agent_001->GetRotation() + glm::vec3(dt*0.0f, dt*0.0f, dt*10.0f));
 			ss_ship_agent_001->EndTransform(true);
-			//ss_ship_agent_001->UpdateAbsoluteTransform();
 
 			ss_ship_agent_001->Update(dt);
 			ok::graphics::LayeredRenderer::instance().Flush();

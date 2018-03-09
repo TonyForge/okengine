@@ -2,14 +2,21 @@
 
 namespace ok
 {
-	enum class RotationOrder
+	enum class RotationDirection
 	{
-		XYZ,
-		XZY,
-		YXZ,
-		YZX,
-		ZXY,
-		ZYX
+		CW,
+		CCW
+	};
+
+	/*
+	Left To Right
+	TRS = First Translate Then Rotate Then Scale
+	*/
+	enum class TransformCombineOrder
+	{
+		SRT, //(Default)Usual for non-uniform scaled objects in 3d world (non uniform scale will work in natural manner)
+		RST, //Usual for uniform scaled object in 3d world (non uniform scale will skew and distort rotated objects)
+		RTS //Usual for world transformation relative to camera (translations shifted by center done by horizontal/vertical axis of zoomed screen space regardless of rotation around center)
 	};
 
 	enum class TransformSpace
@@ -68,28 +75,29 @@ namespace ok
 		void LookAt(glm::vec3 target, glm::vec3 up);
 		void LookAt(glm::vec3 target);
 
-		void SetRotationOrder(ok::RotationOrder new_order);
+		void SetRotationDirection(ok::RotationDirection new_direction);
+		void SetTransformCombineOrder(ok::TransformCombineOrder new_order);
 
 		virtual void OnChange();
 
 		static void CopyPaste(ok::Transform& copyFrom, ok::Transform& pasteTo, bool updateChildrens, ok::TransformSpace space = ok::TransformSpace::LocalSpace);
-
 	protected:
 		std::list<ok::Transform*> _childrens;
 	private:
 		ok::Transform* _parent;
-		ok::RotationOrder _rotation_order;
-	public://delme!
+		ok::RotationDirection _rotation_direction;
+		ok::TransformCombineOrder _transform_combine_order;
+
 		glm::mat4 _relativeTransformMatrix;
 		glm::mat4 _relativeRotationMatrix;
 		glm::mat4 _absoluteTransformMatrix;
 		glm::mat4 _absoluteRotationMatrix;
-	public://delme!
+
 		glm::vec3 _relativePosition;
 		glm::vec3 _relativeRotationEuler;
 		glm::quat _relativeRotationQuat;
 		glm::vec3 _relativeScale;
-	private://delme
+
 		glm::vec3 _forward;
 		glm::vec3 _up;
 		glm::vec3 _right;
@@ -102,18 +110,13 @@ namespace ok
 		void _UpdateRelativeTransformMatrix();
 		void _UpdateAbsoluteTransformMatrix();
 		void _UpdateOrientationVectors();
-	public://delme!
+
 		glm::vec3 _ConvertMatToEulerAnglesXYZ(const glm::mat3& mat);
-		glm::vec3 _ConvertMatToEulerAnglesXZY(const glm::mat3 & mat);
-		glm::vec3 _ConvertMatToEulerAnglesYXZ(const glm::mat3 & mat);
-		glm::vec3 _ConvertMatToEulerAnglesYZX(const glm::mat3 & mat);
-		glm::vec3 _ConvertMatToEulerAnglesZXY(const glm::mat3 & mat);
-		glm::vec3 _ConvertMatToEulerAnglesZYX(const glm::mat3 & mat);
-	public://delme!
+
 		glm::vec3 _absolutePosition;
 		glm::vec3 _absoluteRotationEuler;
 		glm::vec3 _absoluteScale;
-	private://delme
+
 		void _AddChild(ok::Transform* child, bool _keepWorldTransform);
 		void _SetParent(ok::Transform* parent, bool _keepWorldTransform);
 		void _RemoveChild(ok::Transform* child, bool _keepWorldTransform);
