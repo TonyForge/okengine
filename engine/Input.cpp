@@ -132,10 +132,10 @@ void ok::Input::OnMouseUp(int key)
 
 void ok::Input::OnMouseMove(float x, float y, float screen_width, float screen_height)
 {
-	mouse_x = glm::clamp(x,0.0f,1.0f);
+	mouse_x = glm::clamp(x, 0.0f, 1.0f);
 	mouse_y = glm::clamp(y, 0.0f, 1.0f);
 	mouse_px = x * screen_width;
-	mouse_py = y * screen_width;
+	mouse_py = y * screen_height;
 }
 
 void ok::Input::Update()

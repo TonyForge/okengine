@@ -102,19 +102,3 @@ void ok::graphics::Texture::SetProperties(bool smooth, GLenum wrapping, ok::Colo
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 }
-
-void ok::graphics::Texture::Bind()
-{
-	if (_owned_rt != nullptr)
-	{
-		//_owned_rt->Bind();
-	}
-	else
-	{
-
-	}
-}
-
-void ok::graphics::Texture::Unbind()
-{
-}

@@ -3,6 +3,9 @@
 Starpom::GameInfo & Starpom::GameInfo::instance()
 {
 	static Starpom::GameInfo s;
+
+	s._game_mode = Starpom::GameMode::GM_STAR_SYSTEM; //temporary
+
 	return s;
 }
 

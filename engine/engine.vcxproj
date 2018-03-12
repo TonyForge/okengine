@@ -447,13 +447,18 @@
     </ClCompile>
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Kripta.cpp" />
+    <ClCompile Include="LineBatch.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="projects\Kripta\Maze.cpp" />
+    <ClCompile Include="projects\Starpom\Action.cpp" />
     <ClCompile Include="projects\Starpom\GameInfo.cpp" />
     <ClCompile Include="projects\Starpom\Loading.cpp" />
+    <ClCompile Include="projects\Starpom\Planet.cpp" />
     <ClCompile Include="projects\Starpom\Ship.cpp" />
+    <ClCompile Include="projects\Starpom\SmoothPath.cpp" />
+    <ClCompile Include="projects\Starpom\Spaceship.cpp" />
     <ClCompile Include="pystring.cpp" />
     <ClCompile Include="Quad.cpp" />
     <ClCompile Include="LayeredRenderer.cpp" />
@@ -461,6 +466,7 @@
     <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Sound.cpp" />
+    <ClCompile Include="Spline.cpp" />
     <ClCompile Include="SpriteBatch.cpp" />
     <ClCompile Include="Starpom.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -494,14 +500,19 @@
     <ClInclude Include="glew\include\GL\glew.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Kripta.h" />
+    <ClInclude Include="LineBatch.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="Pool.h" />
     <ClInclude Include="projects\Kripta\Maze.h" />
+    <ClInclude Include="projects\Starpom\Action.h" />
     <ClInclude Include="projects\Starpom\GameInfo.h" />
     <ClInclude Include="projects\Starpom\Loading.h" />
+    <ClInclude Include="projects\Starpom\Planet.h" />
     <ClInclude Include="projects\Starpom\Ship.h" />
+    <ClInclude Include="projects\Starpom\SmoothPath.h" />
+    <ClInclude Include="projects\Starpom\Spaceship.h" />
     <ClInclude Include="pystring.h" />
     <ClInclude Include="Quad.h" />
     <ClInclude Include="LayeredRenderer.h" />
@@ -509,6 +520,7 @@
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Sound.h" />
+    <ClInclude Include="Spline.h" />
     <ClInclude Include="SpriteBatch.h" />
     <ClInclude Include="Starpom.h" />
     <ClInclude Include="stdafx.h" />

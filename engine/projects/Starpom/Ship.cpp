@@ -1,6 +1,7 @@
 #include "Ship.h"
 
 std::unordered_map<std::string, Starpom::SS_ShipAgent*> Starpom::SS_ShipAgent::blueprints;
+unsigned int Starpom::Ship_ID::ship_global_id_next[Starpom::Ship_ID::ship_id_length] = { 0,0,0,0 };
 
 Starpom::Ship::Ship() : ss_agent(nullptr)
 {
@@ -118,4 +119,60 @@ ok::Behaviour * Starpom::SS_ShipMaterial_Spaceship::Duplicate(ok::Behaviour * _c
 	*__clone = *static_cast<Starpom::SS_ShipMaterial_Spaceship*>(this);
 
 	return __clone;
+}
+
+Starpom::SS_ShipAgent::Action_FlyInSS::Action_FlyInSS(Starpom::SS_ShipAgent * _actor) : actor(_actor)
+{
+	tick = 0;
+	cost = 1000;
+}
+
+void Starpom::SS_ShipAgent::Action_FlyInSS::OnTickProgress()
+{
+	//Move ship here
+	actor->BeginTransform();
+	actor->SetPosition(path.GetWaypoint(total_progress).position);
+	actor->EndTransform(true);
+}
+
+Starpom::Ship_ID::Ship_ID() : ship_id_type(Starpom::Ship_ID_Type::unknown)
+{
+	memcpy(ship_id, ship_global_id_next, sizeof(ship_id));
+
+	ship_id_string.resize(sizeof(ship_id));
+	memcpy(&ship_id_string[0], ship_id, sizeof(ship_id));
+
+	int i = 0;
+	
+	while (true)
+	{
+		ship_global_id_next[i]++;
+		if (ship_global_id_next[i] == UINT_MAX)
+		{
+			ship_global_id_next[i] = 0;
+			i++;
+			if (i == ship_id_length) break;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+}
+
+const std::string & Starpom::Ship_ID::ShipIDToString()
+{
+	return ship_id_string;
+}
+
+bool Starpom::operator==(const Starpom::Ship_ID & left, const Starpom::Ship_ID & right)
+{
+	return memcmp(left.ship_id, right.ship_id, sizeof(unsigned int)*Starpom::Ship_ID::ship_id_length) == 0;
+}
+
+Starpom::Ship * Starpom::Ship::Universe::Find(Starpom::Ship_ID id)
+{
+
+	return nullptr;
 }

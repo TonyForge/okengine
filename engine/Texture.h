@@ -19,8 +19,6 @@ namespace ok
 			void SetWrapping(GLenum wrapping);
 			void SetBackgroundColor(ok::Color color);
 			void SetProperties(bool smooth, GLenum wrapping, ok::Color background_color, bool already_binded = false);
-			void Bind();
-			void Unbind();
 		private:
 			sf::Texture* _owned_sf_texture;
 			ok::graphics::RenderTarget* _owned_rt;
