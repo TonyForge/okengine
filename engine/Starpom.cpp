@@ -31,6 +31,7 @@ void Starpom::App::Init()
 	camera = new ok::graphics::Camera(ok::graphics::CameraCoordinateSystem::ScreenCenter);
 
 	camera->SetProjectionOrtho(static_cast<float>(screen_width), static_cast<float>(screen_height), 1.f, 10000.f);
+	//camera->SetProjectionPersp(static_cast<float>(screen_width), static_cast<float>(screen_height), 45.f, 1.f, 10000.f);
 	camera->BeginTransform();
 	camera->SetPosition(glm::vec3(0.f, 0.f, -1000.f));
 	camera->EndTransform(false);
@@ -81,12 +82,15 @@ void Starpom::App::Update(float dt)
 				action->path.CollectWaypoint(glm::vec3(300.f, 150.f, 0.f));
 				action->path.CollectWaypoint(glm::vec3(200, 200.f, 0.f));
 				action->path.CollectWaypoint(glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 0.f, 0.f));
-			action->path.EndWaypointsCollection(10.0f);
+			action->path.EndWaypointsCollection(20.0f);
 		}
 		else
 		{
 			ok::graphics::Camera::PushCamera(camera);
 
+			camera_transform->BeginTransform();
+			camera_transform->SetRotation(camera_transform->GetRotation() + dt*glm::vec3(0.f, 10.f, 0.f));
+			camera_transform->EndTransform(true);
 			/*ss_ship_agent_001->BeginTransform();
 			ss_ship_agent_001->SetScale(glm::vec3(0.35f, 0.35f, 0.35f));
 			ss_ship_agent_001->SetRotation(ss_ship_agent_001->GetRotation() + glm::vec3(dt*10.0f, dt*10.0f, dt*10.0f));
@@ -94,18 +98,20 @@ void Starpom::App::Update(float dt)
 
 			ss_ship_agent_001->Update(dt);*/
 
-			//go_spaceship->Update(dt);
+			go_spaceship->Update(dt);
 
-			line_batch->BatchBegin();
+			Starpom::SS_ShipAgent::Action_FlyInSS* action = static_cast<Starpom::SS_ShipAgent::Action_FlyInSS*>(*((**(ss_ship_agent_001->actions))._actions_continious.begin()));
+			Starpom::SmoothPath::DrawDebug(*line_batch, action->path);
+			/*line_batch->BatchBegin();
 
 			line_batch->SetBrushColor(ok::Color(0.f, 1.f, 0.f, 1.f), ok::Color(1.f, 0.f, 0.f, 1.f));
-			line_batch->SetBrushThickness(4.f);
-			line_batch->SetBrushSoftness(1.00f);
+			line_batch->SetBrushThickness(1.f);
+			line_batch->SetBrushSoftness(0.010f);
 
-			//line_batch->LineAB(glm::vec3(0.f, 0.f, 0.f), glm::vec3(-1024.0f*0.5f+ok::Input::o().MousePXPY().x, -768.0f*0.5f + ok::Input::o().MousePXPY().y, 0.f));
-			line_batch->Circle(glm::vec3(-1024.0f*0.5f + ok::Input::o().MousePXPY().x, -768.0f*0.5f + ok::Input::o().MousePXPY().y, 0.f), camera->GetForward(), camera->GetUp(), 100.f, 45.f);
+			line_batch->LineAB(glm::vec3(0.f, 0.f, 0.f), glm::vec3(-1024.0f*0.5f+ok::Input::o().MousePXPY().x, -768.0f*0.5f + ok::Input::o().MousePXPY().y, 0.f));*/
+			//line_batch->Circle(glm::vec3(-1024.0f*0.5f + ok::Input::o().MousePXPY().x, -768.0f*0.5f + ok::Input::o().MousePXPY().y, 0.f), camera->GetForward(), camera->GetUp(), 100.f, 5.f);
 
-			line_batch->BatchEnd();
+			//line_batch->BatchEnd();
 
 			ok::graphics::LayeredRenderer::instance().Flush();
 

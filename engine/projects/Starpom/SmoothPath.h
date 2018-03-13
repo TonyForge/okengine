@@ -1,6 +1,7 @@
 #pragma once
 
 #include "..\..\Spline.h"
+#include "..\..\LineBatch.h"
 
 namespace Starpom
 {
@@ -24,6 +25,8 @@ namespace Starpom
 		void CollectWaypoint(glm::vec3 position, glm::vec3 tangent);
 		void CollectWaypoint(glm::vec3 position);
 		void EndWaypointsCollection(float normalization_step_length);
+
+		static void DrawDebug(ok::graphics::LineBatch& line_batch, Starpom::SmoothPath& path);
 	protected:
 	private:
 		std::vector<Starpom::SmoothPathWaypoint> waypoints;

@@ -181,6 +181,31 @@ void Starpom::SmoothPath::EndWaypointsCollection(float normalization_step_length
 	}
 }
 
+void Starpom::SmoothPath::DrawDebug(ok::graphics::LineBatch & line_batch, Starpom::SmoothPath & path)
+{
+
+	line_batch.SetBrushThickness(2.f);
+	line_batch.SetBrushSoftness(0.2f);
+
+	line_batch.BatchBegin();
+
+	line_batch.SetBrushColor(ok::Color(1.f, 0.f, 0.f, 1.f));
+	for (auto&& waypoint : path.waypoints)
+	{
+		line_batch.MoveTo(waypoint.position);
+		line_batch.LineTo(waypoint.position+waypoint.tangent);
+	}
+
+	line_batch.SetBrushColor(ok::Color(0.f, 1.f, 0.f, 1.f));
+	line_batch.MoveTo(path.waypoints[0].position);
+	for (auto&& waypoint : path.waypoints)
+	{
+		line_batch.LineTo(waypoint.position);
+	}
+	
+	line_batch.BatchEnd();
+}
+
 Starpom::SmoothPathWaypoint::SmoothPathWaypoint() : position(0.f,0.f,0.f), tangent(0.f,1.f,0.f)
 {
 }

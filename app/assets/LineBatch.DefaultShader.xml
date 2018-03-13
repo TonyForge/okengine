@@ -5,7 +5,7 @@
     <transparent enabled="false" />
     <blend enabled="true" template_file="Blend.DefaultAlpha.xml"/>
     <cull enabled="false" />
-    <depth enabled="true" depth_mask="GL_TRUE" depth_func="GL_GREATER"/>
+    <depth enabled="true" depth_mask="GL_FALSE" depth_func="GL_GREATER"/>
   </properties>
   
   <aliases>
@@ -16,7 +16,7 @@
   <vertex>
     <![CDATA[
     #version 330 core
-    layout (location = 0) in vec2 pos0;
+    layout (location = 0) in vec3 pos0;
     layout (location = 1) in vec2 uv0;
     layout (location = 2) in vec4 color0;
     
@@ -24,11 +24,10 @@
     out vec4 color0_out;
     
     uniform mat4 mvp0;
-    uniform float default_z;
     
     void main()
     {
-      gl_Position = mvp0 * vec4(pos0.xy, default_z, 1.0);
+      gl_Position = mvp0 * vec4(pos0, 1.0);
 	  uv0_out = vec2(uv0.x, 1.0 - uv0.y);
       color0_out = color0;
     }

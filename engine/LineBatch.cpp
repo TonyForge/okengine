@@ -102,7 +102,6 @@ void ok::graphics::LineBatch::BatchEnd()
 
 	glDrawElements(GL_TRIANGLES, batch_lines_in_use * 3 * 6, GL_UNSIGNED_INT, 0);
 
-
 	glBO->Unbind();
 
 	batch_lines_in_use = 0;
@@ -158,7 +157,7 @@ void ok::graphics::LineBatch::Circle(glm::vec3 center, glm::vec3 axis_x, glm::ve
 	circle.AddChild(&circle_arc_end);
 
 	circle.BeginTransform();
-	circle.SetRotation(glm::vec3(0.f, 0.f, arc_step_degrees));
+	circle.SetRotation(glm::vec3(0.f, 0.f, 0.f));
 	circle.EndTransform(true);
 
 	root.AddChild(&circle);
@@ -176,7 +175,11 @@ void ok::graphics::LineBatch::Circle(glm::vec3 center, glm::vec3 axis_x, glm::ve
 
 	circle_arc_begin.SetParent(nullptr);
 
-	for (int i = 0; i <= steps+1; i++)
+	circle_arc_end.BeginTransform(ok::TransformSpace::WorldSpace);
+	LineTo(circle_arc_end.GetPosition());
+	circle_arc_end.EndTransform(false);
+
+	for (int i = 1; i <= steps; i++)
 	{
 		circle_arc_end.BeginTransform(ok::TransformSpace::WorldSpace);
 		LineTo(circle_arc_end.GetPosition());
@@ -295,7 +298,12 @@ void ok::graphics::LineBatch::PushLine()
 
 void ok::graphics::LineBatch::Line::Build(glm::vec3 begin, glm::vec3 end, ok::Color begin_color, ok::Color end_color, float thickness)
 {
-	glm::vec3 direction = end - begin;
+	glm::vec3 direction = glm::normalize(end - begin);
+
+	begin -= direction * thickness*0.5f;
+	end += direction * thickness*0.5f;
+
+	direction = end - begin;
 	float direction_length = glm::length(direction);
 
 	if (direction_length < 1.f) direction_length = 1.f;
@@ -305,16 +313,17 @@ void ok::graphics::LineBatch::Line::Build(glm::vec3 begin, glm::vec3 end, ok::Co
 
 	ok::graphics::Camera* current_camera = ok::graphics::Camera::GetCurrent();
 
-	glm::vec3 thickness_vector = glm::normalize(glm::cross(direction, current_camera->GetForward()))*thickness*0.5f;
-
+	glm::vec3 camera_forward = current_camera->GetForward();
+	glm::vec3 thickness_vector = glm::normalize(glm::cross(direction, camera_forward))*thickness*0.5f;
+	
 	verts[0] = begin + thickness_vector;
-	verts[1] = begin + direction * thickness + thickness_vector;
-	verts[2] = begin + direction * thickness - thickness_vector;
+	verts[1] = begin + direction * thickness*0.5f + thickness_vector;
+	verts[2] = begin + direction * thickness*0.5f - thickness_vector;
 	verts[3] = begin - thickness_vector;
 
 	verts[4] = verts[1];
-	verts[5] = end - direction * thickness + thickness_vector;
-	verts[6] = end - direction * thickness - thickness_vector;
+	verts[5] = end - direction * thickness*0.5f + thickness_vector;
+	verts[6] = end - direction * thickness*0.5f - thickness_vector;
 	verts[7] = verts[2];
 
 	verts[8] = verts[5];

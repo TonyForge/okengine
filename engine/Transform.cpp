@@ -117,7 +117,7 @@ void ok::Transform::_AddChild(ok::Transform * child, bool _keepWorldTransform)
 
 	if (_keepWorldTransform)
 	{
-		child->_relativePosition = child->_absolutePosition - _absolutePosition;
+		child->_relativePosition = glm::vec3(glm::transpose(_absoluteRotationMatrix) * glm::vec4(child->_absolutePosition - _absolutePosition, 1.f));
 		child->_relativeRotationEuler = child->_absoluteRotationEuler - _absoluteRotationEuler;
 
 		glm::vec3 parentScale = _absoluteScale;
@@ -147,7 +147,8 @@ void ok::Transform::_SetParent(ok::Transform * parent, bool _keepWorldTransform)
 
 		if (_keepWorldTransform)
 		{
-			_relativePosition = _absolutePosition-parent->_absolutePosition;
+			//_relativePosition = _absolutePosition-parent->_absolutePosition;
+			_relativePosition = glm::vec3(glm::transpose(parent->_absoluteRotationMatrix) * glm::vec4(_absolutePosition - parent->_absolutePosition, 1.f));
 			_relativeRotationEuler = _absoluteRotationEuler - parent->_absoluteRotationEuler;
 
 			glm::vec3 parentScale = parent->_absoluteScale;
