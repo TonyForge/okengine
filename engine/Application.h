@@ -15,6 +15,13 @@
 #include "Sound.h"
 
 namespace ok {
+
+	enum class ApplicationFeature
+	{
+		AutoClearDepth,
+		AutoClearStencil
+	};
+
 	class Application
 	{
 	public:
@@ -34,11 +41,17 @@ namespace ok {
 		int screen_depth_bits;
 		int screen_stencil_bits;
 		int antialiasing;
+		float depth_clear_with_value;
+		int stencil_clear_with_value;
+		
 
 		bool fullscreen;
 		bool vsync;
 		bool keep_aspect_ratio;
 		bool fixed_resolution;
+
+		bool auto_clear_depth_enabled;
+		bool auto_clear_stencil_enabled;
 
 		float framerate;
 
@@ -48,6 +61,8 @@ namespace ok {
 
 		std::string _settings_file_name;
 		void LoadSettings();
+		void EnableFeature(ok::ApplicationFeature feature);
+		void DisableFeature(ok::ApplicationFeature feature);
 	private:
 	};
 }

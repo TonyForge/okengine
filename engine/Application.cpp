@@ -188,11 +188,19 @@ void ok::Application::Run()
 			}
 
 			glClearColor(background_color.r, background_color.g, background_color.b, background_color.a);
-			glClear(GL_COLOR_BUFFER_BIT);
 
-			glClearDepth(0.f);
-			glClearStencil(0);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+			if (auto_clear_depth_enabled)
+			{
+				glDepthMask(GL_TRUE);
+				glClearDepth(depth_clear_with_value);
+			}
+
+			if (auto_clear_stencil_enabled)
+			{
+				glClearStencil(stencil_clear_with_value);
+			}
+			
+			glClear(GL_COLOR_BUFFER_BIT | ((auto_clear_depth_enabled) ? GL_DEPTH_BUFFER_BIT : 0) | ((auto_clear_stencil_enabled) ? GL_STENCIL_BUFFER_BIT : 0));
 
 			//-----------------------------------
 
@@ -275,6 +283,7 @@ void ok::Application::LoadSettings()
 	doc.LoadFile(_settings_file_name.c_str());
 
 	tinyxml2::XMLElement* elem;
+	tinyxml2::XMLElement* inner_elem;
 	elem = doc.FirstChildElement("settings")->FirstChildElement("application");
 
 	window_title = elem->Attribute("title");
@@ -299,6 +308,49 @@ void ok::Application::LoadSettings()
 
 	fullscreen = elem->BoolAttribute("fullscreen", false);
 
-	elem = elem->FirstChildElement("background");
-	background_color = ok::Color((unsigned char)elem->IntAttribute("r"), (unsigned char)elem->IntAttribute("g"), (unsigned char)elem->IntAttribute("b"), 255);
+	inner_elem = elem->FirstChildElement("background");
+	background_color = ok::Color((unsigned char)inner_elem->IntAttribute("r"), (unsigned char)inner_elem->IntAttribute("g"), (unsigned char)inner_elem->IntAttribute("b"), 255);
+
+	inner_elem = elem->FirstChildElement("depth_clear_with");
+	depth_clear_with_value = inner_elem->FloatAttribute("value", 0.f);
+
+	inner_elem = elem->FirstChildElement("stencil_clear_with");
+	stencil_clear_with_value = inner_elem->IntAttribute("value", 0);
+
+	EnableFeature(ok::ApplicationFeature::AutoClearDepth);
+	EnableFeature(ok::ApplicationFeature::AutoClearStencil);
+}
+
+void ok::Application::EnableFeature(ok::ApplicationFeature feature)
+{
+	switch (feature)
+	{
+	case ok::ApplicationFeature::AutoClearDepth :
+	{
+		auto_clear_depth_enabled = true;
+	}
+	break;
+	case ok::ApplicationFeature::AutoClearStencil:
+	{
+		auto_clear_stencil_enabled = true;
+	}
+	break;
+	}
+}
+
+void ok::Application::DisableFeature(ok::ApplicationFeature feature)
+{
+	switch (feature)
+	{
+	case ok::ApplicationFeature::AutoClearDepth:
+	{
+		auto_clear_depth_enabled = false;
+	}
+	break;
+	case ok::ApplicationFeature::AutoClearStencil:
+	{
+		auto_clear_stencil_enabled = false;
+	}
+	break;
+	}
 }

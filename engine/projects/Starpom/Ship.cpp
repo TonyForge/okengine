@@ -124,7 +124,7 @@ ok::Behaviour * Starpom::SS_ShipMaterial_Spaceship::Duplicate(ok::Behaviour * _c
 Starpom::SS_ShipAgent::Action_FlyInSS::Action_FlyInSS(Starpom::SS_ShipAgent * _actor) : actor(_actor)
 {
 	tick = 0;
-	cost = 1000;
+	cost = 2000;
 }
 
 void Starpom::SS_ShipAgent::Action_FlyInSS::OnTickProgress()

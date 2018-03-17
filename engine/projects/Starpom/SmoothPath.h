@@ -9,12 +9,13 @@ namespace Starpom
 	{
 	public:
 		glm::vec3 position;
-		glm::vec3 tangent;
+		glm::vec3 tangent_in;
+		glm::vec3 tangent_out;
 		float pick;
 
 		SmoothPathWaypoint();
-		SmoothPathWaypoint(glm::vec3 _position, glm::vec3 _tangent);
 		SmoothPathWaypoint(glm::vec3 _position);
+		SmoothPathWaypoint(glm::vec3 _position, glm::vec3 _tangent);
 	};
 
 	class SmoothPath
@@ -22,7 +23,6 @@ namespace Starpom
 	public:
 		Starpom::SmoothPathWaypoint GetWaypoint(float path_normalized_position);
 		void BeginWaypointsCollection();
-		void CollectWaypoint(glm::vec3 position, glm::vec3 tangent);
 		void CollectWaypoint(glm::vec3 position);
 		void EndWaypointsCollection(float normalization_step_length);
 
@@ -30,5 +30,6 @@ namespace Starpom
 	protected:
 	private:
 		std::vector<Starpom::SmoothPathWaypoint> waypoints;
+		std::vector<Starpom::SmoothPathWaypoint> _waypoints_cache;
 	};
 }

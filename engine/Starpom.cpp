@@ -28,6 +28,8 @@ ok::graphics::LineBatch* line_batch;
 
 void Starpom::App::Init()
 {
+	DisableFeature(ok::ApplicationFeature::AutoClearStencil);
+
 	camera = new ok::graphics::Camera(ok::graphics::CameraCoordinateSystem::ScreenCenter);
 
 	camera->SetProjectionOrtho(static_cast<float>(screen_width), static_cast<float>(screen_height), 1.f, 10000.f);
@@ -44,6 +46,9 @@ void Starpom::App::Init()
 	line_batch = new ok::graphics::LineBatch();
 }
 
+
+glm::vec3 dpos[3];
+int pos_taken = 0;
 
 void Starpom::App::Update(float dt)
 {
@@ -77,19 +82,21 @@ void Starpom::App::Update(float dt)
 
 			Starpom::SS_ShipAgent::Action_FlyInSS* action = static_cast<Starpom::SS_ShipAgent::Action_FlyInSS*>(*((**(ss_ship_agent_001->actions))._actions_continious.begin()));
 			action->path.BeginWaypointsCollection();
-				action->path.CollectWaypoint(glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 0.f, 0.f));
-				action->path.CollectWaypoint(glm::vec3(200.f, 50.f, 0.f));
-				action->path.CollectWaypoint(glm::vec3(300.f, 150.f, 0.f));
-				action->path.CollectWaypoint(glm::vec3(200, 200.f, 0.f));
-				action->path.CollectWaypoint(glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 0.f, 0.f));
-			action->path.EndWaypointsCollection(20.0f);
+
+			float scl = 1.0f;
+
+			action->path.CollectWaypoint(glm::vec3(0.f, 0.f, 0.f)*scl);
+			action->path.CollectWaypoint(glm::vec3(100.f, 0.f, 0.f)*scl);
+			action->path.CollectWaypoint(glm::vec3(200.f, 100.f, 0.f)*scl);
+			action->path.CollectWaypoint(glm::vec3(200.f, 200.f, 0.f)*scl);
+			action->path.EndWaypointsCollection(25.0f*scl);
 		}
 		else
 		{
 			ok::graphics::Camera::PushCamera(camera);
 
 			camera_transform->BeginTransform();
-			camera_transform->SetRotation(camera_transform->GetRotation() + dt*glm::vec3(0.f, 10.f, 0.f));
+			//camera_transform->SetRotation(camera_transform->GetRotation() + dt*glm::vec3(0.f, 10.f, 0.f));
 			camera_transform->EndTransform(true);
 			/*ss_ship_agent_001->BeginTransform();
 			ss_ship_agent_001->SetScale(glm::vec3(0.35f, 0.35f, 0.35f));
@@ -100,8 +107,48 @@ void Starpom::App::Update(float dt)
 
 			go_spaceship->Update(dt);
 
+			
+			
 			Starpom::SS_ShipAgent::Action_FlyInSS* action = static_cast<Starpom::SS_ShipAgent::Action_FlyInSS*>(*((**(ss_ship_agent_001->actions))._actions_continious.begin()));
+			ok::graphics::LayeredRenderer::instance().Flush();
+
+
 			Starpom::SmoothPath::DrawDebug(*line_batch, action->path);
+
+			if (ok::Input::o().KeyPressed(ok::MKey::Left))
+			{
+				dpos[pos_taken] = glm::vec3(-1024.0f*0.5f + ok::Input::o().MousePXPY().x, -768.0f*0.5f + ok::Input::o().MousePXPY().y, 0.f);
+				pos_taken++;
+				if (pos_taken == 3)
+				{
+					Starpom::SS_ShipAgent::Action_FlyInSS* action = static_cast<Starpom::SS_ShipAgent::Action_FlyInSS*>(*((**(ss_ship_agent_001->actions))._actions_continious.begin()));
+					action->path.BeginWaypointsCollection();
+
+					float scl = 1.0f;
+
+					action->path.CollectWaypoint(dpos[0]*scl);
+					action->path.CollectWaypoint(dpos[1] *scl);
+					action->path.CollectWaypoint(dpos[2] *scl);
+
+					action->path.EndWaypointsCollection(5.0f*scl);
+
+					action->tick = 0;
+					action->total_progress = 0;
+					action->tick_progress = 0;
+
+					pos_taken = 0;
+				}
+					
+			}
+
+			line_batch->SetBrushColor(ok::Color(1.f, 0.f, 1.f, 1.f));
+			line_batch->BatchBegin();
+			line_batch->MoveTo(dpos[0]);
+			line_batch->LineTo(dpos[1]);
+			line_batch->LineTo(dpos[2]);
+			//line_batch->LineAB(glm::vec3(0.f, 0.f, 0.f), glm::vec3(-1024.0f*0.5f + ok::Input::o().MousePXPY().x, -768.0f*0.5f + ok::Input::o().MousePXPY().y, 0.f));
+			line_batch->BatchEnd();
+
 			/*line_batch->BatchBegin();
 
 			line_batch->SetBrushColor(ok::Color(0.f, 1.f, 0.f, 1.f), ok::Color(1.f, 0.f, 0.f, 1.f));
@@ -113,7 +160,7 @@ void Starpom::App::Update(float dt)
 
 			//line_batch->BatchEnd();
 
-			ok::graphics::LayeredRenderer::instance().Flush();
+			
 
 			ok::graphics::Camera::PopCamera();
 		}
