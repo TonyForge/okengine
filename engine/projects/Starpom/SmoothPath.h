@@ -30,6 +30,7 @@ namespace Starpom
 	protected:
 	private:
 		std::vector<Starpom::SmoothPathWaypoint> waypoints;
-		std::vector<Starpom::SmoothPathWaypoint> _waypoints_cache;
+		static std::vector<Starpom::SmoothPathWaypoint> _waypoints_cache;
+		float length;
 	};
 }

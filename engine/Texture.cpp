@@ -1,11 +1,16 @@
 #include "Texture.h"
 
+std::vector<ok::graphics::Texture*> ok::graphics::Texture::binded_textures;
+
 ok::graphics::Texture::Texture(sf::Texture * object_to_own)
 {
 	_owned_sf_texture = object_to_own;
 	_owned_rt = nullptr;
 	SetSmooth(true);
 	SetWrapping(GL_REPEAT);
+	SetBackgroundColor(ok::Color(0.f, 0.f, 0.f, 1.f));
+
+	GuaranteeBindedTextureStorage();
 }
 
 ok::graphics::Texture::Texture(ok::graphics::RenderTarget * object_to_own)
@@ -14,6 +19,9 @@ ok::graphics::Texture::Texture(ok::graphics::RenderTarget * object_to_own)
 	_owned_rt = object_to_own;
 	SetSmooth(true);
 	SetWrapping(GL_REPEAT);
+	SetBackgroundColor(ok::Color(0.f, 0.f, 0.f, 1.f));
+
+	GuaranteeBindedTextureStorage();
 }
 
 glm::ivec2 ok::graphics::Texture::GetSize()
@@ -40,6 +48,9 @@ unsigned int ok::graphics::Texture::getNativeHandle()
 
 void ok::graphics::Texture::SetSmooth(bool smooth)
 {
+	if (_smooth == smooth) return;
+
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, getNativeHandle());
 
 	if (smooth)
@@ -58,6 +69,9 @@ void ok::graphics::Texture::SetSmooth(bool smooth)
 
 void ok::graphics::Texture::SetWrapping(GLenum wrapping)
 {
+	if (_wrapping == wrapping) return;
+
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, getNativeHandle());
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping));
@@ -66,21 +80,27 @@ void ok::graphics::Texture::SetWrapping(GLenum wrapping)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void ok::graphics::Texture::SetBackgroundColor(ok::Color color)
+void ok::graphics::Texture::SetBackgroundColor(ok::Color background_color)
 {
+	if (_background_color == background_color) return;
+
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, getNativeHandle());
 
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(static_cast<glm::vec4>(color)));
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(static_cast<glm::vec4>(background_color)));
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void ok::graphics::Texture::SetProperties(bool smooth, GLenum wrapping, ok::Color background_color, bool already_binded)
+void ok::graphics::Texture::SetProperties(bool smooth, GLenum wrapping, ok::Color background_color)
 {
-	if (false == already_binded)
-	{
-		glBindTexture(GL_TEXTURE_2D, getNativeHandle());
-	}
+	if (_smooth == smooth &&
+		_wrapping == wrapping &&
+		_background_color == background_color) 
+	return;
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, getNativeHandle());
 
 	if (smooth)
 	{
@@ -97,8 +117,67 @@ void ok::graphics::Texture::SetProperties(bool smooth, GLenum wrapping, ok::Colo
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping));
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(static_cast<glm::vec4>(background_color)));
 
-	if (false == already_binded)
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void ok::graphics::Texture::BindTexture(ok::graphics::Texture * texture, int texture_channel_index)
+{
+	while (ok::graphics::Texture::binded_textures.size() < (size_t)(texture_channel_index + 1))
 	{
+		ok::graphics::Texture::binded_textures.push_back(0);
+	}
+
+	if (texture == nullptr)
+	{
+		glActiveTexture(GL_TEXTURE1 + texture_channel_index); //GL_TEXTURE0 is reserved by the engine, so use GL_TEXTURE1 instead
 		glBindTexture(GL_TEXTURE_2D, 0);
+
+		ok::graphics::Texture::binded_textures[texture_channel_index] = nullptr;
+	}
+	else
+	{
+		unsigned int texNativeHandle = texture->getNativeHandle();
+
+		if (ok::graphics::Texture::binded_textures[texture_channel_index] != texture)
+		{
+			glActiveTexture(GL_TEXTURE1 + texture_channel_index); //GL_TEXTURE0 is reserved by the engine, so use GL_TEXTURE1 instead
+			glBindTexture(GL_TEXTURE_2D, texNativeHandle);
+
+			ok::graphics::Texture::binded_textures[texture_channel_index] = texture;
+		}
+	}
+}
+
+void ok::graphics::Texture::UnbindTexture(ok::graphics::Texture * texture)
+{
+	if (texture == nullptr) return;
+
+	int texture_channel_index = 0;
+
+	for (auto& tex : ok::graphics::Texture::binded_textures)
+	{
+		if (tex == texture)
+		{
+			glActiveTexture(GL_TEXTURE1 + texture_channel_index); //GL_TEXTURE0 is reserved by the engine, so use GL_TEXTURE1 instead
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			tex = nullptr;
+
+			break;
+		}
+
+		texture_channel_index++;
+	}
+}
+
+void ok::graphics::Texture::GuaranteeBindedTextureStorage()
+{
+	if (ok::graphics::Texture::binded_textures.size() == 0)
+	{
+		ok::graphics::Texture::binded_textures.resize(32);
+		for (auto& tex : ok::graphics::Texture::binded_textures)
+		{
+			tex = nullptr;
+		}
 	}
 }

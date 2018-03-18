@@ -132,6 +132,7 @@ void Starpom::SS_ShipAgent::Action_FlyInSS::OnTickProgress()
 	//Move ship here
 	actor->BeginTransform();
 	actor->SetPosition(path.GetWaypoint(total_progress).position);
+	actor->SetRight(path.GetWaypoint(total_progress).tangent_out);
 	actor->EndTransform(true);
 }
 

@@ -1,6 +1,5 @@
 #include "Shader.h"
 
-std::vector<unsigned int> ok::graphics::Shader::binded_textures;
 ok::graphics::Shader* ok::graphics::Shader::currentlyBoundShader = nullptr;
 
 ok::graphics::Shader::Shader()
@@ -8,15 +7,6 @@ ok::graphics::Shader::Shader()
 	isValid = false;
 	shader_program_id = 0;
 	samplersUsed = 0;
-
-	if (binded_textures.size() == 0)
-	{
-		binded_textures.resize(32);
-		for (auto& tex : binded_textures)
-		{
-			tex = 0;
-		}
-	}
 }
 
 void ok::graphics::Shader::RegisterUniform(const std::string& name, GLint location)
@@ -30,7 +20,7 @@ void ok::graphics::Shader::RegisterUniform_Sampler(const std::string& name, GLin
 	uniforms[name] = location;
 	uniforms_table.push_back(location);
 
-	_LinkSamplerToTextureChannelIndex(location, samplersUsed);
+	_LinkSamplerToTextureChannelIndex(location, samplersUsed); 
 	samplers[name] = location;
 	samplersUsed++;
 }
@@ -389,51 +379,6 @@ GLuint ok::graphics::Shader::GetSubroutine(GLenum shadertype, int index)
 	}
 
 	return location;
-}
-
-void ok::graphics::Shader::BindTexture(ok::graphics::Texture * texture, int texture_channel_index)
-{
-	unsigned int texNativeHandle = texture->getNativeHandle();
-	BindTexture(texNativeHandle, texture_channel_index);
-}
-
-void ok::graphics::Shader::BindTexture(unsigned int texture_gl_id, int texture_channel_index)
-{
-	while (binded_textures.size() < (size_t)(texture_channel_index + 1))
-	{
-		binded_textures.push_back(0);
-	}
-
-	if (binded_textures[texture_channel_index] != texture_gl_id)
-	{
-		glActiveTexture(GL_TEXTURE0 + texture_channel_index);
-		glBindTexture(GL_TEXTURE_2D, texture_gl_id);
-
-		binded_textures[texture_channel_index] = texture_gl_id;
-	}
-}
-
-void ok::graphics::Shader::UnbindTexture(ok::graphics::Texture * texture)
-{
-	unsigned int texNativeHandle = texture->getNativeHandle();
-	UnbindTexture(texNativeHandle);
-}
-
-void ok::graphics::Shader::UnbindTexture(unsigned int texture_gl_id)
-{
-	int channel_index = 0;
-
-	for (auto&& tex : binded_textures)
-	{
-		if (tex == texture_gl_id)
-		{
-			glActiveTexture(GL_TEXTURE0 + channel_index);
-			glBindTexture(GL_TEXTURE_2D, 0);
-			break;
-		}
-
-		channel_index++;
-	}
 }
 
 void ok::graphics::Shader::SetUniform(std::string name, glm::vec4 value)
@@ -1030,7 +975,7 @@ void ok::graphics::Shader::_LinkSamplerToTextureChannelIndex(GLint sampler_locat
 	sampler_to_channel_linkage_table.resize(texture_channel_index + 1);
 	sampler_to_channel_linkage_table[texture_channel_index] = sampler_location;
 
-	glUniform1i(sampler_location, texture_channel_index);
+	glUniform1i(sampler_location, 1+texture_channel_index); //GL_TEXTURE0 is reserved by the engine, so use GL_TEXTURE1 instead
 
 	if (!IsBound())
 	{

@@ -53,11 +53,11 @@ void ok::graphics::Material::Bind(ok::graphics::ShaderAliasDispatcher* dispatche
 	for (auto&& slot : _texture_slots)
 	{
 		if (slot.second.texture == nullptr)
-		_shader->BindTexture((unsigned int)0, slot.first);
+		ok::graphics::Texture::BindTexture(nullptr, slot.first);
 		else
 		{
-			_shader->BindTexture(slot.second.texture->getNativeHandle(), slot.first);
-			slot.second.texture->SetProperties(slot.second.smooth, slot.second.wrapping, slot.second.background_color, true);
+			ok::graphics::Texture::BindTexture(slot.second.texture, slot.first);
+			slot.second.texture->SetProperties(slot.second.smooth, slot.second.wrapping, slot.second.background_color);
 		}
 		
 	}

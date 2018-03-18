@@ -22,6 +22,9 @@
     <Filter Include="projects\Starpom">
       <UniqueIdentifier>{d9152df4-694b-41c6-80cb-5fe91365abc5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="projects\Zoner">
+      <UniqueIdentifier>{864f6ff7-e165-463b-944e-146ae7babc74}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -162,6 +165,24 @@
     <ClCompile Include="LineBatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="projects\Starpom\Game.cpp">
+      <Filter>projects\Starpom</Filter>
+    </ClCompile>
+    <ClCompile Include="Zoner.cpp">
+      <Filter>projects\Zoner</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\Zoner\Game.cpp">
+      <Filter>projects\Zoner</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\Zoner\Ship.cpp">
+      <Filter>projects\Zoner</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\Zoner\Preloader.cpp">
+      <Filter>projects\Zoner</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\Zoner\IGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -298,6 +319,24 @@
     </ClInclude>
     <ClInclude Include="LineBatch.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Starpom\Game.h">
+      <Filter>projects\Starpom</Filter>
+    </ClInclude>
+    <ClInclude Include="Zoner.h">
+      <Filter>projects\Zoner</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Zoner\Game.h">
+      <Filter>projects\Zoner</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Zoner\IGame.h">
+      <Filter>projects\Zoner</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Zoner\Ship.h">
+      <Filter>projects\Zoner</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Zoner\Preloader.h">
+      <Filter>projects\Zoner</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

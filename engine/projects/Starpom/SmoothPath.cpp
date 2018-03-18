@@ -1,5 +1,7 @@
 #include "SmoothPath.h"
 
+std::vector<Starpom::SmoothPathWaypoint> Starpom::SmoothPath::_waypoints_cache;
+
 Starpom::SmoothPathWaypoint Starpom::SmoothPath::GetWaypoint(float pick)
 {
 	if (waypoints.size() == 0) return Starpom::SmoothPathWaypoint();
@@ -24,6 +26,7 @@ Starpom::SmoothPathWaypoint Starpom::SmoothPath::GetWaypoint(float pick)
 void Starpom::SmoothPath::BeginWaypointsCollection()
 {
 	waypoints.clear();
+	length = 0;
 }
 
 void Starpom::SmoothPath::CollectWaypoint(glm::vec3 position)
@@ -148,8 +151,6 @@ void Starpom::SmoothPath::EndWaypointsCollection(float normalization_step_length
 		index = 0;
 		total_distance = 0;
 
-		float waypoint_pick = 0;
-
 		for (auto& waypoint : waypoints)
 		{
 			index_post = glm::clamp(index + 1, 0, static_cast<int>(waypoints.size() - 1));
@@ -219,6 +220,21 @@ void Starpom::SmoothPath::EndWaypointsCollection(float normalization_step_length
 
 	if (glm::length(waypoints[waypoints.size()-1].position - end_waypoint.position) >= normalization_step_length*0.5f)
 	waypoints.push_back(end_waypoint);
+
+	//Calculate path length
+	{
+		index = 0;
+
+		for (auto& waypoint : waypoints)
+		{
+			index_post = glm::clamp(index + 1, 0, static_cast<int>(waypoints.size() - 1));
+			Starpom::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
+
+			length += glm::length(waypoint.position - waypoint_post.position);
+
+			index++;
+		}
+	}
 }
 
 void Starpom::SmoothPath::DrawDebug(ok::graphics::LineBatch & line_batch, Starpom::SmoothPath & path)

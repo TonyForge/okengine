@@ -13,6 +13,7 @@ ok::graphics::RenderTarget::RenderTarget(int width, int height, bool smooth, boo
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_id);
 
 	glGenTextures(1, &framebuffer_color_channel);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, framebuffer_color_channel);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
@@ -73,6 +74,7 @@ ok::graphics::RenderTarget::RenderTarget(int width, int height, bool smooth, boo
 		if (depth_enabled && stencil_enabled)
 		{
 			glGenTextures(1, &framebuffer_depth_stencil_channel);
+			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, framebuffer_depth_stencil_channel);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, 0);
 
@@ -88,6 +90,7 @@ ok::graphics::RenderTarget::RenderTarget(int width, int height, bool smooth, boo
 			if (depth_enabled)
 			{
 				glGenTextures(1, &framebuffer_depth_channel);
+				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, framebuffer_depth_channel);
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 
@@ -102,6 +105,7 @@ ok::graphics::RenderTarget::RenderTarget(int width, int height, bool smooth, boo
 			if (stencil_enabled)
 			{
 				glGenTextures(1, &framebuffer_depth_stencil_channel);
+				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, framebuffer_depth_stencil_channel);
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, 0);
 
@@ -152,16 +156,6 @@ void ok::graphics::RenderTarget::BindTarget()
 void ok::graphics::RenderTarget::UnbindTarget()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void ok::graphics::RenderTarget::BindTexture_Color()
-{
-	glBindTexture(GL_TEXTURE_2D, framebuffer_color_channel);
-}
-
-void ok::graphics::RenderTarget::UnbindTexture()
-{
-	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 unsigned int ok::graphics::RenderTarget::GetTexture_Color()

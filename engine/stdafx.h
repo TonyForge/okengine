@@ -2,6 +2,7 @@
 
 #include <limits>
 #include <list>
+#include <bitset>
 #include <unordered_map>
 #include <functional>
 #include <fstream>

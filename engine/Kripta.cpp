@@ -41,13 +41,13 @@ void Kripta::App::Init()
 	go.EndTransform(true);
 }
 
-glm::vec3 eye_pos(0.0f,0.0f,0.0f);
+//glm::vec3 eye_pos(0.0f,0.0f,0.0f);
 
 void Kripta::App::Update(float dt)
 {
 	float speed = 1.f;
 
-	if (ok::Input::o().KeyDown(ok::KKey::A))
+	/*if (ok::Input::o().KeyDown(ok::KKey::A))
 	{
 		eye_pos.x -= speed * dt;
 	}
@@ -62,22 +62,23 @@ void Kripta::App::Update(float dt)
 	if (ok::Input::o().KeyDown(ok::KKey::S))
 	{
 		eye_pos.y += speed * dt;
-	}
+	}*/
 
-	go.GetComponent<ok::graphics::MeshRenderer>()->GetMaterial()->GetShader()->SetUniform("eye_pos", eye_pos);
+	//go.GetComponent<ok::graphics::MeshRenderer>()->GetMaterial()->GetShader()->SetUniform("eye_pos", eye_pos);
 
-	camera.BeginTransform();
+	/*camera.BeginTransform();
 	{
 		camera.SetPosition(glm::vec3(eye_pos.x*100.0f, eye_pos.y*100.0f, -500.f));
 		camera.SetForward(glm::vec3(0.f, 0.f, 1.f));
 		camera.SetUp(glm::vec3(0.f, 1.f, 0.f));
 	}
-	camera.EndTransform(true);
+	camera.EndTransform(true);*/
 
 	ok::graphics::Camera::PushCamera(&camera);
 	{	
-		go.Update(dt);
-		ok::graphics::LayeredRenderer::instance().Flush();
+		//go.Update(dt);
+		//go.GetComponent<ok::graphics::MeshRenderer>()->Render();
+		//ok::graphics::LayeredRenderer::instance().Flush();
 	}
 	ok::graphics::Camera::PopCamera();
 }

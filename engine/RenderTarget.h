@@ -11,8 +11,6 @@ namespace ok
 			~RenderTarget();
 			void BindTarget();
 			void UnbindTarget();
-			void BindTexture_Color();
-			void UnbindTexture();
 			unsigned int GetTexture_Color();
 			glm::ivec2 GetSize();
 		protected:

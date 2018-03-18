@@ -107,11 +107,6 @@ namespace ok
 			GLuint GetSubroutine(GLenum shadertype, const std::string& name);
 			GLuint GetSubroutine(GLenum shadertype, int index);
 
-			void BindTexture(ok::graphics::Texture* texture, int texture_channel_index = 0);
-			void BindTexture(unsigned int texture_gl_id, int texture_channel_index = 0);
-			void UnbindTexture(ok::graphics::Texture* texture);
-			void UnbindTexture(unsigned int texture_gl_id);
-
 			void SetUniform(std::string name, glm::vec4 value);
 			void SetUniform(std::string name, glm::vec3 value);
 			void SetUniform(std::string name, glm::vec2 value);
@@ -188,8 +183,6 @@ namespace ok
 				std::string
 				>
 				> aliases_subroutines;
-
-			static std::vector<unsigned int> binded_textures;
 
 			void _LinkSamplerToTextureChannelIndex(GLint sampler_location, int texture_channel_index);
 		};
