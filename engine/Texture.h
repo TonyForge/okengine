@@ -32,7 +32,7 @@ namespace ok
 			GLenum _wrapping;
 			ok::Color _background_color;
 
-			static std::vector<ok::graphics::Texture*> binded_textures;
+			static std::vector<unsigned int> binded_textures;
 			static void GuaranteeBindedTextureStorage();
 		protected:
 		};

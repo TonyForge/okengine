@@ -1,6 +1,6 @@
 #include "Texture.h"
 
-std::vector<ok::graphics::Texture*> ok::graphics::Texture::binded_textures;
+std::vector<unsigned int> ok::graphics::Texture::binded_textures;
 
 ok::graphics::Texture::Texture(sf::Texture * object_to_own)
 {
@@ -132,18 +132,18 @@ void ok::graphics::Texture::BindTexture(ok::graphics::Texture * texture, int tex
 		glActiveTexture(GL_TEXTURE1 + texture_channel_index); //GL_TEXTURE0 is reserved by the engine, so use GL_TEXTURE1 instead
 		glBindTexture(GL_TEXTURE_2D, 0);
 
-		ok::graphics::Texture::binded_textures[texture_channel_index] = nullptr;
+		ok::graphics::Texture::binded_textures[texture_channel_index] = 0;
 	}
 	else
 	{
 		unsigned int texNativeHandle = texture->getNativeHandle();
 
-		if (ok::graphics::Texture::binded_textures[texture_channel_index] != texture)
+		if (ok::graphics::Texture::binded_textures[texture_channel_index] != texNativeHandle)
 		{
 			glActiveTexture(GL_TEXTURE1 + texture_channel_index); //GL_TEXTURE0 is reserved by the engine, so use GL_TEXTURE1 instead
 			glBindTexture(GL_TEXTURE_2D, texNativeHandle);
 
-			ok::graphics::Texture::binded_textures[texture_channel_index] = texture;
+			ok::graphics::Texture::binded_textures[texture_channel_index] = texNativeHandle;
 		}
 	}
 }
@@ -154,14 +154,16 @@ void ok::graphics::Texture::UnbindTexture(ok::graphics::Texture * texture)
 
 	int texture_channel_index = 0;
 
+	unsigned int texNativeHandle = texture->getNativeHandle();
+
 	for (auto& tex : ok::graphics::Texture::binded_textures)
 	{
-		if (tex == texture)
+		if (tex == texNativeHandle)
 		{
 			glActiveTexture(GL_TEXTURE1 + texture_channel_index); //GL_TEXTURE0 is reserved by the engine, so use GL_TEXTURE1 instead
 			glBindTexture(GL_TEXTURE_2D, 0);
 
-			tex = nullptr;
+			tex = 0;
 
 			break;
 		}
@@ -177,7 +179,7 @@ void ok::graphics::Texture::GuaranteeBindedTextureStorage()
 		ok::graphics::Texture::binded_textures.resize(32);
 		for (auto& tex : ok::graphics::Texture::binded_textures)
 		{
-			tex = nullptr;
+			tex = 0;
 		}
 	}
 }

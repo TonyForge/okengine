@@ -2,7 +2,7 @@
 <settings>
   <application title="Zoner">
     <screen width="1024" height="768" depth="24" stencil="8" antialiasing="4" fullscreen="false" framerate="60" vsync="false" keep_aspect_ratio="true" fixed_resolution="true">
-      <background r="127" g="127" b="127" />
+      <background r="0" g="0" b="0" />
 	  <depth_clear_with value="0" />
 	  <stencil_clear_with value="0" />
     </screen>
