@@ -4,6 +4,11 @@ namespace Zoner
 {
 	class ShipBlueprint;
 
+	enum class GameScreen
+	{
+		Space
+	};
+
 	enum class GameStates
 	{
 		PreloaderVisible = 0,

@@ -7,6 +7,7 @@
 
 //include all game classes here
 #include "Ship.h"
+#include "Space.h"
 
 //include ext classes
 #include "Preloader.h"
@@ -20,18 +21,24 @@ namespace Zoner
 		void Init();
 		void Update(float dt);
 
+		void LoadDefaultGame();
+
+		void LoadGame();
+		void SaveGame();
+
 	protected:
 	private:
 		void ShowPreloader();
 		void HidePreloader();
 
-		ok::GameObject _scene_root;
 		Zoner::Preloader _preloader;
 		bool _game_states[static_cast<int>(Zoner::GameStates::Count)];
 
 		std::unordered_map<std::string, Zoner::ShipBlueprint*> _ship_blueprints;
-
+		
 		//planets, systems, spacecrafts etc here...
+		std::unordered_map<std::string, Zoner::Space*> _spaces;
+		Zoner::Space* _current_space = nullptr;
 
 		//every step lasts for 24 hours (decisions happens once per step, so once per day)
 		unsigned int era = std::numeric_limits<unsigned int>::min();	//from UINT_MIN to UINT_MAX eras (cycled) (named value with "era of <something>) [0 .. UINT_MAX]
@@ -44,9 +51,13 @@ namespace Zoner
 
 		const float real_seconds_per_day = 4.0f;
 		float day_progress = 0;
+		int daily_updates_done = 0;
 
 		//called everyday at 24 o'clock
 		void TimeStep();
+
+		Zoner::GameScreen current_game_screen = Zoner::GameScreen::Space;
+		void UpdateGameScreen_Space(float dt);
 
 		ok::graphics::LineBatch* time_bar;
 

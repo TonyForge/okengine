@@ -38,27 +38,10 @@ void Zoner::Game::Update(float dt)
 	}
 	else
 	{
-		if (StateFalse(Zoner::GameStates::PauseEnabled))
+		if (current_game_screen == Zoner::GameScreen::Space)
 		{
-			day_progress += (dt / real_seconds_per_day);
-			hour = static_cast<unsigned int>(glm::floor(24.0f * day_progress));
-			if (hour >= 24)
-			{
-				TimeStep();
-
-				if (StateTrue(Zoner::GameStates::PauseRequest))
-				{
-					State(Zoner::GameStates::PauseEnabled, true);
-					State(Zoner::GameStates::PauseRequest, false);
-				}
-			}
+			UpdateGameScreen_Space(dt);
 		}
-		else
-		{
-			//allow player to do some decisions and press play
-		}
-
-		_scene_root.Update(dt);
 	}
 
 
@@ -80,6 +63,19 @@ void Zoner::Game::Update(float dt)
 		time_bar->LineTo(glm::vec3(day_progress * static_cast<float>(screen_width), 4.f, 0.f));
 	time_bar->BatchEnd();
 	ok::graphics::Camera::PopCamera();
+}
+
+void Zoner::Game::LoadDefaultGame()
+{
+
+}
+
+void Zoner::Game::LoadGame()
+{
+}
+
+void Zoner::Game::SaveGame()
+{
 }
 
 void Zoner::Game::ShowPreloader()
@@ -152,6 +148,115 @@ void Zoner::Game::TimeStep()
 		{
 			era++;
 		}
+	}
+}
+
+void Zoner::Game::UpdateGameScreen_Space(float dt)
+{
+	if (StateFalse(Zoner::GameStates::PauseEnabled))
+	{
+		float day_progress_delta = (dt / real_seconds_per_day);
+		day_progress += day_progress_delta;
+		hour = static_cast<unsigned int>(glm::floor(24.0f * day_progress));
+
+		//update all spaces here
+		//current space update in realtime
+		if (_current_space != nullptr)
+		{
+			_current_space->PassTime(day_progress_delta*24.0f);
+			_current_space->ApplyPassedTime();
+		}
+
+		//other spaces update 4 times per day (every 8 hours, every second in realtime)
+		if (hour >= 0 && daily_updates_done == 0)
+		{
+			//update outer spaces
+			for (auto& space : _spaces)
+			{
+				if (space.second != _current_space)
+				{
+					space.second->PassTime(8);
+					space.second->ApplyPassedTime();
+				}
+
+			}
+			daily_updates_done++;
+		}
+
+		if (hour >= 7 && daily_updates_done == 1)
+		{
+			//update outer spaces
+			for (auto& space : _spaces)
+			{
+				if (space.second != _current_space)
+				{
+					space.second->PassTime(8);
+					space.second->ApplyPassedTime();
+				}
+			}
+			daily_updates_done++;
+		}
+
+		if (hour >= 15 && daily_updates_done == 2)
+		{
+			//update outer spaces
+			for (auto& space : _spaces)
+			{
+				if (space.second != _current_space)
+				{
+					space.second->PassTime(8);
+					space.second->ApplyPassedTime();
+				}
+			}
+			daily_updates_done++;
+		}
+
+		if (hour >= 23 && daily_updates_done == 3)
+		{
+			//update outer spaces
+			for (auto& space : _spaces)
+			{
+				if (space.second != _current_space)
+				{
+					space.second->PassTime(8);
+					space.second->ApplyPassedTime();
+				}
+			}
+			daily_updates_done++;
+		}
+
+		if (hour >= 24)
+		{
+			TimeStep();
+
+			//allow everyone except player to do decisions here
+
+			if (StateTrue(Zoner::GameStates::PauseRequest))
+			{
+				State(Zoner::GameStates::PauseEnabled, true);
+				State(Zoner::GameStates::PauseRequest, false);
+			}
+			daily_updates_done = 0;
+		}
+
+		//------
+		if (ok::Input::o().KeyPressed(ok::KKey::Space)) State(Zoner::GameStates::PauseRequest, true);
+	}
+	else
+	{
+		//allow player to do some decisions and press play
+
+		if (ok::Input::o().KeyPressed(ok::KKey::Space))
+		{
+			State(Zoner::GameStates::PauseEnabled, false);
+			State(Zoner::GameStates::PauseRequest, false);
+		}
+	}
+
+	//animate and render current space here
+	if (_current_space != nullptr)
+	{
+		_current_space->Update(dt);
 	}
 }
 

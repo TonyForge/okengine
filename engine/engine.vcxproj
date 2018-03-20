@@ -467,8 +467,11 @@
     <ClCompile Include="projects\Starpom\Spaceship.cpp" />
     <ClCompile Include="projects\Zoner\Game.cpp" />
     <ClCompile Include="projects\Zoner\IGame.cpp" />
+    <ClCompile Include="projects\Zoner\IShip.cpp" />
+    <ClCompile Include="projects\Zoner\ISpace.cpp" />
     <ClCompile Include="projects\Zoner\Preloader.cpp" />
     <ClCompile Include="projects\Zoner\Ship.cpp" />
+    <ClCompile Include="projects\Zoner\Space.cpp" />
     <ClCompile Include="pystring.cpp" />
     <ClCompile Include="Quad.cpp" />
     <ClCompile Include="LayeredRenderer.cpp" />
@@ -527,8 +530,11 @@
     <ClInclude Include="projects\Starpom\Spaceship.h" />
     <ClInclude Include="projects\Zoner\Game.h" />
     <ClInclude Include="projects\Zoner\IGame.h" />
+    <ClInclude Include="projects\Zoner\IShip.h" />
+    <ClInclude Include="projects\Zoner\ISpace.h" />
     <ClInclude Include="projects\Zoner\Preloader.h" />
     <ClInclude Include="projects\Zoner\Ship.h" />
+    <ClInclude Include="projects\Zoner\Space.h" />
     <ClInclude Include="pystring.h" />
     <ClInclude Include="Quad.h" />
     <ClInclude Include="LayeredRenderer.h" />

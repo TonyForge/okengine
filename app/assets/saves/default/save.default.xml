@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<save>
+	<spaces>
+		<space id="Tallaida" name="Таллаида">
+			<connections>
+				<connection x="0" y="0" rx="60" ry="100" destination="Evgella" />
+				<connection x="200" y="150" rx="60" ry="60" destination="Orgrill" />
+			</connections>
+			<visitors>
+				<visitor id="Sozdatel_Mirov"/>
+			</visitors>
+		</space>
+		<space id="Evgella" name="Евгелла">
+			<connections>
+				<connection x="0" y="0" rx="60" ry="100" destination="Tallaida" />
+				<connection x="200" y="150" rx="60" ry="60" destination="Orgrill" />
+			</connections>
+		</space>
+		<space id="Orgrill" name="Оргрилл">
+			<connections>
+				<connection x="0" y="0" rx="60" ry="100" destination="Tallaida" />
+				<connection x="200" y="150" rx="60" ry="60" destination="Evgella" />
+			</connections>
+		</space>
+	</spaces>
+	
+	<spacecrafts>
+		<spacecraft id="Sozdatel_Mirov" name="Создатель Миров" blueprint="nomad">
+			<position x="0" y="0" z="0" />
+			<rotation x="0" y="0" z="0" />
+		</spacecraft>
+	</spacecrafts>
+</save>

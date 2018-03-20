@@ -25,6 +25,9 @@
     <Filter Include="projects\Zoner">
       <UniqueIdentifier>{864f6ff7-e165-463b-944e-146ae7babc74}</UniqueIdentifier>
     </Filter>
+    <Filter Include="projects\Zoner\Interfaces">
+      <UniqueIdentifier>{785a4a0d-c33f-4d77-86fa-067a582dd838}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -180,8 +183,17 @@
     <ClCompile Include="projects\Zoner\Preloader.cpp">
       <Filter>projects\Zoner</Filter>
     </ClCompile>
+    <ClCompile Include="projects\Zoner\Space.cpp">
+      <Filter>projects\Zoner</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\Zoner\IShip.cpp">
+      <Filter>projects\Zoner\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\Zoner\ISpace.cpp">
+      <Filter>projects\Zoner\Interfaces</Filter>
+    </ClCompile>
     <ClCompile Include="projects\Zoner\IGame.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>projects\Zoner\Interfaces</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -329,14 +341,23 @@
     <ClInclude Include="projects\Zoner\Game.h">
       <Filter>projects\Zoner</Filter>
     </ClInclude>
-    <ClInclude Include="projects\Zoner\IGame.h">
-      <Filter>projects\Zoner</Filter>
-    </ClInclude>
     <ClInclude Include="projects\Zoner\Ship.h">
       <Filter>projects\Zoner</Filter>
     </ClInclude>
     <ClInclude Include="projects\Zoner\Preloader.h">
       <Filter>projects\Zoner</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Zoner\Space.h">
+      <Filter>projects\Zoner</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Zoner\IShip.h">
+      <Filter>projects\Zoner\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Zoner\IGame.h">
+      <Filter>projects\Zoner\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Zoner\ISpace.h">
+      <Filter>projects\Zoner\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
