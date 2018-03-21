@@ -14,22 +14,52 @@ Zoner::Game::Game()
 void Zoner::Game::Init()
 {
 	DisableFeature(ok::ApplicationFeature::AutoClearStencil);
-
+	State(Zoner::GameStates::AtStartup, true);
 	time_bar = new ok::graphics::LineBatch(1);
 }
 
 
 void Zoner::Game::Update(float dt)
 {
-	if (StateFalse(Zoner::GameStates::DefaultResourcesLoaded) && StateFalse(Zoner::GameStates::PreloaderVisible))
+	if (StateTrue(Zoner::GameStates::AtStartup))
 	{
-		_preloader.Task_DefaultResources();
-		ShowPreloader();
+		if (StateFalse(Zoner::GameStates::DefaultResourcesLoaded) && StateFalse(Zoner::GameStates::PreloaderVisible))
+		{
+			_preloader.Task_DefaultResources();
+			ShowPreloader();
+		}
+
+		if (StateTrue(Zoner::GameStates::DefaultResourcesLoaded))
+		{
+			HidePreloader();
+
+			LoadUserSettings();
+			LoadGame();
+
+			State(Zoner::GameStates::AtStartup, false);
+		}
 	}
 
-	if (StateTrue(Zoner::GameStates::DefaultResourcesLoaded) && StateTrue(Zoner::GameStates::PreloaderVisible))
+	if (StateTrue(Zoner::GameStates::LoadGame))
 	{
-		HidePreloader();
+		if (StateFalse(Zoner::GameStates::PreloaderVisible))
+		{
+			_preloader.Task_ShowProgress();
+			ShowPreloader();
+			LoadGameBegin();
+		}
+		else
+		{
+			if (StateTrue(Zoner::GameStates::LoadGameCompleted))
+			{
+				LoadGameEnd();
+				HidePreloader();
+			}
+			else
+			{
+				LoadGameUpdate();
+			}
+		}
 	}
 
 	if (StateTrue(Zoner::GameStates::PreloaderVisible))
@@ -70,12 +100,60 @@ void Zoner::Game::LoadDefaultGame()
 
 }
 
+void Zoner::Game::SetGameName(ok::String game_name)
+{
+	_current_game_name = game_name;
+}
+
 void Zoner::Game::LoadGame()
 {
+	ok::String folder = ok::Assets::instance().assets_root_folder + "saves\\" + _current_game_name + "\\";
+	ok::String file = folder + "save." + _current_game_name + ".xml";
+	std::string std_path = file;
+
+	_game_file.Clear();
+	_game_file.LoadFile(std_path.c_str());
+
+	State(Zoner::GameStates::LoadGame, true);
+	State(Zoner::GameStates::LoadGameCompleted, false);
 }
 
 void Zoner::Game::SaveGame()
 {
+	ok::String folder = ok::Assets::instance().assets_root_folder + "saves\\" + _current_game_name + "\\";
+	ok::String file = folder + "save." + _current_game_name + ".xml";
+}
+
+void Zoner::Game::LoadUserSettings()
+{
+	std::string std_path = "zoner.user.settings.xml";
+	tinyxml2::XMLDocument doc;
+	doc.LoadFile(std_path.c_str());
+
+	tinyxml2::XMLElement* elem;
+	tinyxml2::XMLElement* inner_elem;
+
+	elem = doc.FirstChildElement("user_settings");
+
+	inner_elem = elem->FirstChildElement("last_game");
+	SetGameName(inner_elem->Attribute("name"));
+}
+
+void Zoner::Game::SaveUserSettings()
+{
+	std::string std_path = "zoner.user.settings.xml";
+	tinyxml2::XMLDocument doc;
+	doc.LoadFile(std_path.c_str());
+
+	tinyxml2::XMLElement* elem;
+	tinyxml2::XMLElement* inner_elem;
+
+	elem = doc.FirstChildElement("user_settings");
+
+	inner_elem = elem->FirstChildElement("last_game");
+	inner_elem->SetAttribute("name", _current_game_name.toAnsiString().c_str());
+
+	doc.SaveFile(std_path.c_str());
 }
 
 void Zoner::Game::ShowPreloader()
@@ -88,6 +166,63 @@ void Zoner::Game::HidePreloader()
 {
 	State(Zoner::GameStates::PreloaderVisible, false);
 	_preloader.UnloadItself();
+}
+
+void Zoner::Game::LoadGameBegin()
+{
+	_load_save_game_stage = 0;
+}
+
+void Zoner::Game::LoadGameUpdate()
+{
+	if (_load_save_game_stage == 0)
+	{
+		_game_file_element = _game_file.FirstChildElement("save")->FirstChildElement("spaces");
+		_game_file_element_iterator = _game_file_element->FirstChildElement("space");
+
+		_load_save_game_step = 0;
+		_load_save_game_step_max = _game_file_element->IntAttribute("count");
+
+		_load_save_game_stage = 1;
+	}
+
+	if (_load_save_game_stage == 1 && _load_save_game_step < _load_save_game_step_max)
+	{
+		if (_load_save_game_step < _load_save_game_step_max)
+		{
+			Zoner::Space* space = new Zoner::Space();
+
+			space->Rename(_game_file_element_iterator->Attribute("name"));
+
+			_spaces[_game_file_element_iterator->Attribute("id")] = space;
+			_game_file_element_iterator = _game_file_element_iterator->NextSiblingElement("space");
+
+			_load_save_game_step++;
+		}
+		else
+		{
+			_load_save_game_stage = 2;
+		}
+	}
+
+	if (_load_save_game_stage == 2)
+	{
+		_game_file_element = _game_file.FirstChildElement("save")->FirstChildElement("space_connections");
+		_game_file_element_iterator = _game_file_element->FirstChildElement("connection");
+
+		_load_save_game_step = 0;
+		_load_save_game_step_max = _game_file_element->IntAttribute("count");
+
+		_load_save_game_stage = 3;
+	}
+
+	_preloader.Task_ShowProgress_Update(_load_save_game_step, _load_save_game_step_max);
+}
+
+void Zoner::Game::LoadGameEnd()
+{
+	State(Zoner::GameStates::LoadGame, false);
+	State(Zoner::GameStates::LoadGameCompleted, false);
 }
 
 bool Zoner::Game::StateTrue(Zoner::GameStates state)

@@ -15,6 +15,11 @@ namespace Zoner
 		DefaultResourcesLoaded,
 		PauseEnabled,
 		PauseRequest,
+		LoadGame,
+		LoadGameCompleted,
+		SaveGame,
+		SaveGameCompleted,
+		AtStartup,
 		Count
 	};
 

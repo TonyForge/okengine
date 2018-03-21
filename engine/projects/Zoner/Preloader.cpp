@@ -39,6 +39,8 @@ void Zoner::Preloader::Update(float dt)
 			if (task_step == task_step_max)
 			{
 				_task->End();
+				delete _task;
+				_task = nullptr;
 			}
 			else
 			{
@@ -69,6 +71,19 @@ void Zoner::Preloader::Task_DefaultResources()
 	task_step = -1;
 	
 	_task = new Zoner::Preloader::Task_DefaultResources_Object();
+}
+
+void Zoner::Preloader::Task_ShowProgress()
+{
+	task_step = 0;
+	task_step_max = 1;
+	_task = nullptr;
+}
+
+void Zoner::Preloader::Task_ShowProgress_Update(int _task_step, int _task_step_max)
+{
+	task_step = _task_step;
+	task_step_max = _task_step_max;
 }
 
 void Zoner::Preloader::Task_DefaultResources_Object::Begin()

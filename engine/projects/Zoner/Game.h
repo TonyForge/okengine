@@ -23,13 +23,24 @@ namespace Zoner
 
 		void LoadDefaultGame();
 
+		void SetGameName(ok::String game_name);
 		void LoadGame();
 		void SaveGame();
 
 	protected:
 	private:
+		void LoadUserSettings();
+		void SaveUserSettings();
+		
 		void ShowPreloader();
 		void HidePreloader();
+
+		void LoadGameBegin();
+		void LoadGameUpdate();
+		void LoadGameEnd();
+		int _load_save_game_stage = 0;
+		int _load_save_game_step = 0;
+		int _load_save_game_step_max = 0;
 
 		Zoner::Preloader _preloader;
 		bool _game_states[static_cast<int>(Zoner::GameStates::Count)];
@@ -61,6 +72,10 @@ namespace Zoner
 
 		ok::graphics::LineBatch* time_bar;
 
+		ok::String _current_game_name = "default";
+		tinyxml2::XMLDocument _game_file;
+		tinyxml2::XMLElement* _game_file_element;
+		tinyxml2::XMLElement* _game_file_element_iterator;
 	public:
 		int GetScreenWidth();
 		int GetScreenHeight();

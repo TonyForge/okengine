@@ -1,33 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <save>
-	<spaces>
+	<spaces count="3">
 		<space id="Tallaida" name="Таллаида">
-			<connections>
-				<connection x="0" y="0" rx="60" ry="100" destination="Evgella" />
-				<connection x="200" y="150" rx="60" ry="60" destination="Orgrill" />
-			</connections>
-			<visitors>
-				<visitor id="Sozdatel_Mirov"/>
-			</visitors>
 		</space>
 		<space id="Evgella" name="Евгелла">
-			<connections>
-				<connection x="0" y="0" rx="60" ry="100" destination="Tallaida" />
-				<connection x="200" y="150" rx="60" ry="60" destination="Orgrill" />
-			</connections>
 		</space>
 		<space id="Orgrill" name="Оргрилл">
-			<connections>
-				<connection x="0" y="0" rx="60" ry="100" destination="Tallaida" />
-				<connection x="200" y="150" rx="60" ry="60" destination="Evgella" />
-			</connections>
 		</space>
 	</spaces>
 	
-	<spacecrafts>
+	<space_connections count="6">
+		<connection x="0" y="0" rx="60" ry="100" from="Tallaida" to="Evgella" />
+		<connection x="200" y="150" rx="60" ry="60" from="Tallaida" to="Orgrill" />
+		<connection x="0" y="0" rx="60" ry="100" from="Evgella" to="Tallaida" />
+		<connection x="200" y="150" rx="60" ry="60" from="Evgella" to="Orgrill" />
+		<connection x="0" y="0" rx="60" ry="100" from="Orgrill" to="Tallaida" />
+		<connection x="200" y="150" rx="60" ry="60" from="Orgrill" to="Evgella" />
+	</space_connections>
+	
+	<spacecrafts count="1">
 		<spacecraft id="Sozdatel_Mirov" name="Создатель Миров" blueprint="nomad">
 			<position x="0" y="0" z="0" />
 			<rotation x="0" y="0" z="0" />
+			<location space_id="Tallaida" />
 		</spacecraft>
 	</spacecrafts>
 </save>

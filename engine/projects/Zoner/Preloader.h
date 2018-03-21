@@ -16,6 +16,9 @@ namespace Zoner
 		void UnloadItself();
 		
 		void Task_DefaultResources();
+		void Task_ShowProgress();
+
+		void Task_ShowProgress_Update(int _task_step, int _task_step_max);
 
 		void Update(float dt);
 	private:
