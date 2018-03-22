@@ -186,7 +186,7 @@ void Zoner::Game::LoadGameUpdate()
 		_load_save_game_stage = 1;
 	}
 
-	if (_load_save_game_stage == 1 && _load_save_game_step < _load_save_game_step_max)
+	if (_load_save_game_stage == 1 && _load_save_game_step <= _load_save_game_step_max)
 	{
 		if (_load_save_game_step < _load_save_game_step_max)
 		{
@@ -214,6 +214,87 @@ void Zoner::Game::LoadGameUpdate()
 		_load_save_game_step_max = _game_file_element->IntAttribute("count");
 
 		_load_save_game_stage = 3;
+	}
+
+	if (_load_save_game_stage == 3 && _load_save_game_step <= _load_save_game_step_max)
+	{
+		if (_load_save_game_step < _load_save_game_step_max)
+		{
+			Zoner::SpaceConnection* connection = new Zoner::SpaceConnection();
+			connection->destination = _spaces[_game_file_element_iterator->Attribute("to")];
+			connection->position = glm::vec3(
+				_game_file_element_iterator->FloatAttribute("x"),
+				_game_file_element_iterator->FloatAttribute("y"),
+				0.0f
+			);
+			connection->radius = glm::vec3(
+				_game_file_element_iterator->FloatAttribute("rx"),
+				_game_file_element_iterator->FloatAttribute("ry"),
+				0.0f
+			);
+
+			_spaces[_game_file_element_iterator->Attribute("from")]->connections.push_back(connection);
+
+			_load_save_game_step++;
+			_game_file_element_iterator = _game_file_element_iterator->NextSiblingElement("connection");
+		}
+		else
+		{
+			_load_save_game_stage = 4;
+		}
+	}
+
+	if (_load_save_game_stage == 4)
+	{
+		_game_file_element = _game_file.FirstChildElement("save")->FirstChildElement("spacecrafts");
+		_game_file_element_iterator = _game_file_element->FirstChildElement("spacecraft");
+
+		_load_save_game_step = 0;
+		_load_save_game_step_max = _game_file_element->IntAttribute("count");
+
+		_load_save_game_stage = 5;
+	}
+
+	if (_load_save_game_stage == 5 && _load_save_game_step <= _load_save_game_step_max)
+	{
+		if (_load_save_game_step < _load_save_game_step_max)
+		{
+			Zoner::Ship* ship = new Zoner::Ship();
+
+			ship->this_type = Zoner::ShipType::Spacecraft;
+			ship->Rename(_game_file_element_iterator->Attribute("name"));
+			ship->Relocate(_spaces[_game_file_element_iterator->FirstChildElement("location")->Attribute("space_id")]);
+
+			tinyxml2::XMLElement* position = _game_file_element_iterator->FirstChildElement("position");
+			tinyxml2::XMLElement* rotation = _game_file_element_iterator->FirstChildElement("rotation");
+
+			ship->BeginTransform();
+			ship->SetPosition(glm::vec3(position->FloatAttribute("x"), position->FloatAttribute("y"), position->FloatAttribute("z")));
+			ship->SetRotation(glm::vec3(rotation->FloatAttribute("x"), rotation->FloatAttribute("y"), rotation->FloatAttribute("z")));
+			ship->EndTransform(true);
+
+			ship->this_blueprint = static_cast<Zoner::ShipBlueprint*>(_ship_blueprints[_game_file_element_iterator->Attribute("blueprint")]->Duplicate());
+			ship->AddChild(ship->this_blueprint);
+
+			ship->isNPC = _game_file_element_iterator->BoolAttribute("isNPC");
+
+			if (ship->isNPC == false)
+			{
+				_current_space = static_cast<Zoner::Space*>(ship->Location());
+			}
+
+			_load_save_game_step++;
+			_game_file_element_iterator = _game_file_element_iterator->NextSiblingElement("spacecraft");
+		}
+		else
+		{
+			_load_save_game_stage = 6;
+		}
+	}
+
+	if (_load_save_game_stage == 6)
+	{
+		State(Zoner::GameStates::LoadGameCompleted, true);
 	}
 
 	_preloader.Task_ShowProgress_Update(_load_save_game_step, _load_save_game_step_max);

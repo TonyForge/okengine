@@ -136,7 +136,16 @@ void Zoner::Preloader::Task_DefaultResources_Object::Step()
 	Zoner::ShipBlueprint* blueprint = new Zoner::ShipBlueprint();
 	blueprint->Rename(_name);
 
-	blueprint->AddChild(root);
+	ok::GameObject* transformer = new ok::GameObject();
+
+	transformer->AddChild(root);
+	transformer->BeginTransform();
+	transformer->SetRotation(glm::vec3(-90.0f, 0.f, 0.f));
+	transformer->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
+	transformer->EndTransform(true);
+
+	blueprint->AddChild(transformer);
+	
 
 	Zoner::IGame::o().GetShipBlueprints()[_name] = blueprint;
 

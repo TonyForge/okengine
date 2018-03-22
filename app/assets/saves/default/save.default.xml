@@ -18,10 +18,15 @@
 		<connection x="200" y="150" rx="60" ry="60" from="Orgrill" to="Evgella" />
 	</space_connections>
 	
-	<spacecrafts count="1">
-		<spacecraft id="Sozdatel_Mirov" name="Создатель Миров" blueprint="nomad">
-			<position x="0" y="0" z="0" />
-			<rotation x="0" y="0" z="0" />
+	<spacecrafts count="2">
+		<spacecraft id="Sozdatel_Mirov" name="Создатель Миров" blueprint="nomad" isNPC="false">
+			<position x="10" y="10" z="0" />
+			<rotation x="0" y="0" z="10" />
+			<location space_id="Tallaida" />
+		</spacecraft>
+		<spacecraft id="Broshenniy_ostov" name="Брошенный остов" blueprint="nomad" isNPC="true">
+			<position x="100" y="100" z="0" />
+			<rotation x="0" y="0" z="135" />
 			<location space_id="Tallaida" />
 		</spacecraft>
 	</spacecrafts>

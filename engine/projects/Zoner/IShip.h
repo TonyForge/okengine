@@ -9,6 +9,15 @@
 
 namespace Zoner
 {
+	class ISpace;
+
+	enum class ShipType
+	{
+		Spacecraft,
+		Planet,
+		Star
+	};
+
 	class ShipMaterial_SpacecraftFragment : public ok::Behaviour
 	{
 	public:
@@ -38,11 +47,20 @@ namespace Zoner
 		ok::GameObject* Duplicate(ok::GameObject* _clone = nullptr);
 	};
 
+	
+
 	class IShip : public ok::GameObject
 	{
 	public:
 		virtual void PassTime(float hours_passed) = 0;
 		virtual void ApplyPassedTime() = 0;
+		virtual void Relocate(Zoner::ISpace* to) = 0;
+		virtual Zoner::ISpace*& Location() = 0;
+
+		Zoner::ShipType this_type;
+		Zoner::ShipBlueprint* this_blueprint;
+
+		bool isNPC = true;
 	protected:
 	private:
 	};

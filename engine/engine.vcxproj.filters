@@ -19,9 +19,6 @@
     <Filter Include="projects\Kripta">
       <UniqueIdentifier>{85fbe099-b058-4ccb-b416-9c5b3957857a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="projects\Starpom">
-      <UniqueIdentifier>{d9152df4-694b-41c6-80cb-5fe91365abc5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="projects\Zoner">
       <UniqueIdentifier>{864f6ff7-e165-463b-944e-146ae7babc74}</UniqueIdentifier>
     </Filter>
@@ -138,38 +135,11 @@
     <ClCompile Include="projects\Kripta\Maze.cpp">
       <Filter>projects\Kripta</Filter>
     </ClCompile>
-    <ClCompile Include="Starpom.cpp">
-      <Filter>projects\Starpom</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Starpom\Ship.cpp">
-      <Filter>projects\Starpom</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Starpom\GameInfo.cpp">
-      <Filter>projects\Starpom</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Starpom\Loading.cpp">
-      <Filter>projects\Starpom</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Starpom\Action.cpp">
-      <Filter>projects\Starpom</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Starpom\SmoothPath.cpp">
-      <Filter>projects\Starpom</Filter>
-    </ClCompile>
     <ClCompile Include="Spline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="projects\Starpom\Planet.cpp">
-      <Filter>projects\Starpom</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Starpom\Spaceship.cpp">
-      <Filter>projects\Starpom</Filter>
-    </ClCompile>
     <ClCompile Include="LineBatch.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Starpom\Game.cpp">
-      <Filter>projects\Starpom</Filter>
     </ClCompile>
     <ClCompile Include="Zoner.cpp">
       <Filter>projects\Zoner</Filter>
@@ -194,6 +164,9 @@
     </ClCompile>
     <ClCompile Include="projects\Zoner\IGame.cpp">
       <Filter>projects\Zoner\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\Zoner\SmoothPath.cpp">
+      <Filter>projects\Zoner</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -302,38 +275,11 @@
     <ClInclude Include="projects\Kripta\Maze.h">
       <Filter>projects\Kripta</Filter>
     </ClInclude>
-    <ClInclude Include="Starpom.h">
-      <Filter>projects\Starpom</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Starpom\Ship.h">
-      <Filter>projects\Starpom</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Starpom\GameInfo.h">
-      <Filter>projects\Starpom</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Starpom\Loading.h">
-      <Filter>projects\Starpom</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Starpom\Action.h">
-      <Filter>projects\Starpom</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Starpom\SmoothPath.h">
-      <Filter>projects\Starpom</Filter>
-    </ClInclude>
     <ClInclude Include="Spline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="projects\Starpom\Planet.h">
-      <Filter>projects\Starpom</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Starpom\Spaceship.h">
-      <Filter>projects\Starpom</Filter>
-    </ClInclude>
     <ClInclude Include="LineBatch.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Starpom\Game.h">
-      <Filter>projects\Starpom</Filter>
     </ClInclude>
     <ClInclude Include="Zoner.h">
       <Filter>projects\Zoner</Filter>
@@ -358,6 +304,9 @@
     </ClInclude>
     <ClInclude Include="projects\Zoner\ISpace.h">
       <Filter>projects\Zoner\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Zoner\SmoothPath.h">
+      <Filter>projects\Zoner</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

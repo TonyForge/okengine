@@ -1,7 +1,9 @@
 #pragma once
 
 #include "..\..\GameObject.h"
+#include "..\..\LayeredRenderer.h"
 #include "..\..\Rect2D.h"
+
 #include "IGame.h"
 #include "IShip.h"
 #include "ISpace.h"
@@ -22,6 +24,11 @@ namespace Zoner
 
 		void PassTime(float hours_passed);
 		void ApplyPassedTime();
+
+		void Update(float dt);
+
+		void VisitorIn(Zoner::IShip* visitor);
+		void VisitorOut(Zoner::IShip* visitor);
 	protected:
 	private:
 	};

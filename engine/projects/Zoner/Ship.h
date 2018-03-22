@@ -6,14 +6,17 @@
 
 namespace Zoner
 {
-
-
 	class Ship : public Zoner::IShip
 	{
 	public:
 		void PassTime(float hours_passed);
 		void ApplyPassedTime();
-		Zoner::ISpace* location;
+
+		void Relocate(Zoner::ISpace* to);
+		Zoner::ISpace*& Location();
+		Zoner::ISpace* location = nullptr;
+
+		void Update(float dt);
 	protected:
 	private:
 	};
