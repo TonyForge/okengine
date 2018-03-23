@@ -57,10 +57,14 @@ namespace Zoner
 		virtual void Relocate(Zoner::ISpace* to) = 0;
 		virtual Zoner::ISpace*& Location() = 0;
 
+		virtual void ClickOnceAt(glm::vec2 space_xy) = 0;
+
 		Zoner::ShipType this_type;
 		Zoner::ShipBlueprint* this_blueprint;
 
 		bool isNPC = true;
+		
+		//решить как определять что кликнул по объекту
 	protected:
 	private:
 	};

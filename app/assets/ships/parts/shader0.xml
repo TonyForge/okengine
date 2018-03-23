@@ -116,7 +116,7 @@
 
 		vec3 result = material0*decmix+material1*(1.0-decmix);
 
-		FragColor = vec4((result*materials.x + mix(material0,material2, 1.0-decmix)*materials.y + mix(material0,material0*_ColorMain_DarkMultiplier, 1.0-decmix)*materials.z + material0*decmix*materials.w).rgb, 1.0);
+		FragColor = vec4((result*materials.x + mix(material0,material2, 1.0-decmix)*materials.y + mix(material0,material0*_ColorMain_DarkMultiplier.rgb, 1.0-decmix)*materials.z + material0*decmix*materials.w).rgb, 1.0);
     }
     ]]>
   </fragment>

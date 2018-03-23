@@ -17,6 +17,9 @@ namespace Zoner
 		virtual void VisitorOut(Zoner::IShip* visitor) = 0;
 
 		ok::graphics::Camera camera;
+
+		virtual std::vector<Zoner::IShip*>& WhoIsThere(glm::vec2 space_xy) = 0;
+		static std::vector<Zoner::IShip*> _who_is_there_container;
 	protected:
 	private:
 	};

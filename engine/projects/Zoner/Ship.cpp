@@ -39,3 +39,11 @@ void Zoner::Ship::Update(float dt)
 
 	ok::GameObject::Update(dt);
 }
+
+void Zoner::Ship::ClickOnceAt(glm::vec2 space_xy)
+{
+	if (location != nullptr)
+	{
+
+	}
+}

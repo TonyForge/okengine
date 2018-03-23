@@ -44,7 +44,19 @@ void ok::Application::Run()
 
 	if (fixed_resolution)
 	{
-		fixed_resolution_framebuffer = new ok::graphics::RenderTarget(screen_width, screen_height, true, true, true, true);
+		if (fixed_resolution_resample_enabled)
+		{
+			fixed_resolution_framebuffer = new ok::graphics::RenderTarget(screen_width, screen_height, true, false, false, true);
+			fixed_resolution_resample_framebuffer = new ok::graphics::RenderTarget(
+				static_cast<int>(glm::round(static_cast<float>(screen_width) * fixed_resolution_resample_scale)), 
+				static_cast<int>(glm::round(static_cast<float>(screen_height) * fixed_resolution_resample_scale)),
+				true, true, true, true);
+		}
+		else
+		{
+			fixed_resolution_framebuffer = new ok::graphics::RenderTarget(screen_width, screen_height, true, true, true, true);
+		}
+
 		fixed_resolution_batch = new ok::graphics::SpriteBatch(1);
 	}
 	else fixed_resolution_framebuffer = nullptr;
@@ -178,8 +190,21 @@ void ok::Application::Run()
 
 			if (fixed_resolution)
 			{
-				fixed_resolution_framebuffer->BindTarget();
-				glViewport((GLint)0, (GLint)0, (GLint)screen_width, (GLint)screen_height);
+				if (fixed_resolution_resample_enabled)
+				{
+					fixed_resolution_resample_framebuffer->BindTarget();
+					glViewport(
+						(GLint)0, 
+						(GLint)0, 
+						static_cast<GLint>(glm::round(static_cast<float>(screen_width) * fixed_resolution_resample_scale)),
+						static_cast<GLint>(glm::round(static_cast<float>(screen_height) * fixed_resolution_resample_scale)));
+				}
+				else
+				{
+					fixed_resolution_framebuffer->BindTarget();
+					glViewport((GLint)0, (GLint)0, (GLint)screen_width, (GLint)screen_height);
+				}
+
 
 				ok::graphics::Camera::_viewport_x = 0;
 				ok::graphics::Camera::_viewport_y = 0;
@@ -210,7 +235,35 @@ void ok::Application::Run()
 
 			if (fixed_resolution)
 			{
-				fixed_resolution_framebuffer->UnbindTarget();
+				while (ok::graphics::Camera::GetCurrent() != nullptr)
+				{
+					ok::graphics::Camera::PopCamera();
+				}
+
+				if (fixed_resolution_resample_enabled)
+				{
+					fixed_resolution_resample_framebuffer->UnbindTarget();
+
+					ok::graphics::Camera resample_camera(ok::graphics::CameraCoordinateSystem::ScreenCenter);
+					resample_camera.SetProjectionOrtho(static_cast<float>(screen_width), static_cast<float>(screen_height), -2.f, -1.f);
+
+					ok::graphics::Camera::PushCamera(&resample_camera);
+						fixed_resolution_framebuffer->BindTarget();
+
+						glViewport((GLint)0, (GLint)0, (GLint)screen_width, (GLint)screen_height);
+
+						fixed_resolution_batch->BatchBegin(1.5f);
+							ok::graphics::Texture fixed_resolution_framebuffer_texture = ok::graphics::Texture(fixed_resolution_resample_framebuffer);
+							fixed_resolution_batch->Draw(&fixed_resolution_framebuffer_texture, glm::vec2(0.f, 0.f), glm::vec2(screen_width, screen_height), false);
+						fixed_resolution_batch->BatchEnd();
+
+						fixed_resolution_framebuffer->UnbindTarget();
+					ok::graphics::Camera::PopCamera();
+				}
+				else
+				{
+					fixed_resolution_framebuffer->UnbindTarget();
+				}
 
 				if (keep_aspect_ratio)
 				{
@@ -232,14 +285,9 @@ void ok::Application::Run()
 				}
 
 
-				while (ok::graphics::Camera::GetCurrent() != nullptr)
-				{
-					ok::graphics::Camera::PopCamera();
-				}
-
 				fixed_resolution_batch->BatchBegin(0.f);
-				ok::graphics::Texture fixed_resolution_framebuffer_texture = ok::graphics::Texture(fixed_resolution_framebuffer);
-				fixed_resolution_batch->Draw(&fixed_resolution_framebuffer_texture, glm::vec2(0.f, 0.f), glm::vec2(2.f, 2.f), false);
+					ok::graphics::Texture fixed_resolution_framebuffer_texture = ok::graphics::Texture(fixed_resolution_framebuffer);
+					fixed_resolution_batch->Draw(&fixed_resolution_framebuffer_texture, glm::vec2(0.f, 0.f), glm::vec2(2.f, 2.f), false);
 				fixed_resolution_batch->BatchEnd();
 			}
 			else
@@ -303,6 +351,8 @@ void ok::Application::LoadSettings()
 	vsync = elem->BoolAttribute("vsync", true);
 	keep_aspect_ratio = elem->BoolAttribute("keep_aspect_ratio", true);
 	fixed_resolution = elem->BoolAttribute("fixed_resolution", true);
+	fixed_resolution_resample_enabled = elem->BoolAttribute("fixed_resolution_resample_enabled", false);
+	fixed_resolution_resample_scale = elem->FloatAttribute("fixed_resolution_resample_scale", 1.0f);
 	ok::graphics::Camera::_fixed_resolution_enabled = fixed_resolution;
 	ok::graphics::Camera::_keep_aspect_ratio_enabled = keep_aspect_ratio;
 

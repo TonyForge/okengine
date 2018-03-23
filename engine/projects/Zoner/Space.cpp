@@ -43,3 +43,8 @@ void Zoner::Space::VisitorOut(Zoner::IShip * visitor)
 	visitors.erase(std::remove(visitors.begin(), visitors.end(), visitor), visitors.end());
 	visitor->Location() = nullptr;
 }
+
+std::vector<Zoner::IShip*>& Zoner::Space::WhoIsThere(glm::vec2 space_xy)
+{
+	//for ()
+}

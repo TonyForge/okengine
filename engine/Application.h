@@ -49,6 +49,8 @@ namespace ok {
 		bool vsync;
 		bool keep_aspect_ratio;
 		bool fixed_resolution;
+		bool fixed_resolution_resample_enabled;
+		float fixed_resolution_resample_scale;
 
 		bool auto_clear_depth_enabled;
 		bool auto_clear_stencil_enabled;
@@ -58,6 +60,7 @@ namespace ok {
 		ok::Color background_color;
 
 		ok::graphics::RenderTarget* fixed_resolution_framebuffer;
+		ok::graphics::RenderTarget* fixed_resolution_resample_framebuffer;
 
 		std::string _settings_file_name;
 		void LoadSettings();

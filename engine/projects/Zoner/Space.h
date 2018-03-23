@@ -29,6 +29,8 @@ namespace Zoner
 
 		void VisitorIn(Zoner::IShip* visitor);
 		void VisitorOut(Zoner::IShip* visitor);
+
+		std::vector<Zoner::IShip*>& WhoIsThere(glm::vec2 space_xy);
 	protected:
 	private:
 	};

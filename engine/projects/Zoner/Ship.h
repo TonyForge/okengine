@@ -17,6 +17,8 @@ namespace Zoner
 		Zoner::ISpace* location = nullptr;
 
 		void Update(float dt);
+
+		void ClickOnceAt(glm::vec2 space_xy);
 	protected:
 	private:
 	};
