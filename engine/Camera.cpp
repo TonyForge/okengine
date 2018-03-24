@@ -229,3 +229,33 @@ ok::GameObject * ok::graphics::Camera::Duplicate(ok::GameObject * _clone)
 
 	return _clone;
 }
+
+glm::vec3 ok::graphics::Camera::ScreenToWorldPosition(glm::vec3 normalized_screen_position)
+{
+	normalized_screen_position.y = 1.0 - normalized_screen_position.y;
+
+	normalized_screen_position = (normalized_screen_position - glm::vec3(0.5f, 0.5f, 0.5f))*2.f;
+
+	glm::vec4 result = glm::inverse(GetVPMatrix()) * glm::vec4(normalized_screen_position, 1.0f);
+
+	if (perspective_enabled)
+	{
+		result.w = 1.0f / result.w;
+		result.x *= result.w;
+		result.y *= result.w;
+		result.z *= result.w;
+	}
+
+	return glm::vec3(result);
+}
+
+glm::vec3 ok::graphics::Camera::WorldToScreenPosition(glm::vec3 world_position)
+{
+	glm::vec4 result = GetVPMatrix() * glm::vec4(world_position, 1.0f);
+
+	result.x = (result.x + 1.0f) * 0.5f;
+	result.y = (result.y + 1.0f) * 0.5f;
+	result.z = 0;
+
+	return glm::vec3(result);
+}

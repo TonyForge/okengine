@@ -7,6 +7,7 @@
 #include "IGame.h"
 #include "IShip.h"
 #include "ISpace.h"
+#include "Collision.h"
 
 namespace Zoner
 {
@@ -24,6 +25,7 @@ namespace Zoner
 
 		void PassTime(float hours_passed);
 		void ApplyPassedTime();
+		void OnNewDay();
 
 		void Update(float dt);
 

@@ -10,6 +10,8 @@ namespace ok
 	public:
 		GameObject();
 
+		using ok::Behaviour::gameObject;
+
 		void AddComponent(ok::Behaviour* component);
 		void RemoveComponent(ok::Behaviour* component);
 		virtual void Update(float dt);

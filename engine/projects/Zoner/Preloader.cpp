@@ -146,6 +146,7 @@ void Zoner::Preloader::Task_DefaultResources_Object::Step()
 
 	blueprint->AddChild(transformer);
 	
+	blueprint->CalculateBounder();
 
 	Zoner::IGame::o().GetShipBlueprints()[_name] = blueprint;
 

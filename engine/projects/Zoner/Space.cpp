@@ -16,6 +16,14 @@ void Zoner::Space::ApplyPassedTime()
 	}
 }
 
+void Zoner::Space::OnNewDay()
+{
+	for (auto& visitor : visitors)
+	{
+		visitor->OnNewDay();
+	}
+}
+
 void Zoner::Space::Update(float dt)
 {
 	ok::GameObject::Update(dt);
@@ -46,5 +54,17 @@ void Zoner::Space::VisitorOut(Zoner::IShip * visitor)
 
 std::vector<Zoner::IShip*>& Zoner::Space::WhoIsThere(glm::vec2 space_xy)
 {
-	//for ()
+	_who_is_there_container.clear();
+
+	for (auto&& visitor : visitors)
+	{
+		Zoner::Collision::Point pick = visitor->Pick(glm::vec3(space_xy, 0.f));
+
+		if (pick.hit)
+		{
+			_who_is_there_container.push_back(visitor);
+		}
+	}
+
+	return _who_is_there_container;
 }

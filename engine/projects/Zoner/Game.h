@@ -50,6 +50,7 @@ namespace Zoner
 		//planets, systems, spacecrafts etc here...
 		std::unordered_map<std::string, Zoner::Space*> _spaces;
 		Zoner::Space* _current_space = nullptr;
+		Zoner::Ship* _current_player_ship = nullptr;
 
 		//every step lasts for 24 hours (decisions happens once per step, so once per day)
 		unsigned int era = std::numeric_limits<unsigned int>::min();	//from UINT_MIN to UINT_MAX eras (cycled) (named value with "era of <something>) [0 .. UINT_MAX]

@@ -6,6 +6,9 @@
 #include "..\..\Texture.h"
 #include "..\..\Material.h"
 #include "..\..\Camera.h"
+#include "..\..\MeshRenderer.h"
+#include "Collision.h"
+#include "SmoothPath.h"
 
 namespace Zoner
 {
@@ -45,6 +48,16 @@ namespace Zoner
 	{
 	public:
 		ok::GameObject* Duplicate(ok::GameObject* _clone = nullptr);
+
+		//bounder is ellipsoid, axis alighed in local coordinate system
+		glm::vec3 bounder_center;
+		glm::vec3 bounder_axis;
+
+		Zoner::Collision::Point Bound(glm::vec3 world_position);
+
+		void CalculateBounder();
+	private:
+		void _CalculateBounder(ok::Transform* part, glm::vec3& min_axis, glm::vec3& max_axis);
 	};
 
 	
@@ -54,6 +67,7 @@ namespace Zoner
 	public:
 		virtual void PassTime(float hours_passed) = 0;
 		virtual void ApplyPassedTime() = 0;
+		virtual void OnNewDay() = 0;
 		virtual void Relocate(Zoner::ISpace* to) = 0;
 		virtual Zoner::ISpace*& Location() = 0;
 
@@ -61,10 +75,22 @@ namespace Zoner
 
 		Zoner::ShipType this_type;
 		Zoner::ShipBlueprint* this_blueprint;
+		Zoner::SmoothPath trajectory;
+
+		//tmp begin
+		float engine_speed = 24.0f; //distance per hour
+		float trajectory_progress = 0.f;
+		//tmp end
 
 		bool isNPC = true;
 		
-		//решить как определять что кликнул по объекту
+		Zoner::Collision::Point Pick(glm::vec3 world_position);
+		Zoner::IShip* picked_object = nullptr;
+		int picked_object_picks_counter = 0;
+
+		virtual void Player_UpdateDecisions(float dt) = 0;
+
+		
 	protected:
 	private:
 	};

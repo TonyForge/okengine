@@ -3,6 +3,7 @@
 ok::GameObject::GameObject()
 {
 	ok::Behaviour_GameObject_Assignee(this, this);
+	ok::Transform_GameObject_Assignee(this, this);
 }
 
 void ok::GameObject::AddComponent(ok::Behaviour * component)

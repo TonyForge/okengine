@@ -1,10 +1,10 @@
 #include "SmoothPath.h"
 
-std::vector<Starpom::SmoothPathWaypoint> Starpom::SmoothPath::_waypoints_cache;
+std::vector<Zoner::SmoothPathWaypoint> Zoner::SmoothPath::_waypoints_cache;
 
-Starpom::SmoothPathWaypoint Starpom::SmoothPath::GetWaypoint(float pick)
+Zoner::SmoothPathWaypoint Zoner::SmoothPath::GetWaypoint(float pick)
 {
-	if (waypoints.size() == 0) return Starpom::SmoothPathWaypoint();
+	if (waypoints.size() == 0) return Zoner::SmoothPathWaypoint();
 
 	float path_position = static_cast<float>(waypoints.size()-1) * pick;
 	size_t waypoint_index = static_cast<size_t>(glm::floor(path_position));
@@ -12,9 +12,9 @@ Starpom::SmoothPathWaypoint Starpom::SmoothPath::GetWaypoint(float pick)
 
 	float path_piece_progress = (path_position - waypoint_index);
 
-	Starpom::SmoothPathWaypoint result;
-	Starpom::SmoothPathWaypoint& waypoint = waypoints[waypoint_index];
-	Starpom::SmoothPathWaypoint& waypoint_post = waypoints[waypoint_index_post];
+	Zoner::SmoothPathWaypoint result;
+	Zoner::SmoothPathWaypoint& waypoint = waypoints[waypoint_index];
+	Zoner::SmoothPathWaypoint& waypoint_post = waypoints[waypoint_index_post];
 
 	result.position = glm::lerp(waypoint.position, waypoint_post.position, path_piece_progress);
 	result.tangent_out = glm::lerp(waypoint.tangent_out, waypoint_post.tangent_in, path_piece_progress);
@@ -23,18 +23,18 @@ Starpom::SmoothPathWaypoint Starpom::SmoothPath::GetWaypoint(float pick)
 	return result;
 }
 
-void Starpom::SmoothPath::BeginWaypointsCollection()
+void Zoner::SmoothPath::BeginWaypointsCollection()
 {
 	waypoints.clear();
 	length = 0;
 }
 
-void Starpom::SmoothPath::CollectWaypoint(glm::vec3 position)
+void Zoner::SmoothPath::CollectWaypoint(glm::vec3 position)
 {
-	waypoints.push_back(Starpom::SmoothPathWaypoint(position));
+	waypoints.push_back(Zoner::SmoothPathWaypoint(position));
 }
 
-void Starpom::SmoothPath::EndWaypointsCollection(float normalization_step_length)
+void Zoner::SmoothPath::EndWaypointsCollection(float normalization_step_length)
 {
 	float total_distance = 0.f;
 
@@ -49,8 +49,8 @@ void Starpom::SmoothPath::EndWaypointsCollection(float normalization_step_length
 			index_pre = glm::clamp(index - 1, 0, static_cast<int>(waypoints.size() - 1));
 			index_post = glm::clamp(index + 1, 0, static_cast<int>(waypoints.size() - 1));
 
-			Starpom::SmoothPathWaypoint& waypoint_pre = waypoints[index_pre];
-			Starpom::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
+			Zoner::SmoothPathWaypoint& waypoint_pre = waypoints[index_pre];
+			Zoner::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
 
 			glm::vec3 auto_tangent = waypoint_post.position - waypoint_pre.position;
 			float in_tangent_length = glm::sqrt(glm::abs(glm::dot(waypoint.position - waypoint_pre.position, auto_tangent)));
@@ -91,7 +91,7 @@ void Starpom::SmoothPath::EndWaypointsCollection(float normalization_step_length
 		for (auto& waypoint : waypoints)
 		{
 			index_post = glm::clamp(index + 1, 0, static_cast<int>(waypoints.size() - 1));
-			Starpom::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
+			Zoner::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
 
 			waypoint.pick = waypoint_pick;
 
@@ -101,7 +101,7 @@ void Starpom::SmoothPath::EndWaypointsCollection(float normalization_step_length
 		}
 	}
 
-	Starpom::SmoothPathWaypoint end_waypoint = waypoints[waypoints.size() - 1];
+	Zoner::SmoothPathWaypoint end_waypoint = waypoints[waypoints.size() - 1];
 	end_waypoint.tangent_in = glm::normalize(end_waypoint.tangent_in);
 	end_waypoint.tangent_out = glm::normalize(end_waypoint.tangent_out);
 
@@ -114,21 +114,21 @@ void Starpom::SmoothPath::EndWaypointsCollection(float normalization_step_length
 
 		float pick = 0;
 
-		std::vector<Starpom::SmoothPathWaypoint>& normalized_path = _waypoints_cache;
+		std::vector<Zoner::SmoothPathWaypoint>& normalized_path = _waypoints_cache;
 		normalized_path.clear();
 		normalized_path.reserve(steps);
 
 		for (auto& waypoint : waypoints)
 		{
 			index_post = glm::clamp(index + 1, 0, static_cast<int>(waypoints.size() - 1));
-			Starpom::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
+			Zoner::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
 
 			while (pick >= waypoint.pick && pick <= waypoint_post.pick)
 			{
 				float local_pick = (pick - waypoint.pick) / (waypoint_post.pick - waypoint.pick);
 
 				normalized_path.push_back(
-					Starpom::SmoothPathWaypoint(
+					Zoner::SmoothPathWaypoint(
 						ok::Spline::HermitPick(waypoint.position, waypoint.tangent_out, waypoint_post.position, waypoint_post.tangent_in, local_pick),
 						glm::normalize(ok::Spline::HermitTangentPick(waypoint.position, waypoint.tangent_out, waypoint_post.position, waypoint_post.tangent_in, local_pick))
 					)
@@ -154,7 +154,7 @@ void Starpom::SmoothPath::EndWaypointsCollection(float normalization_step_length
 		for (auto& waypoint : waypoints)
 		{
 			index_post = glm::clamp(index + 1, 0, static_cast<int>(waypoints.size() - 1));
-			Starpom::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
+			Zoner::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
 
 			total_distance += glm::length(waypoint.position - waypoint_post.position);
 
@@ -171,7 +171,7 @@ void Starpom::SmoothPath::EndWaypointsCollection(float normalization_step_length
 		for (auto& waypoint : waypoints)
 		{
 			index_post = glm::clamp(index + 1, 0, static_cast<int>(waypoints.size() - 1));
-			Starpom::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
+			Zoner::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
 
 			waypoint.pick = waypoint_pick;
 
@@ -190,20 +190,20 @@ void Starpom::SmoothPath::EndWaypointsCollection(float normalization_step_length
 
 		float pick = 0;
 
-		std::vector<Starpom::SmoothPathWaypoint>& normalized_path = _waypoints_cache;
+		std::vector<Zoner::SmoothPathWaypoint>& normalized_path = _waypoints_cache;
 		normalized_path.clear();
 		normalized_path.reserve(steps);
 
 		for (auto& waypoint : waypoints)
 		{
 			index_post = glm::clamp(index + 1, 0, static_cast<int>(waypoints.size() - 1));
-			Starpom::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
+			Zoner::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
 
 			while (pick >= waypoint.pick && pick <= waypoint_post.pick)
 			{
 				float local_pick = (pick - waypoint.pick) / (waypoint_post.pick - waypoint.pick);
 
-				normalized_path.push_back(Starpom::SmoothPathWaypoint(
+				normalized_path.push_back(Zoner::SmoothPathWaypoint(
 					glm::lerp(waypoint.position, waypoint_post.position, local_pick),
 					glm::lerp(waypoint.tangent_out, waypoint_post.tangent_in, local_pick)));
 
@@ -228,7 +228,7 @@ void Starpom::SmoothPath::EndWaypointsCollection(float normalization_step_length
 		for (auto& waypoint : waypoints)
 		{
 			index_post = glm::clamp(index + 1, 0, static_cast<int>(waypoints.size() - 1));
-			Starpom::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
+			Zoner::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
 
 			length += glm::length(waypoint.position - waypoint_post.position);
 
@@ -237,7 +237,18 @@ void Starpom::SmoothPath::EndWaypointsCollection(float normalization_step_length
 	}
 }
 
-void Starpom::SmoothPath::DrawDebug(ok::graphics::LineBatch & line_batch, Starpom::SmoothPath & path)
+float Zoner::SmoothPath::Length()
+{
+	return length;
+}
+
+void Zoner::SmoothPath::Clear()
+{
+	waypoints.clear();
+	length = 0;
+}
+
+void Zoner::SmoothPath::DrawDebug(ok::graphics::LineBatch & line_batch, Zoner::SmoothPath & path)
 {
 	line_batch.SetBrushThickness(4.f);
 	line_batch.SetBrushSoftness(0.01f);
@@ -269,14 +280,14 @@ void Starpom::SmoothPath::DrawDebug(ok::graphics::LineBatch & line_batch, Starpo
 	line_batch.BatchEnd();
 }
 
-Starpom::SmoothPathWaypoint::SmoothPathWaypoint() : position(0.f,0.f,0.f), tangent_in(0.f,0.f,0.f), tangent_out(0.f, 0.f, 0.f), pick(0.f)
+Zoner::SmoothPathWaypoint::SmoothPathWaypoint() : position(0.f,0.f,0.f), tangent_in(0.f,0.f,0.f), tangent_out(0.f, 0.f, 0.f), pick(0.f)
 {
 }
 
-Starpom::SmoothPathWaypoint::SmoothPathWaypoint(glm::vec3 _position) : position(_position), tangent_in(0.f, 0.f, 0.f), tangent_out(0.f, 0.f, 0.f), pick(0.f)
+Zoner::SmoothPathWaypoint::SmoothPathWaypoint(glm::vec3 _position) : position(_position), tangent_in(0.f, 0.f, 0.f), tangent_out(0.f, 0.f, 0.f), pick(0.f)
 {
 }
 
-Starpom::SmoothPathWaypoint::SmoothPathWaypoint(glm::vec3 _position, glm::vec3 _tangent) : position(_position), tangent_in(_tangent), tangent_out(_tangent), pick(0.f)
+Zoner::SmoothPathWaypoint::SmoothPathWaypoint(glm::vec3 _position, glm::vec3 _tangent) : position(_position), tangent_in(_tangent), tangent_out(_tangent), pick(0.f)
 {
 }

@@ -281,6 +281,7 @@ void Zoner::Game::LoadGameUpdate()
 			if (ship->isNPC == false)
 			{
 				_current_space = static_cast<Zoner::Space*>(ship->Location());
+				_current_player_ship = ship;
 			}
 
 			_load_save_game_step++;
@@ -445,6 +446,12 @@ void Zoner::Game::UpdateGameScreen_Space(float dt)
 		{
 			TimeStep();
 
+			//Reset some variables daily and etc
+			for (auto& space : _spaces)
+			{
+				space.second->OnNewDay();
+			}
+
 			//allow everyone except player to do decisions here
 
 			if (StateTrue(Zoner::GameStates::PauseRequest))
@@ -461,6 +468,11 @@ void Zoner::Game::UpdateGameScreen_Space(float dt)
 	else
 	{
 		//allow player to do some decisions and press play
+		if (_current_player_ship != nullptr)
+		{
+			_current_player_ship->Player_UpdateDecisions(dt);
+		}
+
 
 		if (ok::Input::o().KeyPressed(ok::KKey::Space))
 		{

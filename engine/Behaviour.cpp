@@ -1,7 +1,8 @@
 #include "Behaviour.h"
 
-ok::Behaviour::Behaviour() : enabled(true)
+ok::Behaviour::Behaviour() : enabled(true), _gameObject(nullptr)
 {
+
 }
 
 void ok::Behaviour::Update(float dt)

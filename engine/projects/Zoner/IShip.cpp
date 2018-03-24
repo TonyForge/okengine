@@ -61,7 +61,104 @@ ok::GameObject * Zoner::ShipBlueprint::Duplicate(ok::GameObject * _clone)
 
 	ok::GameObject::Duplicate(__clone);
 
-	//copy _clone to __clone
+	//copy this to __clone
+	__clone->bounder_axis = bounder_axis;
+	__clone->bounder_center = bounder_center;
 
 	return __clone;
+}
+
+Zoner::Collision::Point Zoner::ShipBlueprint::Bound(glm::vec3 world_position)
+{
+	BeginTransform(ok::TransformSpace::WorldSpace);
+	world_position = world_position - GetPosition();
+	EndTransform(false);
+
+	glm::vec3 point = glm::vec3(glm::inverse(GetAbsoluteTransformMatrix()) * glm::vec4(world_position, 0.f));
+	point = (point - bounder_center) / bounder_axis;
+	point *= point;
+
+	float k = point.x + point.y + point.z;
+
+	if (k <= 1.f)
+	{
+		//collision detected
+		return Zoner::Collision::Point(point, true);
+	}
+	
+	return Zoner::Collision::Point();
+}
+
+void Zoner::ShipBlueprint::CalculateBounder()
+{
+	glm::vec3 min_axis(0.f,0.f,0.f);
+	glm::vec3 max_axis(0.f, 0.f, 0.f);
+
+	_CalculateBounder(this, min_axis, max_axis);
+
+	bounder_center = (min_axis + max_axis) * 0.5f;
+	bounder_axis = max_axis - bounder_center;
+}
+
+void Zoner::ShipBlueprint::_CalculateBounder(ok::Transform * part, glm::vec3& min_axis, glm::vec3& max_axis)
+{
+	ok::graphics::MeshRenderer* mr = part->gameObject().GetComponent<ok::graphics::MeshRenderer>();
+
+	if (mr != nullptr)
+	{
+		GLBufferInfo buf_info = mr->GetMesh()->GetVertices();
+		
+		struct f3
+		{
+			float x, y, z;
+		};
+
+		f3* positions = (f3*)(buf_info.vertices);
+
+		glm::vec4 part_axis4;
+		glm::vec3 part_axis;
+
+		part_axis4.w = 0.f;
+
+		for (int i = 0; i < buf_info.vertex_count; i++)
+		{
+			part_axis4.x = positions->x;
+			part_axis4.y = positions->y;
+			part_axis4.z = positions->z;
+
+			part_axis = glm::vec3(part->GetAbsoluteTransformMatrix() * part_axis4);
+
+			min_axis = glm::min(min_axis, part_axis);
+			max_axis = glm::max(max_axis, part_axis);
+
+			positions++;
+		}
+	}
+	else
+	{
+		glm::vec3 part_axis;
+
+		part->BeginTransform(ok::TransformSpace::WorldSpace);
+			part_axis = part->GetPosition();
+		part->EndTransform(false);
+		
+		min_axis = glm::min(min_axis, part_axis);
+		max_axis = glm::max(max_axis, part_axis);
+	}
+
+	std::list<ok::Transform*>& childrens = part->GetChildrens();
+	for (auto& child : childrens)
+	{
+		_CalculateBounder(child, min_axis, max_axis);
+	}
+}
+
+Zoner::Collision::Point Zoner::IShip::Pick(glm::vec3 world_position)
+{
+	if (this_blueprint != nullptr)
+	{
+		return this_blueprint->Bound(world_position);
+	}
+
+	return Zoner::Collision::Point();
 }

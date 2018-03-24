@@ -2,6 +2,18 @@
 
 namespace ok
 {
+	class GameObject;
+	class Transform;
+}
+
+namespace ok
+{
+	class Transform_GameObject_Assignee
+	{
+	public:
+		Transform_GameObject_Assignee(ok::GameObject * _gameObject, ok::Transform * _transform);
+	};
+
 	enum class RotationDirection
 	{
 		CW,
@@ -33,6 +45,8 @@ namespace ok
 		size_t name_hash;
 
 		Transform();
+
+		ok::GameObject& gameObject();
 
 		void Rename(ok::String name);
 
@@ -120,5 +134,8 @@ namespace ok
 		void _AddChild(ok::Transform* child, bool _keepWorldTransform);
 		void _SetParent(ok::Transform* parent, bool _keepWorldTransform);
 		void _RemoveChild(ok::Transform* child, bool _keepWorldTransform);
+
+		friend class ok::Transform_GameObject_Assignee;
+		ok::GameObject* _gameObject;
 	};
 }

@@ -3,7 +3,7 @@
 #include "..\..\Spline.h"
 #include "..\..\LineBatch.h"
 
-namespace Starpom
+namespace Zoner
 {
 	class SmoothPathWaypoint
 	{
@@ -21,16 +21,18 @@ namespace Starpom
 	class SmoothPath
 	{
 	public:
-		Starpom::SmoothPathWaypoint GetWaypoint(float path_normalized_position);
+		Zoner::SmoothPathWaypoint GetWaypoint(float path_normalized_position);
 		void BeginWaypointsCollection();
 		void CollectWaypoint(glm::vec3 position);
 		void EndWaypointsCollection(float normalization_step_length);
+		float Length();
+		void Clear();
 
-		static void DrawDebug(ok::graphics::LineBatch& line_batch, Starpom::SmoothPath& path);
+		static void DrawDebug(ok::graphics::LineBatch& line_batch, Zoner::SmoothPath& path);
 	protected:
 	private:
-		std::vector<Starpom::SmoothPathWaypoint> waypoints;
-		static std::vector<Starpom::SmoothPathWaypoint> _waypoints_cache;
-		float length;
+		std::vector<Zoner::SmoothPathWaypoint> waypoints;
+		static std::vector<Zoner::SmoothPathWaypoint> _waypoints_cache;
+		float length = 0;
 	};
 }

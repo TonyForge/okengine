@@ -20,9 +20,15 @@ ok::Transform::Transform() :
 	_absoluteRotationMatrix(1.0f),
 	_parent(nullptr),
 	_rotation_direction(ok::RotationDirection::CCW),
-	_transform_combine_order(ok::TransformCombineOrder::SRT)
+	_transform_combine_order(ok::TransformCombineOrder::SRT),
+	_gameObject(nullptr)
 {
 
+}
+
+ok::GameObject & ok::Transform::gameObject()
+{
+	return *_gameObject;
 }
 
 void ok::Transform::Rename(ok::String name)
@@ -644,4 +650,9 @@ glm::vec3 ok::Transform::_ConvertMatToEulerAnglesXYZ(const glm::mat3 & mat)
 	const float zEuler = std::atan2(-mat[1].x, mat[0].x);
 
 	return glm::degrees(glm::vec3(xEuler, yEuler, zEuler));
+}
+
+ok::Transform_GameObject_Assignee::Transform_GameObject_Assignee(ok::GameObject * _gameObject, ok::Transform * _transform)
+{
+	_transform->_gameObject = _gameObject;
 }

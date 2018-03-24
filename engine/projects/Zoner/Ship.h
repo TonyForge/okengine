@@ -3,6 +3,7 @@
 #include "IGame.h"
 #include "IShip.h"
 #include "ISpace.h"
+#include "..\..\Input.h"
 
 namespace Zoner
 {
@@ -11,6 +12,7 @@ namespace Zoner
 	public:
 		void PassTime(float hours_passed);
 		void ApplyPassedTime();
+		void OnNewDay();
 
 		void Relocate(Zoner::ISpace* to);
 		Zoner::ISpace*& Location();
@@ -19,6 +21,8 @@ namespace Zoner
 		void Update(float dt);
 
 		void ClickOnceAt(glm::vec2 space_xy);
+
+		void Player_UpdateDecisions(float dt);
 	protected:
 	private:
 	};
