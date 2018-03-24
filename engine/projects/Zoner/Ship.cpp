@@ -5,21 +5,24 @@ void Zoner::Ship::PassTime(float hours_passed)
 {
 	if (trajectory.Length() != 0.f)
 	{
-		trajectory_progress += (trajectory.Length() / engine_speed) * hours_passed;
+		trajectory_progress += (engine_speed * hours_passed) / trajectory.Length();
 		if (trajectory_progress > 1.f) trajectory_progress = 1.f;
 	}
 }
 
 void Zoner::Ship::ApplyPassedTime()
 {
-	//Move in space
-	Zoner::SmoothPathWaypoint trajectory_waypoint = trajectory.GetWaypoint(trajectory_progress);
+	if (trajectory.Length() != 0.f)
+	{
+		//Move in space
+		Zoner::SmoothPathWaypoint trajectory_waypoint = trajectory.GetWaypoint(trajectory_progress);
 
-	BeginTransform();
-	SetPosition(trajectory_waypoint.position);
-	EndTransform(true);
+		BeginTransform();
+		SetPosition(trajectory_waypoint.position);
+		EndTransform(true);
 
-	SetRight(trajectory_waypoint.tangent_out);
+		SetRight(trajectory_waypoint.tangent_out);
+	}
 }
 
 void Zoner::Ship::OnNewDay()
