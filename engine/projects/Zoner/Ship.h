@@ -20,7 +20,7 @@ namespace Zoner
 
 		void Update(float dt);
 
-		void ClickOnceAt(glm::vec2 space_xy);
+		void ClickOnceAt(glm::vec2 space_xy, bool ignore_objects = false);
 
 		void Player_UpdateDecisions(float dt);
 	protected:

@@ -532,6 +532,53 @@ void ok::Transform::LookAt(glm::vec3 target)
 	EndTransform(true);
 }
 
+void ok::Transform::LookAt(glm::vec3 v1, glm::vec3 v2, ok::LookAtAxis v1_axis, ok::LookAtAxis v2_axis)
+{
+	if (v1_axis == v2_axis) return;
+
+	float axis_x_sign = 1.f;
+	float axis_y_sign = 1.f;
+
+	glm::vec3* axis_x;
+	glm::vec3* axis_y;
+	glm::vec3* axis_z;
+		
+	switch (v1_axis)
+	{
+		case ok::LookAtAxis::Forward : axis_x = &_forward; break;
+		case ok::LookAtAxis::InvForward: axis_x = &_forward; axis_x_sign = -1.f; break;
+		case ok::LookAtAxis::Right: axis_x = &_right; break;
+		case ok::LookAtAxis::InvRight: axis_x = &_right; axis_x_sign = -1.f; break;
+		case ok::LookAtAxis::Up: axis_x = &_up; break;
+		case ok::LookAtAxis::InvUp: axis_x = &_up; axis_x_sign = -1.f; break;
+	}
+
+	switch (v2_axis)
+	{
+		case ok::LookAtAxis::Forward: axis_y = &_forward; break;
+		case ok::LookAtAxis::InvForward: axis_y = &_forward; axis_y_sign = -1.f; break;
+		case ok::LookAtAxis::Right: axis_y = &_right; break;
+		case ok::LookAtAxis::InvRight: axis_y = &_right; axis_y_sign = -1.f; break;
+		case ok::LookAtAxis::Up: axis_y = &_up; break;
+		case ok::LookAtAxis::InvUp: axis_y = &_up; axis_y_sign = -1.f; break;
+	}
+
+	if (axis_x == &_forward && axis_y == &_right) axis_z = &_up; else
+	if (axis_y == &_forward && axis_x == &_right) axis_z = &_up; else
+	if (axis_x == &_forward && axis_y == &_up) axis_z = &_right; else
+	if (axis_y == &_forward && axis_x == &_up) axis_z = &_right; else axis_z = &_forward;
+
+	*axis_x = v1 * axis_x_sign;
+	*axis_y = v2 * axis_y_sign;
+	*axis_z = glm::normalize(glm::cross(*axis_y, *axis_x));
+
+	glm::mat4 orientationMatrix = glm::lookAtLH(glm::vec3(0.f, 0.f, 0.f), _forward, _up);
+
+	BeginTransform(ok::TransformSpace::WorldSpace);
+	SetRotation(_ConvertMatToEulerAnglesXYZ(orientationMatrix));
+	EndTransform(true);
+}
+
 void ok::Transform::SetRotationDirection(ok::RotationDirection new_direction)
 {
 	_rotation_direction = new_direction;

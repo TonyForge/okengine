@@ -14,6 +14,16 @@ namespace ok
 		Transform_GameObject_Assignee(ok::GameObject * _gameObject, ok::Transform * _transform);
 	};
 
+	enum class LookAtAxis
+	{
+		Forward,
+		Up,
+		Right,
+		InvForward,
+		InvUp,
+		InvRight
+	};
+
 	enum class RotationDirection
 	{
 		CW,
@@ -88,6 +98,7 @@ namespace ok
 		void SetOrientation(glm::vec3 forward, glm::vec3 up);
 		void LookAt(glm::vec3 target, glm::vec3 up);
 		void LookAt(glm::vec3 target);
+		void LookAt(glm::vec3 v1, glm::vec3 v2, ok::LookAtAxis v1_axis, ok::LookAtAxis v2_axis);
 
 		void SetRotationDirection(ok::RotationDirection new_direction);
 		void SetTransformCombineOrder(ok::TransformCombineOrder new_order);

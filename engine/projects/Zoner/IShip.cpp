@@ -162,3 +162,10 @@ Zoner::Collision::Point Zoner::IShip::Pick(glm::vec3 world_position)
 
 	return Zoner::Collision::Point();
 }
+
+Zoner::IShip::IShip() : 
+	engine_speed(24.f),
+	trajectory_progress(0.f)
+{
+	
+}

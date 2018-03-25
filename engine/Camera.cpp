@@ -232,7 +232,7 @@ ok::GameObject * ok::graphics::Camera::Duplicate(ok::GameObject * _clone)
 
 glm::vec3 ok::graphics::Camera::ScreenToWorldPosition(glm::vec3 normalized_screen_position)
 {
-	normalized_screen_position.y = 1.0 - normalized_screen_position.y;
+	normalized_screen_position.y = 1.0f - normalized_screen_position.y;
 
 	normalized_screen_position = (normalized_screen_position - glm::vec3(0.5f, 0.5f, 0.5f))*2.f;
 

@@ -65,21 +65,23 @@ namespace Zoner
 	class IShip : public ok::GameObject
 	{
 	public:
+		IShip();
+
 		virtual void PassTime(float hours_passed) = 0;
 		virtual void ApplyPassedTime() = 0;
 		virtual void OnNewDay() = 0;
 		virtual void Relocate(Zoner::ISpace* to) = 0;
 		virtual Zoner::ISpace*& Location() = 0;
 
-		virtual void ClickOnceAt(glm::vec2 space_xy) = 0;
+		virtual void ClickOnceAt(glm::vec2 space_xy, bool ignore_objects = false) = 0;
 
 		Zoner::ShipType this_type;
 		Zoner::ShipBlueprint* this_blueprint;
 		Zoner::SmoothPath trajectory;
 
 		//tmp begin
-		float engine_speed = 24.0f; //distance per hour
-		float trajectory_progress = 0.f;
+		float engine_speed; //distance per hour
+		float trajectory_progress;
 		//tmp end
 
 		bool isNPC = true;
