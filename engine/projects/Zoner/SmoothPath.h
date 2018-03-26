@@ -5,34 +5,20 @@
 
 namespace Zoner
 {
-	class SmoothPathWaypoint
+	class SmoothPathObstacle
 	{
 	public:
 		glm::vec3 position;
-		glm::vec3 tangent_in;
-		glm::vec3 tangent_out;
-		float pick;
+		float radius;
+	};
 
-		SmoothPathWaypoint();
-		SmoothPathWaypoint(glm::vec3 _position);
-		SmoothPathWaypoint(glm::vec3 _position, glm::vec3 _tangent);
+	class SmoothPathWaypoint
+	{
 	};
 
 	class SmoothPath
 	{
 	public:
-		Zoner::SmoothPathWaypoint GetWaypoint(float path_normalized_position);
-		void BeginWaypointsCollection();
-		void CollectWaypoint(glm::vec3 position);
-		void EndWaypointsCollection(float normalization_step_length);
-		float Length();
-		void Clear();
-
-		static void DrawDebug(ok::graphics::LineBatch& line_batch, Zoner::SmoothPath& path);
-	protected:
-	private:
-		std::vector<Zoner::SmoothPathWaypoint> waypoints;
-		static std::vector<Zoner::SmoothPathWaypoint> _waypoints_cache;
-		float length = 0;
+		void Build(glm::vec3 from, glm::vec3 from_direction, glm::vec3 to, std::vector<Zoner::SmoothPathObstacle*>& obstacles, ok::graphics::LineBatch& batch);
 	};
 }

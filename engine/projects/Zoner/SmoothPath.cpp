@@ -1,293 +1,78 @@
 #include "SmoothPath.h"
 
-std::vector<Zoner::SmoothPathWaypoint> Zoner::SmoothPath::_waypoints_cache;
-
-Zoner::SmoothPathWaypoint Zoner::SmoothPath::GetWaypoint(float pick)
+void Zoner::SmoothPath::Build(glm::vec3 from, glm::vec3 from_direction, glm::vec3 to, std::vector<Zoner::SmoothPathObstacle*>& obstacles, ok::graphics::LineBatch& batch)
 {
-	if (waypoints.size() == 0) return Zoner::SmoothPathWaypoint();
+	bool mirrored = false;
 
-	float path_position = static_cast<float>(waypoints.size()-1) * pick;
-	size_t waypoint_index = static_cast<size_t>(glm::floor(path_position));
-	size_t waypoint_index_post = glm::clamp(static_cast<int>(waypoint_index + 1), 0, static_cast<int>(waypoints.size() - 1));
+	glm::vec3 to_memory = to;
 
-	float path_piece_progress = (path_position - waypoint_index);
+	glm::vec2 from_to_direction = glm::vec2(to - from);
+	glm::vec2 from_direction_nrm = glm::vec2(from_direction.y, -from_direction.x);
 
-	Zoner::SmoothPathWaypoint result;
-	Zoner::SmoothPathWaypoint& waypoint = waypoints[waypoint_index];
-	Zoner::SmoothPathWaypoint& waypoint_post = waypoints[waypoint_index_post];
-
-	result.position = glm::lerp(waypoint.position, waypoint_post.position, path_piece_progress);
-	result.tangent_out = glm::lerp(waypoint.tangent_out, waypoint_post.tangent_in, path_piece_progress);
-	result.tangent_in = -result.tangent_out;
-
-	return result;
-}
-
-void Zoner::SmoothPath::BeginWaypointsCollection()
-{
-	waypoints.clear();
-	length = 0;
-}
-
-void Zoner::SmoothPath::CollectWaypoint(glm::vec3 position)
-{
-	waypoints.push_back(Zoner::SmoothPathWaypoint(position));
-}
-
-void Zoner::SmoothPath::EndWaypointsCollection(float normalization_step_length)
-{
-	float total_distance = 0.f;
-
-	int index = 0;
-	int index_pre;
-	int index_post;
-
-	//Calculate tangents and total distance
+	if (glm::dot(from_direction_nrm, from_to_direction) > 0.f)
 	{
-		for (auto& waypoint : waypoints)
-		{
-			index_pre = glm::clamp(index - 1, 0, static_cast<int>(waypoints.size() - 1));
-			index_post = glm::clamp(index + 1, 0, static_cast<int>(waypoints.size() - 1));
+		mirrored = true;
 
-			Zoner::SmoothPathWaypoint& waypoint_pre = waypoints[index_pre];
-			Zoner::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
+		float dot_x = glm::dot(glm::vec2(from_direction), from_to_direction);
+		float dot_y = glm::dot(-from_direction_nrm, from_to_direction);
 
-			glm::vec3 auto_tangent = waypoint_post.position - waypoint_pre.position;
-			float in_tangent_length = glm::sqrt(glm::abs(glm::dot(waypoint.position - waypoint_pre.position, auto_tangent)));
-			float out_tangent_length = glm::sqrt(glm::abs(glm::dot(waypoint.position - waypoint_post.position, -auto_tangent)));
-
-			auto_tangent = glm::normalize(auto_tangent);
-
-			//in tangent
-			waypoint.tangent_in = auto_tangent * in_tangent_length;
-			//out tangent
-			waypoint.tangent_out = auto_tangent * out_tangent_length;
-
-			if (index == 0)
-			{
-				waypoint.tangent_in = waypoint.tangent_out;
-			}
-
-			if (index == index_post)
-			{
-				waypoint.tangent_out = waypoint.tangent_in;
-			}
-
-			if (index < static_cast<int>(waypoints.size() - 1))
-			{
-				total_distance += glm::length(waypoint.position - waypoint_post.position);
-			}
-
-			index++;
-		}
+		from_to_direction = glm::vec2(from_direction) * dot_x + from_direction_nrm * dot_y;
+		to = from + glm::vec3(from_to_direction, 0.f);
 	}
 
-	//Calculate sparse picks
-	{
-		index = 0;
 
-		float waypoint_pick = 0;
+	float from_to_distance = glm::length(from_to_direction);
+	from_to_direction = glm::normalize(from_to_direction);
 
-		for (auto& waypoint : waypoints)
-		{
-			index_post = glm::clamp(index + 1, 0, static_cast<int>(waypoints.size() - 1));
-			Zoner::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
-
-			waypoint.pick = waypoint_pick;
-
-			waypoint_pick += glm::length(waypoint.position - waypoint_post.position) / total_distance;
-
-			index++;
-		}
-	}
-
-	Zoner::SmoothPathWaypoint end_waypoint = waypoints[waypoints.size() - 1];
-	end_waypoint.tangent_in = glm::normalize(end_waypoint.tangent_in);
-	end_waypoint.tangent_out = glm::normalize(end_waypoint.tangent_out);
-
-	//Hermit curve linearization (STAGE 1)
-	{
-		index = 0;
-
-		int steps = static_cast<int>(glm::ceil(total_distance / normalization_step_length)) + 1;
-		float picks_per_step = 1.f / static_cast<float>(steps - 1);
-
-		float pick = 0;
-
-		std::vector<Zoner::SmoothPathWaypoint>& normalized_path = _waypoints_cache;
-		normalized_path.clear();
-		normalized_path.reserve(steps);
-
-		for (auto& waypoint : waypoints)
-		{
-			index_post = glm::clamp(index + 1, 0, static_cast<int>(waypoints.size() - 1));
-			Zoner::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
-
-			while (pick >= waypoint.pick && pick <= waypoint_post.pick)
-			{
-				float local_pick = (pick - waypoint.pick) / (waypoint_post.pick - waypoint.pick);
-
-				normalized_path.push_back(
-					Zoner::SmoothPathWaypoint(
-						ok::Spline::HermitPick(waypoint.position, waypoint.tangent_out, waypoint_post.position, waypoint_post.tangent_in, local_pick),
-						glm::normalize(ok::Spline::HermitTangentPick(waypoint.position, waypoint.tangent_out, waypoint_post.position, waypoint_post.tangent_in, local_pick))
-					)
-				);
-				normalized_path[normalized_path.size() - 1].pick = pick;
-
-				pick += picks_per_step;
-			}
-
-			index++;
-		}
-
-		normalized_path.push_back(end_waypoint);
-
-		waypoints = normalized_path;
-	}
-
-	//Calculate linearized curve total distance
-	{
-		index = 0;
-		total_distance = 0;
-
-		for (auto& waypoint : waypoints)
-		{
-			index_post = glm::clamp(index + 1, 0, static_cast<int>(waypoints.size() - 1));
-			Zoner::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
-
-			total_distance += glm::length(waypoint.position - waypoint_post.position);
-
-			index++;
-		}
-	}
-
-	//Recalculate sparse picks
-	{
-		index = 0;
-
-		float waypoint_pick = 0;
-
-		for (auto& waypoint : waypoints)
-		{
-			index_post = glm::clamp(index + 1, 0, static_cast<int>(waypoints.size() - 1));
-			Zoner::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
-
-			waypoint.pick = waypoint_pick;
-
-			waypoint_pick += glm::length(waypoint.position - waypoint_post.position) / total_distance;
-
-			index++;
-		}
-	}
-
-	//Linearized curve resample (STAGE 2)
-	{
-		index = 0;
-
-		int steps = static_cast<int>(glm::ceil(total_distance / normalization_step_length)) + 1;
-		float picks_per_step = 1.f / static_cast<float>(steps - 1);
-
-		float pick = 0;
-
-		std::vector<Zoner::SmoothPathWaypoint>& normalized_path = _waypoints_cache;
-		normalized_path.clear();
-		normalized_path.reserve(steps);
-
-		for (auto& waypoint : waypoints)
-		{
-			index_post = glm::clamp(index + 1, 0, static_cast<int>(waypoints.size() - 1));
-			Zoner::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
-
-			while (pick >= waypoint.pick && pick <= waypoint_post.pick)
-			{
-				float local_pick = (pick - waypoint.pick) / (waypoint_post.pick - waypoint.pick);
-
-				normalized_path.push_back(Zoner::SmoothPathWaypoint(
-					glm::lerp(waypoint.position, waypoint_post.position, local_pick),
-					glm::lerp(waypoint.tangent_out, waypoint_post.tangent_in, local_pick)));
-
-				normalized_path[normalized_path.size() - 1].pick = pick;
-
-				pick += picks_per_step;
-			}
-
-			index++;
-		}
-
-		waypoints = normalized_path;
-	}
-
-	if (glm::length(waypoints[waypoints.size()-1].position - end_waypoint.position) >= normalization_step_length*0.5f)
-	waypoints.push_back(end_waypoint);
-
-	//Calculate path length
-	{
-		index = 0;
-
-		for (auto& waypoint : waypoints)
-		{
-			index_post = glm::clamp(index + 1, 0, static_cast<int>(waypoints.size() - 1));
-			Zoner::SmoothPathWaypoint& waypoint_post = waypoints[index_post];
-
-			length += glm::length(waypoint.position - waypoint_post.position);
-
-			index++;
-		}
-	}
-}
-
-float Zoner::SmoothPath::Length()
-{
-	return length;
-}
-
-void Zoner::SmoothPath::Clear()
-{
-	waypoints.clear();
-	length = 0;
-}
-
-void Zoner::SmoothPath::DrawDebug(ok::graphics::LineBatch & line_batch, Zoner::SmoothPath & path)
-{
-	line_batch.SetBrushThickness(4.f);
-	line_batch.SetBrushSoftness(0.01f);
-
-	line_batch.BatchBegin();
-
-	line_batch.SetBrushColor(ok::Color(0.f, 0.f, 1.f, 1.f));
-
-	line_batch.MoveTo(path.waypoints[0].position);
-	for (auto&& waypoint : path.waypoints)
-	{
-		line_batch.SetBrushColor(ok::Color(glm::fract(waypoint.position.x), glm::fract(waypoint.position.y), glm::fract(waypoint.position.z), 1.f));
-		line_batch.LineTo(waypoint.position);
-	}
+	float rotation_radius = glm::clamp(from_to_distance, 1.f, 50.f);
+	float oriented_angle = glm::degrees(glm::orientedAngle(glm::vec2(from_direction), glm::vec2(from_to_direction)));
+	float oriented_angle_delta = glm::sign(-oriented_angle)*(180.0f - glm::abs(oriented_angle));
 	
-	line_batch.SetBrushThickness(1.f);
+	glm::vec2 rotation_center = glm::vec2(from) - glm::vec2(from_direction.y, -from_direction.x) * rotation_radius;
 
-	for (auto&& waypoint : path.waypoints)
+	float c = glm::length(rotation_center - glm::vec2(to));
+	float a = rotation_radius;
+	float b = glm::sqrt(c*c - a*a);
+
+	float sina = a / c;
+	float ang_a = glm::degrees(glm::asin(sina));
+	float ang_b = 90.0f - ang_a;
+
+	glm::vec2 arc_end = (glm::vec2(to) + b*glm::normalize(glm::rotate(rotation_center - glm::vec2(to), glm::radians(ang_a)))) - glm::vec2(from);
+
+	if (mirrored)
 	{
-		line_batch.SetBrushColor(ok::Color(1.f, 1.f, 0.f, 1.f));
-		line_batch.MoveTo(waypoint.position);
-		line_batch.LineTo(waypoint.position - waypoint.tangent_in);
+		glm::vec2 nrm = glm::vec2(from_direction.y, -from_direction.x);
 
-		line_batch.SetBrushColor(ok::Color(0.f, 1.f, 0.f, 1.f));
-		line_batch.MoveTo(waypoint.position);
-		line_batch.LineTo(waypoint.position + waypoint.tangent_out);
+		float dot_x = glm::dot(glm::vec2(from_direction), arc_end);
+		float dot_y = glm::dot(-nrm, arc_end);
+
+		arc_end = glm::vec2(from_direction) * dot_x + nrm * dot_y;
+
+		to = to_memory;
+		rotation_center = glm::vec2(from) - (rotation_center - glm::vec2(from));
 	}
+
+	arc_end += glm::vec2(from);
+
+
+	batch.SetBrushThickness(2.f);
+	batch.SetBrushSoftness(0.0001f);
 	
-	line_batch.BatchEnd();
-}
+	batch.BatchBegin();
 
-Zoner::SmoothPathWaypoint::SmoothPathWaypoint() : position(0.f,0.f,0.f), tangent_in(0.f,0.f,0.f), tangent_out(0.f, 0.f, 0.f), pick(0.f)
-{
-}
+	batch.SetBrushColor(ok::Color::Gray);
+	batch.Circle(glm::vec3(rotation_center,0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f), rotation_radius, 5.f);
 
-Zoner::SmoothPathWaypoint::SmoothPathWaypoint(glm::vec3 _position) : position(_position), tangent_in(0.f, 0.f, 0.f), tangent_out(0.f, 0.f, 0.f), pick(0.f)
-{
-}
+	batch.SetBrushColor(ok::Color::Red);
+	batch.MoveTo(from);
+	batch.LineTo(glm::vec3(rotation_center,0.f));
 
-Zoner::SmoothPathWaypoint::SmoothPathWaypoint(glm::vec3 _position, glm::vec3 _tangent) : position(_position), tangent_in(_tangent), tangent_out(_tangent), pick(0.f)
-{
+	batch.SetBrushColor(ok::Color::Green);
+	batch.LineTo(glm::vec3(arc_end, 0.f));
+
+	batch.SetBrushColor(ok::Color::Blue);
+	batch.LineTo(to);
+
+	batch.BatchEnd();
 }

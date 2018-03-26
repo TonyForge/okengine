@@ -1,5 +1,15 @@
 #include "Color.h"
 
+ok::Color ok::Color::Red(1.f,0.f,0.f,1.f);
+ok::Color ok::Color::Green(0.f, 1.f, 0.f, 1.f);
+ok::Color ok::Color::Blue(0.f, 0.f, 1.f, 1.f);
+ok::Color ok::Color::Yellow(1.f, 1.f, 0.f, 1.f);
+ok::Color ok::Color::Magenta(1.f, 0.f, 1.f, 1.f);
+ok::Color ok::Color::Cyan(0.f, 1.f, 1.f, 1.f);
+ok::Color ok::Color::White(1.f, 1.f, 1.f, 1.f);
+ok::Color ok::Color::Black(0.f, 0.f, 0.f, 1.f);
+ok::Color ok::Color::Gray(0.5f, 0.5f, 0.5f, 1.f);
+
 ok::Color::Color() : glm::vec4()
 {
 }

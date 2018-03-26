@@ -3,16 +3,16 @@
 
 void Zoner::Ship::PassTime(float hours_passed)
 {
-	if (trajectory.Length() > 0.f)
+	/*if (trajectory.Length() > 0.f)
 	{
 		trajectory_progress += (engine_speed * hours_passed) / trajectory.Length();
 		if (trajectory_progress > 1.f) trajectory_progress = 1.f;
-	}
+	}*/
 }
 
 void Zoner::Ship::ApplyPassedTime()
 {
-	if (trajectory.Length() > 0.f)
+	/*if (trajectory.Length() > 0.f)
 	{
 		//Move in space
 		Zoner::SmoothPathWaypoint trajectory_waypoint = trajectory.GetWaypoint(trajectory_progress);
@@ -22,12 +22,12 @@ void Zoner::Ship::ApplyPassedTime()
 		EndTransform(true);
 
 		LookAt(trajectory_waypoint.tangent_out, glm::vec3(0.f, 0.f, 1.f), ok::LookAtAxis::Right, ok::LookAtAxis::Forward);
-	}
+	}*/
 }
 
 void Zoner::Ship::OnNewDay()
 {
-	if (trajectory.Length() > 0.f)
+	/*if (trajectory.Length() > 0.f)
 	{
 		if (trajectory_progress < 1.f)
 		{
@@ -39,7 +39,7 @@ void Zoner::Ship::OnNewDay()
 		}
 
 		trajectory_progress = 0.f;
-	}
+	}*/
 }
 
 void Zoner::Ship::Relocate(Zoner::ISpace * to)
@@ -59,6 +59,8 @@ Zoner::ISpace *& Zoner::Ship::Location()
 
 #include "..\..\LineBatch.h"
 ok::graphics::LineBatch* line_batch_debug = nullptr;
+
+glm::vec3 mouse_world_position;
 
 void Zoner::Ship::Update(float dt)
 {
@@ -81,13 +83,18 @@ void Zoner::Ship::Update(float dt)
 		line_batch_debug = new ok::graphics::LineBatch();
 	}
 
-	if (trajectory.Length() > 0.f)
-	Zoner::SmoothPath::DrawDebug(*line_batch_debug, trajectory);
+	Zoner::SmoothPath sp;
+	if (ok::Input::o().KeyDown(ok::MKey::Left))
+	mouse_world_position = location->camera.ScreenToWorldPosition(glm::vec3(ok::Input::o().MouseX(), ok::Input::o().MouseY(), 0.f));
+	std::vector<Zoner::SmoothPathObstacle*> vc;
+	sp.Build(GetPosition(), GetRight(), mouse_world_position, vc, *line_batch_debug);
+	/*if (trajectory.Length() > 0.f)
+	Zoner::SmoothPath::DrawDebug(*line_batch_debug, trajectory);*/
 }
 
 void Zoner::Ship::ClickOnceAt(glm::vec2 space_xy, bool ignore_objects)
 {
-	if (location != nullptr)
+	/*if (location != nullptr)
 	{
 		//todo: avoid WhoIsThere call if ignore_objects == true
 		std::vector<Zoner::IShip*>& picked_objects = location->WhoIsThere(space_xy);
@@ -118,10 +125,6 @@ void Zoner::Ship::ClickOnceAt(glm::vec2 space_xy, bool ignore_objects)
 				glm::vec3 shift1 = glm::rotate(direction_vector, glm::radians(glm::sign(oriented_angle) * 45.f), glm::vec3(0.f, 0.f, 1.f));
 				glm::vec3 shift2 = -glm::rotate(direction_vector, glm::radians(glm::sign(-oriented_angle) * 45.f), glm::vec3(0.f, 0.f, 1.f));
 				glm::vec3 shift3 = glm::rotate(direction_vector, glm::radians(glm::sign(oriented_angle) * 90.f), glm::vec3(0.f, 0.f, 1.f));
-				
-				//glm::vec3 shift2 = glm::rotate(direction_vector, glm::radians(oriented_angle * 0.3f), glm::vec3(0.f, 0.f, 1.f));
-				//glm::vec3 shift3 = glm::rotate(direction_vector, glm::radians(oriented_angle * 0.6f), glm::vec3(0.f, 0.f, 1.f));
-				//glm::vec3 shift4 = glm::rotate(direction_vector, glm::radians(oriented_angle * 0.8f), glm::vec3(0.f, 0.f, 1.f));
 
 			float angular_push = 50.f;
 
@@ -155,41 +158,6 @@ void Zoner::Ship::ClickOnceAt(glm::vec2 space_xy, bool ignore_objects)
 
 			}
 			
-
-			/*if (to_target_distance_length > 100.f)
-			trajectory.CollectWaypoint(this_position + to_target_distance*0.5f + shift3*50.f);
-			else
-			trajectory.CollectWaypoint(this_position + shift2 * 75.f);*/
-
-			/*if (glm::abs(oriented_angle) > 80.f && glm::abs(oriented_angle) < 100.f)
-			{
-				trajectory.CollectWaypoint(this_position + to_target_distance*0.5f + direction_vector*glm::clamp(to_target_distance_length*0.5f, 0.f, 50.f));
-			}
-			else
-			{
-				if (glm::abs(oriented_angle) > 90.f)
-					trajectory.CollectWaypoint(this_position + shift1*50.f);
-
-				if (glm::abs(oriented_angle) > 120.f)
-					trajectory.CollectWaypoint(this_position + shift1*50.f + shift2 * 50.f);
-
-				if (glm::abs(oriented_angle) > 90.f)
-					trajectory.CollectWaypoint(this_position + to_target_distance*0.5f + shift3*50.f);
-				else
-					trajectory.CollectWaypoint(this_position + direction_vector*glm::clamp(to_target_distance_length*0.5f, 0.f, 100.f));
-			}*/
-
-			//if (to_target_distance_length > 100.0f)
-		//	{
-				
-			//}
-			//trajectory.CollectWaypoint(this_position + direction_vector);
-			//trajectory.CollectWaypoint(this_position + direction_vector*50.0f);
-			//trajectory.CollectWaypoint(this_position + shift1*50.f);  //2
-			//trajectory.CollectWaypoint(this_position + shift2*50.f);  //3
-		//	trajectory.CollectWaypoint(this_position + shift3*50.f);  //4
-			//trajectory.CollectWaypoint(this_position + shift4*50.f);  //4
-			//trajectory.CollectWaypoint(this_position + (glm::vec3(space_xy, this_position.z) - this_position)*0.5f);
 			//...
 			
 			trajectory.CollectWaypoint(glm::vec3(space_xy, 0.f));  //5
@@ -213,7 +181,7 @@ void Zoner::Ship::ClickOnceAt(glm::vec2 space_xy, bool ignore_objects)
 					picked_object_picks_counter = 1;
 			}
 		}
-	}
+	}*/
 }
 
 void Zoner::Ship::Player_UpdateDecisions(float dt)
