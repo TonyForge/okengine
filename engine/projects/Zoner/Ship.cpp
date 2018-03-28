@@ -87,10 +87,30 @@ void Zoner::Ship::Update(float dt)
 	if (ok::Input::o().KeyDown(ok::MKey::Left))
 	mouse_world_position = location->camera.ScreenToWorldPosition(glm::vec3(ok::Input::o().MouseX(), ok::Input::o().MouseY(), 0.f));
 	std::vector<Zoner::SmoothPathObstacle*> vc;
-	sp.BuildPassage(GetPosition(), GetRight(), mouse_world_position, vc, *line_batch_debug);
 
+	sp.BeginWaypointsCollection(10.f);
+	sp.BuildPassage(GetPosition(), GetRight(), mouse_world_position, vc, *line_batch_debug);
+	sp.EndWaypointsCollection();
+
+	float div_seg = 1.f / 100.f;
+	float div_prog = 0.f;
 
 	line_batch_debug->BatchBegin();
+
+		line_batch_debug->SetBrushColor(ok::Color::Gray);
+		line_batch_debug->SetBrushThickness(2.f);
+		line_batch_debug->SetBrushSoftness(0.001f);
+
+		line_batch_debug->MoveTo(GetPosition());
+
+		while (div_prog <= 1.f)
+		{
+			line_batch_debug->LineTo(sp.Pick(div_prog).position);
+			div_prog += div_seg;
+		}
+
+	line_batch_debug->BatchEnd();
+	/*line_batch_debug->BatchBegin();
 
 	line_batch_debug->SetBrushColor(ok::Color::Gray);
 	line_batch_debug->Circle(GetPosition(), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f), 100.f, 5.f);
@@ -100,7 +120,7 @@ void Zoner::Ship::Update(float dt)
 	line_batch_debug->MoveTo(mouse_world_position);
 	line_batch_debug->LineTo(glm::vec3(sp._CircleToPointTangent(GetPosition(), 100.0f, mouse_world_position, false), 0.f));
 
-	line_batch_debug->BatchEnd();
+	line_batch_debug->BatchEnd();*/
 
 	/*if (trajectory.Length() > 0.f)
 	Zoner::SmoothPath::DrawDebug(*line_batch_debug, trajectory);*/

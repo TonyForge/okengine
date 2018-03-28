@@ -3,6 +3,44 @@
 std::vector<Zoner::SmoothPathWaypoint> Zoner::SmoothPath::_waypoints_cache;
 std::vector<Zoner::SmoothPathObstacle> Zoner::SmoothPath::_obstacles_cache;
 
+Zoner::SmoothPathWaypoint::SmoothPathWaypoint() : position(0.f,0.f,0.f), tangent(1.f,0.f,0.f) {}
+Zoner::SmoothPathWaypoint::SmoothPathWaypoint(glm::vec3 _position) : position(_position), tangent(1.f, 0.f, 0.f) {}
+Zoner::SmoothPathWaypoint::SmoothPathWaypoint(glm::vec3 _position, glm::vec3 _tangent) : position(_position), tangent(_tangent) {}
+
+Zoner::SmoothPathWaypoint Zoner::SmoothPath::Pick(float pick)
+{
+	if (_waypoints.size() == 0) return Zoner::SmoothPathWaypoint();
+
+	float path_position = static_cast<float>(_waypoints.size() - 1) * pick;
+	size_t waypoint_index = static_cast<size_t>(glm::floor(path_position));
+	size_t waypoint_index_post = glm::clamp(static_cast<int>(waypoint_index + 1), 0, static_cast<int>(_waypoints.size() - 1));
+
+	float path_piece_progress = (path_position - waypoint_index);
+
+	Zoner::SmoothPathWaypoint result;
+	Zoner::SmoothPathWaypoint& waypoint = _waypoints[waypoint_index];
+	Zoner::SmoothPathWaypoint& waypoint_post = _waypoints[waypoint_index_post];
+
+	result.position = glm::lerp(waypoint.position, waypoint_post.position, path_piece_progress);
+	result.tangent = glm::lerp(waypoint.tangent, waypoint_post.tangent, path_piece_progress);
+
+	return result;
+}
+
+void Zoner::SmoothPath::BeginWaypointsCollection(float seg_length)
+{
+	_seg_length = seg_length;
+	_total_length = 0;
+
+	_waypoints.clear();
+	_waypoints_cache.clear();
+}
+
+void Zoner::SmoothPath::EndWaypointsCollection()
+{
+	_CalculateTangents();
+}
+
 void Zoner::SmoothPath::BuildPassage(glm::vec2 from, glm::vec2 from_direction, glm::vec2 to, std::vector<Zoner::SmoothPathObstacle*>& obstacles, ok::graphics::LineBatch& batch)
 {
 	_waypoints_cache.clear();
@@ -37,7 +75,7 @@ void Zoner::SmoothPath::BuildPassage(glm::vec2 from, glm::vec2 from_direction, g
 			//create waypoints from line between path_point and in (store in waypoints cache)
 			_CollectWaypointsFromLineSegment(path_point, in, true);
 			//create waypoints from arc between in and out (store in waypoints cache)
-			_CollectWaypointsFromArc(obstacle.position, obstacle.radius, in, out, 5.f, true);
+			_CollectWaypointsFromArc(obstacle.position, obstacle.radius, in, out, true);
 
 			path_point = out;
 		}
@@ -106,15 +144,15 @@ void Zoner::SmoothPath::BuildPassage(glm::vec2 from, glm::vec2 from_direction, g
 	arc_end += from;
 
 	//create waypoints from arc between from and arc_end
-	_CollectWaypointsFromArc(rotation_center, rotation_radius, from, arc_end, 5.f);
+	_CollectWaypointsFromArc(rotation_center, rotation_radius, from, arc_end);
 	//create waypoints from line between arc_end and to
 	_CollectWaypointsFromLineSegment(arc_end, to);
 	//append waypoints from waypoints cache (filled from obstacles avoidance stage)
 	_waypoints.reserve(_waypoints.size() + _waypoints_cache.size());
-	_waypoints.insert(_waypoints.end(), _waypoints_cache.begin(), _waypoints_cache.end());
+	_waypoints.insert(_waypoints.end(), _waypoints_cache.end(), _waypoints_cache.begin());
 
 	//Otrisovka debug
-	batch.SetBrushThickness(2.f);
+	/*batch.SetBrushThickness(2.f);
 	batch.SetBrushSoftness(0.0001f);
 
 	batch.BatchBegin();
@@ -132,7 +170,7 @@ void Zoner::SmoothPath::BuildPassage(glm::vec2 from, glm::vec2 from_direction, g
 	batch.SetBrushColor(ok::Color::Blue);
 	batch.LineTo(glm::vec3(to, 0.f));
 
-	batch.BatchEnd();
+	batch.BatchEnd();*/
 }
 
 glm::vec2 Zoner::SmoothPath::_CircleToPointTangent(glm::vec2 circle_center, float circle_radius, glm::vec2 point, bool flip_side)
@@ -161,12 +199,107 @@ bool Zoner::SmoothPath::_CircleToLineIntesectionCheck(glm::vec2 circle_center, f
 	return false;
 }
 
-void Zoner::SmoothPath::_CollectWaypointsFromArc(glm::vec2 circle_center, float circle_radius, glm::vec2 arc_begin, glm::vec2 arc_end, float arc_step_degrees, bool use_cache)
+void Zoner::SmoothPath::_CollectWaypointsFromArc(glm::vec2 circle_center, float circle_radius, glm::vec2 arc_begin, glm::vec2 arc_end, bool use_cache)
 {
+	std::vector<Zoner::SmoothPathWaypoint>* _waypoints_ptr = nullptr;
+
+	if (use_cache)
+	{
+		_waypoints_ptr = &_waypoints_cache;
+	}
+	else
+	{
+		_waypoints_ptr = &_waypoints;
+	}
+
+	std::vector<Zoner::SmoothPathWaypoint>& collection = *_waypoints_ptr;
+
+	float arc_angle = glm::degrees(glm::orientedAngle(glm::normalize(arc_begin - circle_center), glm::normalize(arc_end - circle_center)));
+	float arc_length = (glm::pi<float>() * circle_radius * glm::abs(arc_angle)) / 180.f;
+	float seg_angle = (_seg_length * 180.f) / (glm::pi<float>() * circle_radius);
+
+	collection.push_back(Zoner::SmoothPathWaypoint(glm::vec3(arc_begin, 0.f)));
+
+	arc_begin = arc_begin - circle_center;
+
+	while (arc_length > 0.f)
+	{
+		arc_begin = glm::rotate(arc_begin, glm::sign(arc_angle) * glm::radians(seg_angle));
+		_total_length += _seg_length;
+
+		collection.push_back(Zoner::SmoothPathWaypoint(glm::vec3(circle_center + arc_begin, 0.f)));
+		arc_length -= _seg_length;
+	}
+
+	collection.push_back(Zoner::SmoothPathWaypoint(glm::vec3(arc_end, 0.f)));
+	_total_length += (_seg_length + arc_length);
 }
 
 void Zoner::SmoothPath::_CollectWaypointsFromLineSegment(glm::vec2 line_begin, glm::vec2 line_end, bool use_cache)
 {
+	std::vector<Zoner::SmoothPathWaypoint>* _waypoints_ptr = nullptr;
+
+	if (use_cache)
+	{
+		_waypoints_ptr = &_waypoints_cache;
+	}
+	else
+	{
+		_waypoints_ptr = &_waypoints;
+	}
+
+	std::vector<Zoner::SmoothPathWaypoint>& collection = *_waypoints_ptr;
+
+	glm::vec2 line_dir = line_end - line_begin;
+	float line_len = glm::length(line_dir);
+	line_dir = glm::normalize(line_dir);
+
+	collection.push_back(Zoner::SmoothPathWaypoint(glm::vec3(line_begin, 0.f)));
+
+	while (line_len > 0.f)
+	{
+		line_begin += line_dir * _seg_length;
+		_total_length += _seg_length;
+
+		collection.push_back(Zoner::SmoothPathWaypoint(glm::vec3(line_begin, 0.f)));
+		line_len -= _seg_length;
+	}
+
+	collection.push_back(Zoner::SmoothPathWaypoint(glm::vec3(line_end, 0.f)));
+	_total_length += (_seg_length + line_len);
+}
+
+void Zoner::SmoothPath::_CalculateTangents()
+{
+	int index_pre;
+	int index_post;
+
+	int index = 0;
+
+	for (auto& waypoint : _waypoints)
+	{
+		index_pre = glm::clamp(index - 1, 0, static_cast<int>(_waypoints.size() - 1));
+		index_post = glm::clamp(index + 1, 0, static_cast<int>(_waypoints.size() - 1));
+
+		Zoner::SmoothPathWaypoint& waypoint_pre = _waypoints[index_pre];
+		Zoner::SmoothPathWaypoint& waypoint_post = _waypoints[index_post];
+
+		if (index == 0)
+		{
+			waypoint.tangent = glm::normalize(waypoint_post.position - waypoint.position);
+		}
+		else
+			if (index == index_post)
+			{
+				waypoint.tangent = waypoint_pre.tangent;
+			}
+			else
+			{
+				waypoint.tangent = glm::normalize(waypoint_post.position - waypoint_pre.position);
+			}
+
+		index++;
+	}
 }
 
 /*void Zoner::SmoothPath::Build(glm::vec3 from, glm::vec3 from_direction, glm::vec3 to, std::vector<Zoner::SmoothPathObstacle*>& obstacles, ok::graphics::LineBatch& batch)
