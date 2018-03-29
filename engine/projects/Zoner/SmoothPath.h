@@ -48,9 +48,9 @@ namespace Zoner
 		static std::vector<Zoner::SmoothPathWaypoint> _waypoints_cache;
 		static std::vector<Zoner::SmoothPathObstacle> _obstacles_cache;
 
-		//circle_center, arc_begin, arc_end is in world space
+		//circle_center is in world space
 		bool _CircleToLineIntesectionCheck(glm::vec2 circle_center, float circle_radius, glm::vec2 line_begin, glm::vec2 line_end);
-		void _CollectWaypointsFromArc(glm::vec2 circle_center, float circle_radius, glm::vec2 arc_begin, glm::vec2 arc_end, bool use_cache = false);
+		void _CollectWaypointsFromArc(glm::vec2 circle_center, float circle_radius, glm::vec2 arc_begin, glm::vec2 arc_end, bool use_cache = false, bool force_ccw = false, bool force_cw = false);
 		void _CollectWaypointsFromLineSegment(glm::vec2 line_begin, glm::vec2 line_end, bool use_cache = false);
 		void _CalculateTangents();
 
