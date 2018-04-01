@@ -64,6 +64,7 @@ glm::vec3 mouse_world_position;
 
 glm::vec2 pos0(-200.f, 200.f);
 glm::vec2 pos1(-300.f, 300.f);
+glm::vec2 pos2(-350.f, 350.f);
 
 void Zoner::Ship::Update(float dt)
 {
@@ -91,14 +92,17 @@ void Zoner::Ship::Update(float dt)
 	mouse_world_position = location->camera.ScreenToWorldPosition(glm::vec3(ok::Input::o().MouseX(), ok::Input::o().MouseY(), 0.f));
 	std::vector<Zoner::SmoothPathObstacle*> vc;
 
-	Zoner::SmoothPathObstacle obst[2];
+	Zoner::SmoothPathObstacle obst[3];
 
 
 	obst[0].position = pos0;
 	obst[0].radius = 25.f;
 
 	obst[1].position = pos1;
-	obst[1].radius = 25.f;
+	obst[1].radius = 50.f;
+
+	obst[2].position = pos2;
+	obst[2].radius = 75.f;
 
 	if (ok::Input::o().KeyDown(ok::MKey::Right))
 	{
@@ -114,7 +118,7 @@ void Zoner::Ship::Update(float dt)
 
 	pos0 = obst[0].position;
 	pos1 = obst[1].position;
-
+	pos2 = obst[2].position;
 
 	for (auto&& obstacle : obst)
 	{
@@ -137,6 +141,7 @@ void Zoner::Ship::Update(float dt)
 		line_batch_debug->SetBrushColor(ok::Color::Red);
 		line_batch_debug->Circle(glm::vec3(obst[0].position, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f), obst[0].radius, 5.f);
 		line_batch_debug->Circle(glm::vec3(obst[1].position, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f), obst[1].radius, 5.f);
+		line_batch_debug->Circle(glm::vec3(obst[2].position, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f), obst[2].radius, 5.f);
 
 		line_batch_debug->SetBrushColor(ok::Color::Gray);
 		line_batch_debug->MoveTo(GetPosition());
@@ -147,11 +152,21 @@ void Zoner::Ship::Update(float dt)
 			div_prog += div_seg;
 		}
 
-	
+
+		/*line_batch_debug->SetBrushColor(ok::Color::Magenta);
+		line_batch_debug->MoveTo(GetPosition());
+		line_batch_debug->LineTo(mouse_world_position);*/
 
 	line_batch_debug->BatchEnd();
 
+	//glm::vec2 circ1_center = ;
+	/*Zoner::SmoothPath::_Tangent2D tang = sp._CircleToCircleTangent(obst[0].position, obst[0].radius, obst[1].position, obst[1].radius, true, false);
 
+	line_batch_debug->BatchBegin();
+	line_batch_debug->SetBrushColor(ok::Color::Magenta);
+	line_batch_debug->MoveTo(glm::vec3(tang.begin, 0.f));
+	line_batch_debug->LineTo(glm::vec3(tang.end, 0.f));
+	line_batch_debug->BatchEnd();*/
 	/*line_batch_debug->BatchBegin();
 
 	line_batch_debug->SetBrushColor(ok::Color::Gray);
