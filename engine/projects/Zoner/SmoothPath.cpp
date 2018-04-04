@@ -7,6 +7,7 @@ std::vector<Zoner::SmoothPathObstacle> Zoner::SmoothPath::_obstacles_cache_pre;
 std::vector<bool> Zoner::SmoothPath::_obstacles_moved_to_cache;
 std::vector<bool> Zoner::SmoothPath::_obstacles_forbidden_cache;
 std::vector<glm::vec2> Zoner::SmoothPath::_pathfind_pivots_cache;
+std::vector<glm::vec3> Zoner::SmoothPath::_obstacles_hotspot_cache;
 
 bool Zoner::SmoothPath::_pfs_mirrored;
 glm::vec2 Zoner::SmoothPath::_pfs_rotation_center;
@@ -755,15 +756,28 @@ bool Zoner::SmoothPath::_RebuildPathfindPivotsCache(glm::vec2 from, glm::vec2 to
 	for (i = 0; i < _obstacles_cache.size(); i++)
 	{
 		Zoner::SmoothPathObstacle& obstacle = _obstacles_cache[i];
+		float max_delta = 0.f;
+		int max_delta_obstacle_index = -1;
+
+		_obstacles_hotspot_cache.clear();
+		_obstacles_hotspot_cache.reserve(_obstacles_cache.size());
 
 		for (j = i + 1; j < _obstacles_cache.size(); j++)
 		{
 			Zoner::SmoothPathObstacle& obstacle_next = _obstacles_cache[j];
 			glm::vec2 distance = obstacle.position - obstacle_next.position;
+			float delta = glm::pow(obstacle.radius + obstacle_next.radius, 2.f) - glm::length2(distance);
 
-			if (glm::length2(distance) <= glm::pow(obstacle.radius + obstacle_next.radius, 2.f))
+			if (delta >= 0.f)
 			{
 				//intersection detected
+				if ((delta > max_delta) || (max_delta_obstacle_index == -1))
+				{
+					max_delta = delta;
+					max_delta_obstacle_index = j;
+				}
+
+				_obstacles_hotspot_cache[j].z = glm::sqrt(delta);
 			}
 			else
 			{
@@ -771,14 +785,56 @@ bool Zoner::SmoothPath::_RebuildPathfindPivotsCache(glm::vec2 from, glm::vec2 to
 			}
 		}
 
+		
 		//from i to j obstacles are intersecting each other
+		if (max_delta_obstacle_index != -1)
+		{
+			int obstacles_count = j - i;
+
+			//calculate hotspots
+			for (int m = 0; m < obstacles_count; m++)
+			{
+				Zoner::SmoothPathObstacle& obstacle = _obstacles_cache[i + m];
+				glm::vec3& hotspot = _obstacles_hotspot_cache[m];
 
 
-		//
-		i = j - 1;
+				hotspot.x = 0.f;
+				hotspot.y = 0.f;
+
+				for (int k = 0; k < obstacles_count; k++)
+				{
+					if (k != m)
+					{
+						Zoner::SmoothPathObstacle& obstacle_next = _obstacles_cache[i + k];
+
+						hotspot += glm::vec3(glm::normalize(obstacle.position - obstacle_next.position) * _obstacles_hotspot_cache[i + k].z, 0.f);
+					}
+				}
+
+				if (glm::length2(hotspot) > glm::pow(obstacle.radius, 2.f))
+				{
+					hotspot = glm::normalize(hotspot) * obstacle.radius;
+				}
+
+				hotspot += obstacle.position;
+			}
+
+
+			//
+			//i = j - 1;
+		}
+
+		
+		
 	}
 
 	return new_obstacles_found;
+}
+
+void Zoner::SmoothPath::_RescaleCircle(glm::vec2 & circle_center, float & circle_radius, glm::vec2 scale_hotspot, float scale)
+{
+	circle_center = scale_hotspot + (circle_center - scale_hotspot) * scale;
+	circle_radius *= scale;
 }
 
 /*void Zoner::SmoothPath::Build(glm::vec3 from, glm::vec3 from_direction, glm::vec3 to, std::vector<Zoner::SmoothPathObstacle*>& obstacles, ok::graphics::LineBatch& batch)
