@@ -5,7 +5,8 @@
 
 namespace Zoner
 {
-	class SmoothPathObstacle
+
+	class SmoothPathObstacle //obsolete
 	{
 	public:
 		glm::vec2 position;
@@ -30,22 +31,16 @@ namespace Zoner
 	public:
 		Zoner::SmoothPathWaypoint Pick(float pick);
 
-		void BeginWaypointsCollection(float seg_length);
-		void EndWaypointsCollection();
+		void BeginWay(glm::vec2 begin_position, glm::vec2 begin_direction, float seg_length);
+		void AdvanceWay(glm::vec2 next_position);
+		void EndWay();
 
-		/*void BeginWaypointsCollection();
-		void CollectWaypoint(glm::vec2 position, glm::vec2 direction);
-		void EndWaypointsCollection();
+		float Length();
+		void Clear();
 
-		void BuildFromWaypoints(std::vector<Zoner::SmoothPathObstacle*>& obstacles);
-		void BuildFromEllipse(glm::vec2 center, glm::vec2 axis_x, glm::vec2 axis_y);*/
-
-		void BuildPassage(glm::vec2 from, glm::vec2 from_direction, glm::vec2 to, std::vector<Zoner::SmoothPathObstacle*>& obstacles, ok::graphics::LineBatch& batch);
-
-		//void Build(glm::vec3 from, glm::vec3 from_direction, glm::vec3 to, std::vector<Zoner::SmoothPathObstacle*>& obstacles, ok::graphics::LineBatch& batch);
-
+		//void BuildFromEllipse(glm::vec2 center, glm::vec2 axis_x, glm::vec2 axis_y);
 		
-	//private:
+	private:
 		struct _Tangent2D
 		{
 			glm::vec2 begin;
@@ -54,20 +49,12 @@ namespace Zoner
 
 		std::vector<Zoner::SmoothPathWaypoint> _waypoints;
 		static std::vector<Zoner::SmoothPathWaypoint> _waypoints_cache;
-		static std::vector<Zoner::SmoothPathObstacle> _obstacles_cache;
-		static std::vector<Zoner::SmoothPathObstacle> _obstacles_cache_post;
-		static std::vector<Zoner::SmoothPathObstacle> _obstacles_cache_pre;
-		static std::vector<bool> _obstacles_moved_to_cache;
-		static std::vector<bool> _obstacles_forbidden_cache;
-		static std::vector<glm::vec2> _pathfind_pivots_cache;
-		static std::vector<glm::vec3> _obstacles_hotspot_cache;
 
 		//circle_center is in world space
 		bool _CircleToLineIntesectionCheck(glm::vec2 circle_center, float circle_radius, glm::vec2 line_begin, glm::vec2 line_end);
 		void _CollectWaypointsFromArc(glm::vec2 circle_center, float circle_radius, glm::vec2 arc_begin, glm::vec2 arc_end, bool use_cache = false, bool force_ccw = false, bool force_cw = false);
 		void _CollectWaypointsFromLineSegment(glm::vec2 line_begin, glm::vec2 line_end, bool use_cache = false);
 		void _CalculateTangents();
-		bool _RebuildPathfindPivotsCache(glm::vec2 from, glm::vec2 to, std::vector<Zoner::SmoothPathObstacle*>& obstacles);
 		void _RescaleCircle(glm::vec2& circle_center, float& circle_radius, glm::vec2 scale_hotspot, float scale);
 
 		//must be non parallel

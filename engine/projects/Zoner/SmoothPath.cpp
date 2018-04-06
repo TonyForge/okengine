@@ -1,13 +1,6 @@
 #include "SmoothPath.h"
 
 std::vector<Zoner::SmoothPathWaypoint> Zoner::SmoothPath::_waypoints_cache;
-std::vector<Zoner::SmoothPathObstacle> Zoner::SmoothPath::_obstacles_cache;
-std::vector<Zoner::SmoothPathObstacle> Zoner::SmoothPath::_obstacles_cache_post;
-std::vector<Zoner::SmoothPathObstacle> Zoner::SmoothPath::_obstacles_cache_pre;
-std::vector<bool> Zoner::SmoothPath::_obstacles_moved_to_cache;
-std::vector<bool> Zoner::SmoothPath::_obstacles_forbidden_cache;
-std::vector<glm::vec2> Zoner::SmoothPath::_pathfind_pivots_cache;
-std::vector<glm::vec3> Zoner::SmoothPath::_obstacles_hotspot_cache;
 
 bool Zoner::SmoothPath::_pfs_mirrored;
 glm::vec2 Zoner::SmoothPath::_pfs_rotation_center;
@@ -45,201 +38,61 @@ Zoner::SmoothPathWaypoint Zoner::SmoothPath::Pick(float pick)
 	return result;
 }
 
-void Zoner::SmoothPath::BeginWaypointsCollection(float seg_length)
+void Zoner::SmoothPath::BeginWay(glm::vec2 begin_position, glm::vec2 begin_direction, float seg_length)
 {
 	_seg_length = seg_length;
 	_total_length = 0;
 
 	_waypoints.clear();
 	_waypoints_cache.clear();
+
+	_waypoints_cache.push_back(Zoner::SmoothPathWaypoint(glm::vec3(begin_position,0.f), glm::vec3(begin_direction, 0.f)));
 }
 
-void Zoner::SmoothPath::EndWaypointsCollection()
+void Zoner::SmoothPath::AdvanceWay(glm::vec2 next_position)
 {
+	if (glm::length2(next_position - glm::vec2(_waypoints_cache[_waypoints_cache.size() - 1].position)) > 1.f)
+	{
+		glm::vec2 arc_end = _CalculatePassageFirstSection(_waypoints_cache[_waypoints_cache.size() - 1].position, _waypoints_cache[_waypoints_cache.size() - 1].tangent, next_position);
+		glm::vec2 next_direction = glm::normalize(next_position - arc_end);
+
+		_waypoints_cache.push_back(Zoner::SmoothPathWaypoint(glm::vec3(arc_end, _pfs_mirrored == true ? 1.f : 0.f), glm::vec3(next_direction, _pfs_rotation_center.x)));
+		_waypoints_cache.push_back(Zoner::SmoothPathWaypoint(glm::vec3(next_position, _pfs_rotation_center.y), glm::vec3(next_direction, _pfs_rotation_radius)));
+	}
+}
+
+void Zoner::SmoothPath::EndWay()
+{
+	for (size_t i = 1; i < _waypoints_cache.size() - 1; i+=2)
+	{
+		Zoner::SmoothPathWaypoint& wp0 = _waypoints_cache[i - 1];
+		Zoner::SmoothPathWaypoint& wp1 = _waypoints_cache[i];
+		Zoner::SmoothPathWaypoint& wp2 = _waypoints_cache[i + 1];
+
+		if (wp1.position.z == 1.f) //if (_pfs_mirrored)
+			//_CollectWaypointsFromArc(_pfs_rotation_center, _pfs_rotation_radius, from, arc_end, false, true, false);
+			_CollectWaypointsFromArc(glm::vec2(wp1.tangent.z, wp2.position.z), wp2.tangent.z, wp0.position, wp1.position, false, true, false);
+		else
+			//_CollectWaypointsFromArc(_pfs_rotation_center, _pfs_rotation_radius, from, arc_end, false, false, true);
+			_CollectWaypointsFromArc(glm::vec2(wp1.tangent.z, wp2.position.z), wp2.tangent.z, wp0.position, wp1.position, false, false, true);
+			
+		_CollectWaypointsFromLineSegment(wp1.position, wp2.position, false);
+	}
+
 	_CalculateTangents();
 }
 
-void Zoner::SmoothPath::BuildPassage(glm::vec2 from, glm::vec2 from_direction, glm::vec2 to, std::vector<Zoner::SmoothPathObstacle*>& obstacles, ok::graphics::LineBatch& batch)
+float Zoner::SmoothPath::Length()
 {
+	return _total_length;
+}
+
+void Zoner::SmoothPath::Clear()
+{
+	_waypoints.clear();
 	_waypoints_cache.clear();
 
-	glm::vec2 arc_end = _CalculatePassageFirstSection(from, from_direction, to);
-	glm::vec2 obstacle_collection_direction = glm::normalize(arc_end - to); //because we collect obstacles from ending to starting 
-	//*********************************
-
-	//Formiruem uporyadochenniy spisok peresekaemih prepyatstviy 
-	_obstacles_cache.clear();
-	_obstacles_moved_to_cache.assign(obstacles.size(), false);
-	_obstacles_forbidden_cache.assign(obstacles.size(), false);
-
-	int obstacle_index = 0;
-
-	for (auto&& obstacle : obstacles)
-	{
-		if (true == _CircleToLineIntesectionCheck(obstacle->position, obstacle->radius, arc_end, to))
-		{
-			_obstacles_cache.push_back(*obstacle);
-			_obstacles_moved_to_cache[obstacle_index] = true;
-		}
-
-		obstacle_index++;
-	}
-
-	auto sort_obstacles_function = [to](const Zoner::SmoothPathObstacle& left, const Zoner::SmoothPathObstacle& right) {
-		return glm::length2(left.position - to) < glm::length2(right.position - to);
-	};
-	
-	//*************************************
-	//dopisat s uchetom starting ending point
-	if (_obstacles_cache.size() > 0)
-	{
-		std::sort(_obstacles_cache.begin(), _obstacles_cache.end(), sort_obstacles_function);
-		//int iteration = 0;
-		while (_RebuildPathfindPivotsCache(arc_end, to, obstacles) != false) 
-		{
-			/*batch.BatchBegin();
-			if (iteration == 0)
-			{
-				batch.SetBrushColor(ok::Color::Blue);
-				batch.SetBrushThickness(4.f);
-			}
-			else if (iteration == 1)
-			{
-				batch.SetBrushColor(ok::Color::Yellow);
-				batch.SetBrushThickness(8.f);
-			}
-			else if (iteration == 2)
-			{
-				batch.SetBrushColor(ok::Color::Green);
-				batch.SetBrushThickness(16.f);
-			}
-
-			batch.MoveTo(glm::vec3(_pathfind_pivots_cache[0], 0.f));
-			for (size_t i = 1; i < _pathfind_pivots_cache.size(); i++)
-			{
-				batch.LineTo(glm::vec3(_pathfind_pivots_cache[i], 0.f));
-			}
-
-			batch.SetBrushThickness(2.f);
-			batch.BatchEnd();
-
-			iteration++;*/
-		}
-
-		batch.BatchBegin();
-		batch.SetBrushColor(ok::Color::Cyan);
-		batch.SetBrushThickness(1.f);
-
-		batch.MoveTo(glm::vec3(_pathfind_pivots_cache[0], 0.f));
-		for (size_t i = 1; i < _pathfind_pivots_cache.size(); i++)
-		{
-			batch.LineTo(glm::vec3(_pathfind_pivots_cache[i], 0.f));
-		}
-
-		batch.SetBrushThickness(2.f);
-		batch.BatchEnd();
-
-		//collect initial section
-		//_CollectWaypointsFromLineSegment(_pathfind_pivots_cache[0], _pathfind_pivots_cache[1], true);
-
-		obstacle_index = 0;
-
-		bool arc_or_line = false; //false is arc, true is line
-
-		for (size_t i = 1; i < _pathfind_pivots_cache.size()-2; i++)
-		{
-			glm::vec2& pivot_begin = _pathfind_pivots_cache[i];
-			glm::vec2& pivot_end = _pathfind_pivots_cache[i+1];
-			Zoner::SmoothPathObstacle& obstacle = _obstacles_cache[obstacle_index];
-
-			if (arc_or_line == false)
-			{
-				glm::vec2 arc_direction = glm::normalize(pivot_end - pivot_begin);
-
-				if (glm::dot(obstacle_collection_direction, arc_direction) > 0)
-				{
-					_CollectWaypointsFromLineSegment(_pathfind_pivots_cache[i - 1], pivot_begin, true);
-					_CollectWaypointsFromArc(obstacle.position, obstacle.radius, pivot_begin, pivot_end, true);		
-				}
-				else
-				{
-					//guaranteed to exists
-					glm::vec2 intersection = _LineToLineIntersection(_pathfind_pivots_cache[i - 1], pivot_begin, _pathfind_pivots_cache[i + 2], pivot_end);
-					glm::vec2 nrm = (intersection - ( pivot_begin + 0.5f * (pivot_end - pivot_begin)));
-
-					pivot_begin += nrm*2.0f;
-					pivot_end += nrm*2.0f;
-
-					glm::vec2 mirrored_circle_center = intersection + (intersection - obstacle.position);
-
-					std::swap(pivot_begin, pivot_end);
-
-					_CollectWaypointsFromLineSegment(_pathfind_pivots_cache[i - 1], pivot_begin, true);
-					_CollectWaypointsFromArc(mirrored_circle_center, obstacle.radius, pivot_begin, pivot_end, true);
-				}
-			}
-				
-
-			if (arc_or_line == true)
-			{
-				//_CollectWaypointsFromLineSegment(pivot_begin, pivot_end, true);
-				obstacle_index++;
-			}
-
-			arc_or_line = !arc_or_line;
-		}
-
-		to = _pathfind_pivots_cache[_pathfind_pivots_cache.size() - 2];
-		//arc_end = _CalculatePassageFirstSection(from, from_direction, to);
-	}
-
-	//*************************************
-
-	//create waypoints from arc between from and arc_end
-	if (_pfs_mirrored)
-	_CollectWaypointsFromArc(_pfs_rotation_center, _pfs_rotation_radius, from, arc_end,false, true, false);
-	else
-	_CollectWaypointsFromArc(_pfs_rotation_center, _pfs_rotation_radius, from, arc_end, false, false, true);
-	//create waypoints from line between arc_end and to
-	_CollectWaypointsFromLineSegment(arc_end, to);
-	//append waypoints from waypoints cache (filled from obstacles avoidance stage)
-
-	if (_waypoints_cache.size() > 0)
-	{
-		if (_waypoints.size() == 0 || _waypoints.size() > 0 && false == _waypoints[_waypoints.size() - 1].IsEqualTo(_waypoints_cache[_waypoints_cache.size() - 1]))
-		{
-			_waypoints.reserve(_waypoints.size() + _waypoints_cache.size());
-			_waypoints.insert(_waypoints.end(), _waypoints_cache.rbegin(), _waypoints_cache.rend());
-		}
-		else
-		{
-			_waypoints.reserve(_waypoints.size() + _waypoints_cache.size() - 1);
-			_waypoints.insert(_waypoints.end(), _waypoints_cache.rbegin() + 1, _waypoints_cache.rend());
-		}
-	}
-	
-
-
-	//Otrisovka debug
-	/*batch.SetBrushThickness(2.f);
-	batch.SetBrushSoftness(0.0001f);
-
-	batch.BatchBegin();
-
-	batch.SetBrushColor(ok::Color::Gray);
-	batch.Circle(glm::vec3(rotation_center, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f), rotation_radius, 5.f);
-
-	batch.SetBrushColor(ok::Color::Red);
-	batch.MoveTo(glm::vec3(from, 0.f));
-	batch.LineTo(glm::vec3(rotation_center, 0.f));
-
-	batch.SetBrushColor(ok::Color::Green);
-	batch.LineTo(glm::vec3(arc_end, 0.f));
-
-	batch.SetBrushColor(ok::Color::Blue);
-	batch.LineTo(glm::vec3(to, 0.f));
-
-	batch.BatchEnd();*/
+	_total_length = 0.f;
 }
 
 glm::vec2 Zoner::SmoothPath::_LineToLineIntersection(glm::vec2 line_a_start, glm::vec2 line_a_end, glm::vec2 line_b_start, glm::vec2 line_b_end)
@@ -270,6 +123,10 @@ glm::vec2 Zoner::SmoothPath::_CircleToPointTangent(glm::vec2 circle_center, floa
 {
 	float c = glm::length(circle_center - point);
 	float a = circle_radius;
+	if (c == a)
+	{
+		c += 1.0f;
+	}
 	float b = glm::sqrt(c*c - a*a);
 
 	if (a > c) b = 1.0f;
@@ -445,9 +302,8 @@ glm::vec2 Zoner::SmoothPath::_CalculatePassageFirstSection(const glm::vec2 & fro
 	bool& mirrored = _pfs_mirrored;
 	mirrored = false;
 
-	glm::vec2 to_memory = to;
-
 	glm::vec2 from_to_direction = to - from;
+	glm::vec2 to_memory = to;
 	glm::vec2 from_direction_nrm = glm::vec2(from_direction.y, -from_direction.x);
 
 	//Esli tochka "to" ne v nignei poluploskosti, to otzerkalivaem ee
@@ -592,9 +448,6 @@ void Zoner::SmoothPath::_CollectWaypointsFromArc(glm::vec2 circle_center, float 
 		arc_length -= _seg_length;
 		arc_angle -= _step_angle;
 	}
-
-	//collection.push_back(Zoner::SmoothPathWaypoint(glm::vec3(arc_end, 0.f)));
-	//_total_length += (_seg_length + arc_length);
 }
 
 void Zoner::SmoothPath::_CollectWaypointsFromLineSegment(glm::vec2 line_begin, glm::vec2 line_end, bool use_cache)
@@ -637,9 +490,6 @@ void Zoner::SmoothPath::_CollectWaypointsFromLineSegment(glm::vec2 line_begin, g
 		collection.push_back(waypoint);
 		line_len -= _step_len;
 	}
-
-	//collection.push_back(Zoner::SmoothPathWaypoint(glm::vec3(line_end, 0.f)));
-	//_total_length += (_seg_length + line_len);
 }
 
 void Zoner::SmoothPath::_CalculateTangents()
@@ -675,241 +525,8 @@ void Zoner::SmoothPath::_CalculateTangents()
 	}
 }
 
-bool Zoner::SmoothPath::_RebuildPathfindPivotsCache(glm::vec2 from, glm::vec2 to, std::vector<Zoner::SmoothPathObstacle*>& obstacles)
-{
-	auto sort_obstacles_function = [to](const Zoner::SmoothPathObstacle& left, const Zoner::SmoothPathObstacle& right) {
-		return glm::length2(left.position - to) < glm::length2(right.position - to);
-	};
-
-	auto sort_pivots_function = [to](const glm::vec2& left, const glm::vec2& right) {
-		return glm::length2(left - to) < glm::length2(right - to);
-	};
-
-
-	_pathfind_pivots_cache.clear();
-	_pathfind_pivots_cache.reserve((_obstacles_cache.size() - 1) * 2 + 2);
-
-
-	bool flip_side = false;
-
-	//starting point 
-
-	Zoner::SmoothPath::_Tangent2D tmp_tangent = _CircleToCircleTangent(to, 0.f, _obstacles_cache[0].position, _obstacles_cache[0].radius, true, false);
-	_pathfind_pivots_cache.push_back(tmp_tangent.begin);
-	_pathfind_pivots_cache.push_back(tmp_tangent.end);
-	//segments_count++;
-	//_pathfind_pivots_cache.push_back(to);
-	//_pathfind_pivots_cache.push_back(_CircleToPointTangent(_obstacles_cache[0].position, _obstacles_cache[0].radius, to, flip_side));
-	//flip_side = !flip_side;
-
-	for (size_t i = 0; i < _obstacles_cache.size() - 1; i++)
-	{
-		Zoner::SmoothPathObstacle& obstacle = _obstacles_cache[i];
-		Zoner::SmoothPathObstacle& obstacle_next = _obstacles_cache[i + 1];
-
-		Zoner::SmoothPath::_Tangent2D obstacles_tangent = _CircleToCircleTangent(obstacle.position, obstacle.radius, obstacle_next.position, obstacle_next.radius, true, false);
-		_pathfind_pivots_cache.push_back(obstacles_tangent.begin);
-		_pathfind_pivots_cache.push_back(obstacles_tangent.end);
-
-		//flip_side = !flip_side;
-	}
-
-	tmp_tangent = _CircleToCircleTangent(_obstacles_cache[_obstacles_cache.size() - 1].position, _obstacles_cache[_obstacles_cache.size() - 1].radius, from, 0.f, true, false);
-	_pathfind_pivots_cache.push_back(tmp_tangent.begin);
-	_pathfind_pivots_cache.push_back(tmp_tangent.end);
-
-
-	//std::sort(_pathfind_pivots_cache.begin(), _pathfind_pivots_cache.end(), sort_pivots_function);
-
-	bool new_obstacles_found = false;
-
-	for (size_t i = 0; i < _pathfind_pivots_cache.size(); i += 2)
-	{
-		glm::vec2& line_begin = _pathfind_pivots_cache[i];
-		glm::vec2& line_end = _pathfind_pivots_cache[i + 1];
-
-		for (size_t i = 0; i < obstacles.size(); i++)
-		{
-			if (_obstacles_moved_to_cache[i] == true)
-			{
-				//do nothing
-			}
-			else
-			{
-				Zoner::SmoothPathObstacle& obstacle = *obstacles[i];
-				if (true == _CircleToLineIntesectionCheck(obstacle.position, obstacle.radius, line_begin, line_end))
-				{
-					_obstacles_cache.push_back(obstacle);
-					_obstacles_moved_to_cache[i] = true;
-					new_obstacles_found = true;
-				}
-			}
-		}
-	}
-
-	std::sort(_obstacles_cache.begin(), _obstacles_cache.end(), sort_obstacles_function);
-
-	//perebrat obstacles i umenshat radius poka ne budet peresecheniy
-
-	int i, j;
-
-	for (i = 0; i < _obstacles_cache.size(); i++)
-	{
-		Zoner::SmoothPathObstacle& obstacle = _obstacles_cache[i];
-		float max_delta = 0.f;
-		int max_delta_obstacle_index = -1;
-
-		_obstacles_hotspot_cache.clear();
-		_obstacles_hotspot_cache.reserve(_obstacles_cache.size());
-
-		for (j = i + 1; j < _obstacles_cache.size(); j++)
-		{
-			Zoner::SmoothPathObstacle& obstacle_next = _obstacles_cache[j];
-			glm::vec2 distance = obstacle.position - obstacle_next.position;
-			float delta = glm::pow(obstacle.radius + obstacle_next.radius, 2.f) - glm::length2(distance);
-
-			if (delta >= 0.f)
-			{
-				//intersection detected
-				if ((delta > max_delta) || (max_delta_obstacle_index == -1))
-				{
-					max_delta = delta;
-					max_delta_obstacle_index = j;
-				}
-
-				_obstacles_hotspot_cache[j].z = glm::sqrt(delta);
-			}
-			else
-			{
-				break;
-			}
-		}
-
-		
-		//from i to j obstacles are intersecting each other
-		if (max_delta_obstacle_index != -1)
-		{
-			int obstacles_count = j - i;
-
-			//calculate hotspots
-			for (int m = 0; m < obstacles_count; m++)
-			{
-				Zoner::SmoothPathObstacle& obstacle = _obstacles_cache[i + m];
-				glm::vec3& hotspot = _obstacles_hotspot_cache[m];
-
-
-				hotspot.x = 0.f;
-				hotspot.y = 0.f;
-
-				for (int k = 0; k < obstacles_count; k++)
-				{
-					if (k != m)
-					{
-						Zoner::SmoothPathObstacle& obstacle_next = _obstacles_cache[i + k];
-
-						hotspot += glm::vec3(glm::normalize(obstacle.position - obstacle_next.position) * _obstacles_hotspot_cache[i + k].z, 0.f);
-					}
-				}
-
-				if (glm::length2(hotspot) > glm::pow(obstacle.radius, 2.f))
-				{
-					hotspot = glm::normalize(hotspot) * obstacle.radius;
-				}
-
-				hotspot += obstacle.position;
-			}
-
-
-			//
-			//i = j - 1;
-		}
-
-		
-		
-	}
-
-	return new_obstacles_found;
-}
-
 void Zoner::SmoothPath::_RescaleCircle(glm::vec2 & circle_center, float & circle_radius, glm::vec2 scale_hotspot, float scale)
 {
 	circle_center = scale_hotspot + (circle_center - scale_hotspot) * scale;
 	circle_radius *= scale;
 }
-
-/*void Zoner::SmoothPath::Build(glm::vec3 from, glm::vec3 from_direction, glm::vec3 to, std::vector<Zoner::SmoothPathObstacle*>& obstacles, ok::graphics::LineBatch& batch)
-{
-bool mirrored = false;
-
-glm::vec3 to_memory = to;
-
-glm::vec2 from_to_direction = glm::vec2(to - from);
-glm::vec2 from_direction_nrm = glm::vec2(from_direction.y, -from_direction.x);
-
-if (glm::dot(from_direction_nrm, from_to_direction) > 0.f)
-{
-mirrored = true;
-
-float dot_x = glm::dot(glm::vec2(from_direction), from_to_direction);
-float dot_y = glm::dot(-from_direction_nrm, from_to_direction);
-
-from_to_direction = glm::vec2(from_direction) * dot_x + from_direction_nrm * dot_y;
-to = from + glm::vec3(from_to_direction, 0.f);
-}
-
-
-float from_to_distance = glm::length(from_to_direction);
-from_to_direction = glm::normalize(from_to_direction);
-
-float rotation_radius = glm::clamp(from_to_distance, 1.f, 50.f);
-float oriented_angle = glm::degrees(glm::orientedAngle(glm::vec2(from_direction), glm::vec2(from_to_direction)));
-float oriented_angle_delta = glm::sign(-oriented_angle)*(180.0f - glm::abs(oriented_angle));
-
-glm::vec2 rotation_center = glm::vec2(from) - glm::vec2(from_direction.y, -from_direction.x) * rotation_radius;
-
-float c = glm::length(rotation_center - glm::vec2(to));
-float a = rotation_radius;
-float b = glm::sqrt(c*c - a*a);
-
-float sina = a / c;
-float ang_a = glm::degrees(glm::asin(sina));
-float ang_b = 90.0f - ang_a;
-
-glm::vec2 arc_end = (glm::vec2(to) + b*glm::normalize(glm::rotate(rotation_center - glm::vec2(to), glm::radians(ang_a)))) - glm::vec2(from);
-
-if (mirrored)
-{
-glm::vec2 nrm = glm::vec2(from_direction.y, -from_direction.x);
-
-float dot_x = glm::dot(glm::vec2(from_direction), arc_end);
-float dot_y = glm::dot(-nrm, arc_end);
-
-arc_end = glm::vec2(from_direction) * dot_x + nrm * dot_y;
-
-to = to_memory;
-rotation_center = glm::vec2(from) - (rotation_center - glm::vec2(from));
-}
-
-arc_end += glm::vec2(from);
-
-
-batch.SetBrushThickness(2.f);
-batch.SetBrushSoftness(0.0001f);
-
-batch.BatchBegin();
-
-batch.SetBrushColor(ok::Color::Gray);
-batch.Circle(glm::vec3(rotation_center,0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f), rotation_radius, 5.f);
-
-batch.SetBrushColor(ok::Color::Red);
-batch.MoveTo(from);
-batch.LineTo(glm::vec3(rotation_center,0.f));
-
-batch.SetBrushColor(ok::Color::Green);
-batch.LineTo(glm::vec3(arc_end, 0.f));
-
-batch.SetBrushColor(ok::Color::Blue);
-batch.LineTo(to);
-
-batch.BatchEnd();
-}*/
