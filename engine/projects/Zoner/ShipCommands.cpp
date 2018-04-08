@@ -16,11 +16,33 @@ void Zoner::Cmd_Ship_MoveTo::OnEnterList()
 
 	owner->trajectory.AdvanceWay(destination);
 	owner->trajectory.EndWay();
+
+	owner->trajectory_progress = 0.f;
+
+	if (owner->trajectory.Length() == 0.f)
+	{
+		destination_reached = true;
+	}
+	else
+	{
+		destination_reached = false;
+	}
+}
+
+bool Zoner::Cmd_Ship_MoveTo::Execute(float dt)
+{
+	return destination_reached;
+}
+
+void Zoner::Cmd_Ship_MoveTo::OnExitList()
+{
+	owner->trajectory.Clear();
+	owner->trajectory_progress = 0.f;
 }
 
 void Zoner::Cmd_Ship_MoveTo::PassTime(float hours_passed)
 {
-	if (owner->trajectory.Length() > 0.f)
+	if (destination_reached == false)
 	{
 		owner->trajectory_progress += (owner->engine_speed * hours_passed) / owner->trajectory.Length();
 		if (owner->trajectory_progress > 1.f) owner->trajectory_progress = 1.f;
@@ -29,7 +51,7 @@ void Zoner::Cmd_Ship_MoveTo::PassTime(float hours_passed)
 
 void Zoner::Cmd_Ship_MoveTo::ApplyPassedTime()
 {
-	if (owner->trajectory.Length() > 0.f)
+	if (destination_reached == false)
 	{
 		//Move in space
 		Zoner::SmoothPathWaypoint trajectory_waypoint = owner->trajectory.Pick(owner->trajectory_progress);
@@ -39,24 +61,11 @@ void Zoner::Cmd_Ship_MoveTo::ApplyPassedTime()
 		owner->EndTransform(true);
 
 		owner->LookAt(trajectory_waypoint.tangent, glm::vec3(0.f, 0.f, 1.f), ok::LookAtAxis::Right, ok::LookAtAxis::Forward);
-	}
-}
 
-void Zoner::Cmd_Ship_MoveTo::OnNewDay()
-{
-	if (owner->trajectory.Length() > 0.f)
-	{
-		if (owner->trajectory_progress < 1.f)
+		if (owner->trajectory_progress >= 1.f)
 		{
-			destination = owner->trajectory.Pick(1.f).position;
-			owner->cmd_parallel.Replace(this, Zoner::Cmd_Groups::Movement);
+			destination_reached = true;
 		}
-		else
-		{
-			owner->trajectory.Clear();
-		}
-
-		owner->trajectory_progress = 0.f;
 	}
 }
 
@@ -72,6 +81,7 @@ bool Zoner::Cmd_Ship_WaitArrival::Execute(float dt)
 	if (glm::length2(glm::vec2(owner->GetPosition()) - destination) < 2.f)
 	{
 		owner->EndTransform(false);
+		owner->cmd_parallel.Remove(Zoner::Cmd_Groups::Movement);
 		return true;
 	}
 
@@ -98,7 +108,9 @@ void Zoner::Cmd_Ship_Relocate::ReturnToPool()
 
 bool Zoner::Cmd_Ship_Relocate::Execute(float dt)
 {
+	owner->relocationDestinationPosition = destination_position;
 	owner->Relocate(destination);
+
 	return true;
 }
 

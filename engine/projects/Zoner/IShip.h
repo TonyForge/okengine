@@ -92,6 +92,7 @@ namespace Zoner
 
 		bool isNPC = true;
 		bool relocationInProgress = false;
+		glm::vec2 relocationDestinationPosition;
 		
 		virtual Zoner::Collision::Point Pick(glm::vec3 world_position);
 		Zoner::IShip* picked_object = nullptr;

@@ -9,6 +9,7 @@ namespace Zoner
 		ICommand();
 
 		virtual void OnEnterList() {};
+		virtual void OnExitList() {};
 		virtual bool Execute(float dt) { return true; };
 
 		virtual void PassTime(float hours_passed) {};

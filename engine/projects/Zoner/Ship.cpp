@@ -9,7 +9,7 @@ void Zoner::Ship::PassTime(float hours_passed)
 void Zoner::Ship::ApplyPassedTime()
 {
 	cmd_parallel.ApplyPassedTime();
-
+	
 	/*if (isNPC)
 	if (location != nullptr)
 	{
@@ -64,6 +64,10 @@ void Zoner::Ship::Relocate(Zoner::ISpace * to)
 
 void Zoner::Ship::RelocationComplete()
 {
+	BeginTransform(ok::TransformSpace::WorldSpace);
+	SetPosition(glm::vec3(relocationDestinationPosition, 0.f));
+	EndTransform(true);
+
 	relocationInProgress = false;
 }
 
@@ -102,6 +106,8 @@ void Zoner::Ship::ClickOnceAt(glm::vec2 space_xy, bool ignore_objects)
 			//click at empty space
 			picked_object = nullptr;
 			picked_object_picks_counter = 0;
+
+			cmd_sequence.Clear();
 
 			_cmd_ship_moveto.owner = this;
 			_cmd_ship_moveto.destination = space_xy;
@@ -145,6 +151,7 @@ void Zoner::Ship::ClickOnceAt(glm::vec2 space_xy, bool ignore_objects)
 					cmd_relocate->destination_position = *static_cast<glm::vec2*>(picked_object->GetPtr(Zoner::Requests::JumpHole_DestinationPosition)) + (space_xy - glm::vec2(picked_object->GetPosition()));
 					picked_object->EndTransform(false);
 
+					cmd_sequence.Clear();
 					cmd_sequence.Push(cmd_arrival, -1);
 					cmd_sequence.Push(cmd_relocate, -1);
 				}

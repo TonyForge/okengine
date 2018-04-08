@@ -31,13 +31,15 @@ namespace Zoner
 	{
 	public:
 		void OnEnterList();
+		bool Execute(float dt);
+		void OnExitList();
 
 		void PassTime(float hours_passed);
 		void ApplyPassedTime();
-		void OnNewDay();
 
 		Zoner::IShip* owner;
 		glm::vec2 destination;
+		bool destination_reached;
 	};
 
 	class Cmd_Ship_Relocate : public Zoner::ICommand
@@ -55,9 +57,17 @@ namespace Zoner
 		static ok::Pool<Zoner::Cmd_Ship_Relocate> pool;
 	};
 
+	//mode A - maksimalnoe sbligenie
+	//mode B - dergatsa na rasstoyanii vistrela iz vseh orudiy
+	//mode C - avtomaticheskaya bitva
 	class Cmd_Ship_Pursuit : public Zoner::ICommand
 	{
 	public:
+		Zoner::IShip* owner;
 		Zoner::IShip* target;
+
+		bool close_up_mode;
+		bool keep_attack_distance_mode;
+		bool automatic_battle_mode;
 	};
 }

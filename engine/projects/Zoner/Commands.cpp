@@ -32,6 +32,8 @@ void Zoner::CommandsList::Remove(int group_id)
 			{
 				Zoner::ICommand*& cmd = command.second;
 
+				cmd->OnExitList();
+
 				if (cmd->deletable)
 				{
 					if (cmd->poolable) cmd->ReturnToPool();
@@ -57,6 +59,8 @@ void Zoner::CommandsList::Replace(Zoner::ICommand * cmd, int group_id)
 			if (command.first == group_id)
 			{
 				Zoner::ICommand*& _cmd = command.second;
+
+				cmd->OnExitList();
 
 				if (_cmd->deletable)
 				{
@@ -100,6 +104,8 @@ void Zoner::CommandsList::PopExecute(float dt)
 
 		if (cmd->Execute(dt))
 		{
+			cmd->OnExitList();
+
 			if (cmd->deletable)
 			{
 				if (cmd->poolable) cmd->ReturnToPool();
@@ -124,6 +130,8 @@ void Zoner::CommandsList::Pop()
 	{
 		Zoner::ICommand*& cmd = _commands[_commands_shift].second;
 
+		cmd->OnExitList();
+
 		if (cmd->deletable)
 		{
 			if (cmd->poolable) cmd->ReturnToPool();
@@ -145,6 +153,8 @@ void Zoner::CommandsList::Clear()
 	for (auto& command : _commands)
 	{
 		Zoner::ICommand*& cmd = command.second;
+
+		cmd->OnExitList();
 
 		if (cmd->deletable)
 		{
