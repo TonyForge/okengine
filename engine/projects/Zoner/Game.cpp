@@ -207,8 +207,8 @@ void Zoner::Game::LoadGameUpdate()
 
 	if (_load_save_game_stage == 2)
 	{
-		_game_file_element = _game_file.FirstChildElement("save")->FirstChildElement("space_connections");
-		_game_file_element_iterator = _game_file_element->FirstChildElement("connection");
+		_game_file_element = _game_file.FirstChildElement("save")->FirstChildElement("space_jump_holes");
+		_game_file_element_iterator = _game_file_element->FirstChildElement("jump_hole");
 
 		_load_save_game_step = 0;
 		_load_save_game_step_max = _game_file_element->IntAttribute("count");
@@ -220,23 +220,30 @@ void Zoner::Game::LoadGameUpdate()
 	{
 		if (_load_save_game_step < _load_save_game_step_max)
 		{
-			Zoner::SpaceConnection* connection = new Zoner::SpaceConnection();
-			connection->destination = _spaces[_game_file_element_iterator->Attribute("to")];
-			connection->position = glm::vec3(
-				_game_file_element_iterator->FloatAttribute("x"),
-				_game_file_element_iterator->FloatAttribute("y"),
-				0.0f
-			);
-			connection->radius = glm::vec3(
+			Zoner::JumpHole* jump_hole = new Zoner::JumpHole();
+
+			jump_hole->this_type = Zoner::ShipType::ST_Jumphole;
+
+			jump_hole->location = _spaces[_game_file_element_iterator->Attribute("from")];
+			jump_hole->destination = _spaces[_game_file_element_iterator->Attribute("to")];
+			jump_hole->destination_position = glm::vec2(_game_file_element_iterator->FloatAttribute("dest_x"), _game_file_element_iterator->FloatAttribute("dest_y"));
+
+			jump_hole->BeginTransform();
+			jump_hole->SetPosition(glm::vec3(_game_file_element_iterator->FloatAttribute("x"), _game_file_element_iterator->FloatAttribute("y"), 0.f));
+			jump_hole->SetRotation(glm::vec3(0.f, 0.f, _game_file_element_iterator->FloatAttribute("rotation")));
+			jump_hole->EndTransform(true);
+
+			jump_hole->radius = glm::vec2(
 				_game_file_element_iterator->FloatAttribute("rx"),
-				_game_file_element_iterator->FloatAttribute("ry"),
-				0.0f
+				_game_file_element_iterator->FloatAttribute("ry")
 			);
 
-			_spaces[_game_file_element_iterator->Attribute("from")]->connections.push_back(connection);
+			jump_hole->isNPC = true;
+
+			_spaces[_game_file_element_iterator->Attribute("from")]->jump_holes.push_back(jump_hole);
 
 			_load_save_game_step++;
-			_game_file_element_iterator = _game_file_element_iterator->NextSiblingElement("connection");
+			_game_file_element_iterator = _game_file_element_iterator->NextSiblingElement("jump_hole");
 		}
 		else
 		{
@@ -261,7 +268,7 @@ void Zoner::Game::LoadGameUpdate()
 		{
 			Zoner::Ship* ship = new Zoner::Ship();
 
-			ship->this_type = Zoner::ShipType::Spacecraft;
+			ship->this_type = Zoner::ShipType::ST_Spacecraft;
 			ship->Rename(_game_file_element_iterator->Attribute("name"));
 			ship->Relocate(_spaces[_game_file_element_iterator->FirstChildElement("location")->Attribute("space_id")]);
 
@@ -280,7 +287,7 @@ void Zoner::Game::LoadGameUpdate()
 
 			if (ship->isNPC == false)
 			{
-				_current_space = static_cast<Zoner::Space*>(ship->Location());
+				//_current_space = static_cast<Zoner::Space*>(ship->Location());
 				_current_player_ship = ship;
 			}
 
@@ -370,72 +377,70 @@ void Zoner::Game::TimeStep()
 
 void Zoner::Game::UpdateGameScreen_Space(float dt)
 {
+
 	if (StateFalse(Zoner::GameStates::PauseEnabled))
 	{
 		float day_progress_delta = (dt / real_seconds_per_day);
 		day_progress += day_progress_delta;
 		hour = static_cast<unsigned int>(glm::floor(24.0f * day_progress));
 
+		if (_current_player_ship != nullptr)
+		{
+			_current_space = static_cast<Zoner::Space*>(_current_player_ship->Location());
+		}
+
 		//update all spaces here
 		//current space update in realtime
 		if (_current_space != nullptr)
 		{
-			_current_space->PassTime(day_progress_delta*24.0f);
+			//_current_space->PassTime(day_progress_delta*24.0f);
+			_current_space->PassToTime(24.0f * day_progress);
 			_current_space->ApplyPassedTime();
 		}
 
-		//other spaces update 4 times per day (every 8 hours, every second in realtime)
+		//other spaces update 4 times per day (every 6 hours, every second in realtime)
 		if (hour >= 0 && daily_updates_done == 0)
 		{
-			//update outer spaces
-			for (auto& space : _spaces)
-			{
-				if (space.second != _current_space)
-				{
-					space.second->PassTime(8);
-					space.second->ApplyPassedTime();
-				}
-
-			}
+			//FIX: Dont update here because it's the same moment as 24 p.m.
 			daily_updates_done++;
 		}
 
-		if (hour >= 7 && daily_updates_done == 1)
+		if (hour >= 5 && daily_updates_done == 1)
 		{
 			//update outer spaces
 			for (auto& space : _spaces)
 			{
 				if (space.second != _current_space)
 				{
-					space.second->PassTime(8);
+					space.second->PassToTime(6);
 					space.second->ApplyPassedTime();
 				}
 			}
 			daily_updates_done++;
 		}
 
-		if (hour >= 15 && daily_updates_done == 2)
+		if (hour >= 11 && daily_updates_done == 2)
 		{
 			//update outer spaces
 			for (auto& space : _spaces)
 			{
 				if (space.second != _current_space)
 				{
-					space.second->PassTime(8);
+					space.second->PassToTime(12);
 					space.second->ApplyPassedTime();
 				}
 			}
 			daily_updates_done++;
 		}
 
-		if (hour >= 23 && daily_updates_done == 3)
+		if (hour >= 17 && daily_updates_done == 3)
 		{
 			//update outer spaces
 			for (auto& space : _spaces)
 			{
 				if (space.second != _current_space)
 				{
-					space.second->PassTime(8);
+					space.second->PassToTime(18);
 					space.second->ApplyPassedTime();
 				}
 			}
@@ -444,21 +449,26 @@ void Zoner::Game::UpdateGameScreen_Space(float dt)
 
 		if (hour >= 24)
 		{
+			for (auto& space : _spaces)
+			{
+				space.second->PassToTime(24);
+				space.second->ApplyPassedTime();
+			}
+
 			TimeStep();
 
-			//Reset some variables daily and etc
+			//Reset some variables daily and etc, and allow everyone except player to do decisions here
 			for (auto& space : _spaces)
 			{
 				space.second->OnNewDay();
 			}
-
-			//allow everyone except player to do decisions here
 
 			if (StateTrue(Zoner::GameStates::PauseRequest))
 			{
 				State(Zoner::GameStates::PauseEnabled, true);
 				State(Zoner::GameStates::PauseRequest, false);
 			}
+
 			daily_updates_done = 0;
 		}
 

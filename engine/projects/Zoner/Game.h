@@ -8,6 +8,7 @@
 //include all game classes here
 #include "Ship.h"
 #include "Space.h"
+#include "JumpHole.h"
 
 //include ext classes
 #include "Preloader.h"

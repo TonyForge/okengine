@@ -1,5 +1,6 @@
 #pragma once
 
+#include "UID.h"
 #include "IGame.h"
 #include "..\..\GameObject.h"
 #include "..\..\Behaviour.h"
@@ -9,6 +10,8 @@
 #include "..\..\MeshRenderer.h"
 #include "Collision.h"
 #include "SmoothPath.h"
+#include "Commands.h"
+#include "RequestsDispatcher.h"
 
 namespace Zoner
 {
@@ -16,9 +19,10 @@ namespace Zoner
 
 	enum class ShipType
 	{
-		Spacecraft,
-		Planet,
-		Star
+		ST_Spacecraft,
+		ST_Planet,
+		ST_Star,
+		ST_Jumphole
 	};
 
 	class ShipMaterial_SpacecraftFragment : public ok::Behaviour
@@ -60,9 +64,7 @@ namespace Zoner
 		void _CalculateBounder(ok::Transform* part, glm::vec3& min_axis, glm::vec3& max_axis);
 	};
 
-	
-
-	class IShip : public ok::GameObject
+	class IShip : public ok::GameObject, public Zoner::UID, public Zoner::RequestsDispatcher
 	{
 	public:
 		IShip();
@@ -71,6 +73,7 @@ namespace Zoner
 		virtual void ApplyPassedTime() = 0;
 		virtual void OnNewDay() = 0;
 		virtual void Relocate(Zoner::ISpace* to) = 0;
+		virtual void RelocationComplete() = 0;
 		virtual Zoner::ISpace*& Location() = 0;
 
 		virtual void ClickOnceAt(glm::vec2 space_xy, bool ignore_objects = false) = 0;
@@ -79,19 +82,23 @@ namespace Zoner
 		Zoner::ShipBlueprint* this_blueprint;
 		Zoner::SmoothPath trajectory;
 
+		Zoner::CommandsList cmd_sequence;
+		Zoner::CommandsList cmd_parallel;
+
 		//tmp begin
 		float engine_speed; //distance per hour
 		float trajectory_progress;
 		//tmp end
 
 		bool isNPC = true;
+		bool relocationInProgress = false;
 		
-		Zoner::Collision::Point Pick(glm::vec3 world_position);
+		virtual Zoner::Collision::Point Pick(glm::vec3 world_position);
 		Zoner::IShip* picked_object = nullptr;
 		int picked_object_picks_counter = 0;
 
 		virtual void Player_UpdateDecisions(float dt) = 0;
-
+		virtual void NPC_MakeDecisions() = 0;
 		
 	protected:
 	private:

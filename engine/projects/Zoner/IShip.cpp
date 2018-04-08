@@ -167,5 +167,5 @@ Zoner::IShip::IShip() :
 	engine_speed(24.f),
 	trajectory_progress(0.f)
 {
-	
+	acquire_uid();
 }

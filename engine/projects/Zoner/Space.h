@@ -15,24 +15,30 @@ namespace Zoner
 	{
 	public:
 		std::vector<Zoner::IShip*> visitors;
+		std::vector<std::pair<Zoner::IShip*, Zoner::ISpace*>> visitors_out;
 
+		std::vector<Zoner::IShip*> jump_holes;
 		//std::vector<Zoner::IShip*> planets;
 		//std::vector<Zoner::IShip*> stars;
 
-		std::vector<Zoner::SpaceConnection*> connections;
+		//std::vector<Zoner::SpaceConnection*> connections;
 
 		ok::Rect2Df borders;
 
+		float local_hour = 0;
 		void PassTime(float hours_passed);
+		void PassToTime(float daytime_hour); //only forward time direction allowed
 		void ApplyPassedTime();
 		void OnNewDay();
 
 		void Update(float dt);
 
 		void VisitorIn(Zoner::IShip* visitor);
-		void VisitorOut(Zoner::IShip* visitor);
+		void VisitorOut(Zoner::IShip* visitor, Zoner::ISpace* destination);
+		void RelocateVisitors();
 
 		std::vector<Zoner::IShip*>& WhoIsThere(glm::vec2 space_xy);
+		std::vector<Zoner::IShip*>& Visitors();
 	protected:
 	private:
 	};

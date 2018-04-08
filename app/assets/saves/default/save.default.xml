@@ -9,20 +9,25 @@
 		</space>
 	</spaces>
 	
-	<space_connections count="6">
-		<connection x="0" y="0" rx="60" ry="100" from="Tallaida" to="Evgella" />
-		<connection x="200" y="150" rx="60" ry="60" from="Tallaida" to="Orgrill" />
-		<connection x="0" y="0" rx="60" ry="100" from="Evgella" to="Tallaida" />
-		<connection x="200" y="150" rx="60" ry="60" from="Evgella" to="Orgrill" />
-		<connection x="0" y="0" rx="60" ry="100" from="Orgrill" to="Tallaida" />
-		<connection x="200" y="150" rx="60" ry="60" from="Orgrill" to="Evgella" />
-	</space_connections>
+	<space_jump_holes count="6">
+		<jump_hole x="0" y="0" dest_x="0" dest_y="0" rx="60" ry="100" rotation="0" from="Tallaida" to="Evgella" />
+		<jump_hole x="200" y="150" dest_x="0" dest_y="0" rx="60" ry="60" rotation="0" from="Tallaida" to="Orgrill" />
+		<jump_hole x="0" y="0" dest_x="0" dest_y="0" rx="60" ry="100" rotation="0" from="Evgella" to="Tallaida" />
+		<jump_hole x="200" y="150" dest_x="0" dest_y="0" rx="60" ry="60" rotation="0" from="Evgella" to="Orgrill" />
+		<jump_hole x="0" y="0" dest_x="0" dest_y="0" rx="60" ry="100" rotation="0" from="Orgrill" to="Tallaida" />
+		<jump_hole x="200" y="150" dest_x="0" dest_y="0" rx="60" ry="60" rotation="0" from="Orgrill" to="Evgella" />
+	</space_jump_holes>
 	
-	<spacecrafts count="1">
+	<spacecrafts count="2">
 		<spacecraft id="Sozdatel_Mirov" name="Создатель Миров" blueprint="nomad" isNPC="false">
-			<position x="10" y="10" z="0" />
+			<position x="-200" y="-200" z="0" />
 			<rotation x="0" y="0" z="10" />
 			<location space_id="Tallaida" />
+		</spacecraft>
+		<spacecraft id="Broshenniy_Ostov" name="Брошенный остов" blueprint="nomad" isNPC="true">
+			<position x="100" y="100" z="0" />
+			<rotation x="0" y="0" z="135" />
+			<location space_id="Evgella" />
 		</spacecraft>
 	</spacecrafts>
 </save>

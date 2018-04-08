@@ -3,6 +3,7 @@
 std::vector<Zoner::SmoothPathWaypoint> Zoner::SmoothPath::_waypoints_cache;
 
 bool Zoner::SmoothPath::_pfs_mirrored;
+bool Zoner::SmoothPath::_pfs_confluent_arc;
 glm::vec2 Zoner::SmoothPath::_pfs_rotation_center;
 float Zoner::SmoothPath::_pfs_rotation_radius;
 
@@ -57,7 +58,7 @@ void Zoner::SmoothPath::AdvanceWay(glm::vec2 next_position)
 		glm::vec2 next_direction = glm::normalize(next_position - arc_end);
 
 		_waypoints_cache.push_back(Zoner::SmoothPathWaypoint(glm::vec3(arc_end, _pfs_mirrored == true ? 1.f : 0.f), glm::vec3(next_direction, _pfs_rotation_center.x)));
-		_waypoints_cache.push_back(Zoner::SmoothPathWaypoint(glm::vec3(next_position, _pfs_rotation_center.y), glm::vec3(next_direction, _pfs_rotation_radius)));
+		_waypoints_cache.push_back(Zoner::SmoothPathWaypoint(glm::vec3(next_position, _pfs_rotation_center.y), glm::vec3(next_direction, (_pfs_confluent_arc == true) ? -1.f : _pfs_rotation_radius)));
 	}
 }
 
@@ -69,12 +70,20 @@ void Zoner::SmoothPath::EndWay()
 		Zoner::SmoothPathWaypoint& wp1 = _waypoints_cache[i];
 		Zoner::SmoothPathWaypoint& wp2 = _waypoints_cache[i + 1];
 
-		if (wp1.position.z == 1.f) //if (_pfs_mirrored)
-			//_CollectWaypointsFromArc(_pfs_rotation_center, _pfs_rotation_radius, from, arc_end, false, true, false);
-			_CollectWaypointsFromArc(glm::vec2(wp1.tangent.z, wp2.position.z), wp2.tangent.z, wp0.position, wp1.position, false, true, false);
+		if (wp2.tangent.z < 0.f)
+		{
+			_CollectWaypointsFromLineSegment(wp0.position, wp1.position, false);
+		}
 		else
-			//_CollectWaypointsFromArc(_pfs_rotation_center, _pfs_rotation_radius, from, arc_end, false, false, true);
-			_CollectWaypointsFromArc(glm::vec2(wp1.tangent.z, wp2.position.z), wp2.tangent.z, wp0.position, wp1.position, false, false, true);
+		{
+			if (wp1.position.z == 1.f) //if (_pfs_mirrored)
+				 //_CollectWaypointsFromArc(_pfs_rotation_center, _pfs_rotation_radius, from, arc_end, false, true, false);
+				_CollectWaypointsFromArc(glm::vec2(wp1.tangent.z, wp2.position.z), wp2.tangent.z, wp0.position, wp1.position, false, true, false);
+			else
+				//_CollectWaypointsFromArc(_pfs_rotation_center, _pfs_rotation_radius, from, arc_end, false, false, true);
+				_CollectWaypointsFromArc(glm::vec2(wp1.tangent.z, wp2.position.z), wp2.tangent.z, wp0.position, wp1.position, false, false, true);
+		}
+
 			
 		_CollectWaypointsFromLineSegment(wp1.position, wp2.position, false);
 	}
@@ -306,6 +315,14 @@ glm::vec2 Zoner::SmoothPath::_CalculatePassageFirstSection(const glm::vec2 & fro
 	glm::vec2 to_memory = to;
 	glm::vec2 from_direction_nrm = glm::vec2(from_direction.y, -from_direction.x);
 
+	if (glm::dot(from_direction, glm::normalize(from_to_direction)) > 0.95f)
+	{
+		_pfs_confluent_arc = true;
+	}
+	else
+	{
+		_pfs_confluent_arc = false;
+	}
 	//Esli tochka "to" ne v nignei poluploskosti, to otzerkalivaem ee
 	if (glm::dot(from_direction_nrm, from_to_direction) > 0.f)
 	{

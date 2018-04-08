@@ -171,6 +171,18 @@
     <ClCompile Include="projects\Zoner\Collision.cpp">
       <Filter>projects\Zoner</Filter>
     </ClCompile>
+    <ClCompile Include="projects\Zoner\UID.cpp">
+      <Filter>projects\Zoner</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\Zoner\Commands.cpp">
+      <Filter>projects\Zoner</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\Zoner\ShipCommands.cpp">
+      <Filter>projects\Zoner</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\Zoner\JumpHole.cpp">
+      <Filter>projects\Zoner</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -312,6 +324,21 @@
       <Filter>projects\Zoner</Filter>
     </ClInclude>
     <ClInclude Include="projects\Zoner\Collision.h">
+      <Filter>projects\Zoner</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Zoner\UID.h">
+      <Filter>projects\Zoner</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Zoner\Commands.h">
+      <Filter>projects\Zoner</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Zoner\ShipCommands.h">
+      <Filter>projects\Zoner</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Zoner\JumpHole.h">
+      <Filter>projects\Zoner</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Zoner\RequestsDispatcher.h">
       <Filter>projects\Zoner</Filter>
     </ClInclude>
   </ItemGroup>

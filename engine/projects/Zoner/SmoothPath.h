@@ -72,6 +72,7 @@ namespace Zoner
 		float _seg_length;
 		float _total_length;
 
+		static bool _pfs_confluent_arc;
 		static bool _pfs_mirrored;
 		static glm::vec2 _pfs_rotation_center;
 		static float _pfs_rotation_radius;
