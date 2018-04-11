@@ -17,7 +17,7 @@ namespace Zoner
 	{
 	public:
 		void ReturnToPool();
-		bool Execute(float dt);
+		bool Execute();
 
 		glm::vec2 destination;
 		Zoner::IShip* owner;
@@ -31,7 +31,7 @@ namespace Zoner
 	{
 	public:
 		void OnEnterList();
-		bool Execute(float dt);
+		bool Execute();
 		void OnExitList();
 
 		void PassTime(float hours_passed);
@@ -46,7 +46,7 @@ namespace Zoner
 	{
 	public:
 		void ReturnToPool();
-		bool Execute(float dt);
+		bool Execute();
 
 		Zoner::ISpace* destination;
 		glm::vec2 destination_position;

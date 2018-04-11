@@ -1,39 +1,5 @@
 #include "Space.h"
 
-void Zoner::Space::PassTime(float hours_passed)
-{
-	local_hour += hours_passed;
-
-	for (auto& visitor : visitors)
-	{
-		visitor->PassTime(hours_passed);
-	}
-}
-
-void Zoner::Space::PassToTime(float daytime_hour)
-{
-	float hours_passed = daytime_hour - local_hour;
-	PassTime(hours_passed);
-}
-
-void Zoner::Space::ApplyPassedTime()
-{
-	for (auto& visitor : visitors)
-	{
-		visitor->ApplyPassedTime();
-	}
-}
-
-void Zoner::Space::OnNewDay()
-{
-	local_hour = 0;
-
-	for (auto& visitor : visitors)
-	{
-		visitor->OnNewDay();
-	}
-}
-
 void Zoner::Space::Update(float dt)
 {
 	ok::GameObject::Update(dt);

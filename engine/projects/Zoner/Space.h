@@ -25,12 +25,6 @@ namespace Zoner
 
 		ok::Rect2Df borders;
 
-		float local_hour = 0;
-		void PassTime(float hours_passed);
-		void PassToTime(float daytime_hour); //only forward time direction allowed
-		void ApplyPassedTime();
-		void OnNewDay();
-
 		void Update(float dt);
 
 		void VisitorIn(Zoner::IShip* visitor);

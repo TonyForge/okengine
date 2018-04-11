@@ -168,4 +168,8 @@ Zoner::IShip::IShip() :
 	trajectory_progress(0.f)
 {
 	acquire_uid();
+	cmd_sequence.sleep = false;
+	cmd_sequence.sequence = true;
+	cmd_parallel.sleep = false;
+	cmd_parallel.parallel = true;
 }

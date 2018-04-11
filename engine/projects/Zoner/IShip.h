@@ -69,9 +69,9 @@ namespace Zoner
 	public:
 		IShip();
 
-		virtual void PassTime(float hours_passed) = 0;
+		/*virtual void PassTime(float hours_passed) = 0;
 		virtual void ApplyPassedTime() = 0;
-		virtual void OnNewDay() = 0;
+		virtual void OnNewDay() = 0;*/
 		virtual void Relocate(Zoner::ISpace* to) = 0;
 		virtual void RelocationComplete() = 0;
 		virtual Zoner::ISpace*& Location() = 0;

@@ -1,15 +1,15 @@
 #include "Ship.h"
 
 
-void Zoner::Ship::PassTime(float hours_passed)
+/*void Zoner::Ship::PassTime(float hours_passed)
 {
 	cmd_parallel.PassTime(hours_passed);
-}
+}*/
 
-void Zoner::Ship::ApplyPassedTime()
+/*void Zoner::Ship::ApplyPassedTime()
 {
 	cmd_parallel.ApplyPassedTime();
-	
+	*/
 	/*if (isNPC)
 	if (location != nullptr)
 	{
@@ -37,9 +37,9 @@ void Zoner::Ship::ApplyPassedTime()
 			}
 		}
 	}*/
-}
+//}
 
-void Zoner::Ship::OnNewDay()
+/*void Zoner::Ship::OnNewDay()
 {
 	cmd_parallel.OnNewDay();
 
@@ -47,7 +47,7 @@ void Zoner::Ship::OnNewDay()
 	{
 		NPC_MakeDecisions();
 	}
-}
+}*/
 
 void Zoner::Ship::Relocate(Zoner::ISpace * to)
 {
@@ -78,8 +78,23 @@ Zoner::ISpace *& Zoner::Ship::Location()
 
 void Zoner::Ship::Update(float dt)
 {
-	cmd_sequence.PopExecute(dt);
+	if (location != nullptr && location->isCurrent)
+	{
+		cmd_sequence.restriction_a = true;
+		cmd_parallel.restriction_a = true;
 
+		cmd_sequence.restriction_b = true;
+		cmd_parallel.restriction_b = true;
+	}
+	else
+	{
+		cmd_sequence.restriction_a = false;
+		cmd_parallel.restriction_a = false;
+
+		cmd_sequence.restriction_b = false;
+		cmd_parallel.restriction_b = false;
+	}
+		
 	switch (this_type)
 	{
 		case Zoner::ShipType::ST_Spacecraft :
@@ -107,11 +122,11 @@ void Zoner::Ship::ClickOnceAt(glm::vec2 space_xy, bool ignore_objects)
 			picked_object = nullptr;
 			picked_object_picks_counter = 0;
 
-			cmd_sequence.Clear();
+			cmd_sequence.Clear(Zoner::CommandExecutionStrategy::daily_240);
 
 			_cmd_ship_moveto.owner = this;
 			_cmd_ship_moveto.destination = space_xy;
-			cmd_parallel.Replace(&_cmd_ship_moveto, Zoner::Cmd_Groups::Movement);
+			cmd_parallel.Replace(&_cmd_ship_moveto, Zoner::Cmd_Groups::Movement, Zoner::CommandExecutionStrategy::daily_240);
 		}
 		else
 		{
@@ -137,7 +152,7 @@ void Zoner::Ship::ClickOnceAt(glm::vec2 space_xy, bool ignore_objects)
 				{
 					_cmd_ship_moveto.owner = this;
 					_cmd_ship_moveto.destination = space_xy;
-					cmd_parallel.Replace(&_cmd_ship_moveto, Zoner::Cmd_Groups::Movement);
+					cmd_parallel.Replace(&_cmd_ship_moveto, Zoner::Cmd_Groups::Movement, Zoner::CommandExecutionStrategy::daily_240);
 
 					Zoner::Cmd_Ship_WaitArrival* cmd_arrival = Zoner::Cmd_Ship_WaitArrival::New();
 					cmd_arrival->owner = this;
@@ -151,9 +166,9 @@ void Zoner::Ship::ClickOnceAt(glm::vec2 space_xy, bool ignore_objects)
 					cmd_relocate->destination_position = *static_cast<glm::vec2*>(picked_object->GetPtr(Zoner::Requests::JumpHole_DestinationPosition)) + (space_xy - glm::vec2(picked_object->GetPosition()));
 					picked_object->EndTransform(false);
 
-					cmd_sequence.Clear();
-					cmd_sequence.Push(cmd_arrival, -1);
-					cmd_sequence.Push(cmd_relocate, -1);
+					cmd_sequence.Clear(Zoner::CommandExecutionStrategy::daily_96);
+					cmd_sequence.Push(cmd_arrival, -1, Zoner::CommandExecutionStrategy::daily_96);
+					cmd_sequence.Push(cmd_relocate, -1, Zoner::CommandExecutionStrategy::daily_96);
 				}
 			}
 		}

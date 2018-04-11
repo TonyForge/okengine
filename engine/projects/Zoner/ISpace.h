@@ -22,6 +22,8 @@ namespace Zoner
 
 		virtual std::vector<Zoner::IShip*>& WhoIsThere(glm::vec2 space_xy) = 0;
 		static std::vector<Zoner::IShip*> _who_is_there_container;
+
+		bool isCurrent;
 	protected:
 	private:
 	};

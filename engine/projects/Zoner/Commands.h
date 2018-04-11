@@ -2,6 +2,17 @@
 
 namespace Zoner
 {
+	enum class CommandExecutionStrategy
+	{
+		realtime_60,
+		realtime_30,
+		daily_240,
+		daily_96,
+		daily_48,
+		daily_4,
+		daily_1
+	};
+
 	class ICommand
 	{
 	public:
@@ -10,11 +21,13 @@ namespace Zoner
 
 		virtual void OnEnterList() {};
 		virtual void OnExitList() {};
-		virtual bool Execute(float dt) { return true; };
 
-		virtual void PassTime(float hours_passed) {};
-		virtual void ApplyPassedTime() {};
-		virtual void OnNewDay() {};
+		virtual bool Execute() { return true; }
+
+		virtual void Update(float dt) {}
+		virtual void PassTime(float hours_passed) {}
+		virtual void ApplyPassedTime() {}
+		virtual void OnNewDay() {}
 
 		virtual void ReturnToPool() {};
 
@@ -30,33 +43,39 @@ namespace Zoner
 		CommandsList();
 		~CommandsList();
 
-		void Push(Zoner::ICommand* cmd, int group_id);
-		void Remove(int group_id);
-		void Replace(Zoner::ICommand* cmd, int group_id);
-		void ExecuteAll(float dt);
-		void PopExecute(float dt);
-		void Pop();
-		void Clear();
+		void Push(Zoner::ICommand* cmd, int group_id, Zoner::CommandExecutionStrategy execution_strategy);
+		void Remove(int group_id, Zoner::CommandExecutionStrategy execution_strategy);
+		void Replace(Zoner::ICommand* cmd, int group_id, Zoner::CommandExecutionStrategy execution_strategy);
+		void ExecuteAll(Zoner::CommandExecutionStrategy execution_strategy);
+		void PopExecute(Zoner::CommandExecutionStrategy execution_strategy);
+		void Pop(Zoner::CommandExecutionStrategy execution_strategy);
+		void Clear(Zoner::CommandExecutionStrategy execution_strategy);
 
+		void Update(float dt);
 		void PassTime(float hours_passed);
 		void ApplyPassedTime();
 		void OnNewDay();
 
-		void Update(float dt, float hours_passed, bool new_day); //must be called as fast as possible (realtime, 60 fps limit inside)
-
 		size_t this_in_all_lists_index;
-		float dt_accumulator;
-		float hours_accumulator;
-		int realtime_frames_accumulator;
-		int gametime_frames_accumulator;
+		bool sleep;
+		bool sequence;
+		bool parallel;
+		bool restriction_a; //meanings: owner is in current_space
+		bool restriction_b; //meanings: owner is in viewport
 
-		static void AllListsUpdate(float dt, float hours_passed, bool new_day);
+		static void AllListsRepackIfNeeded();
+		static void AllListsUpdate(float dt);
+		static void AllListsOnNewDay();
+		static void AllListsPassTime(float hours_passed);
+		static void AllListsApplyPassedTime();
+		static void AllListsExecute();
+
 		static std::vector<Zoner::CommandsList*> all_lists;
 		static size_t alive_lists;
 	protected:
 	private:
-		size_t _commands_shift;
-		std::vector<std::pair<int, Zoner::ICommand*>> _commands;
+		size_t* __commands_shift;
+		std::vector<std::pair<int, Zoner::ICommand*>>* __commands;
 
 		//realtime commands execute happens only in current space!
 		std::vector<std::pair<int, Zoner::ICommand*>> _commands_realtime_60; //for smooth and slow animations in viewport
@@ -79,7 +98,23 @@ namespace Zoner
 		float _commands_daily_4_timer;
 		float _commands_daily_1_timer;
 
-		std::vector<std::pair<int, Zoner::ICommand*>> _commands_fps_;
+		size_t _commands_realtime_60_shift;
+		size_t _commands_realtime_30_shift;
+
+		size_t _commands_daily_240_shift;
+		size_t _commands_daily_96_shift;
+		size_t _commands_daily_48_shift;
+		size_t _commands_daily_4_shift;
+		size_t _commands_daily_1_shift;
+
+		bool _commands_daily_240_dirty;
+		bool _commands_daily_96_dirty;
+		bool _commands_daily_48_dirty;
+		bool _commands_daily_4_dirty;
+		bool _commands_daily_1_dirty;
+
+		void _InstallExecutionStrategy(Zoner::CommandExecutionStrategy execution_strategy);
+
 		static std::vector<std::pair<int,Zoner::ICommand*>> _commands_cache;
 	};
 }

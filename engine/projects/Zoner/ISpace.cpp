@@ -9,4 +9,6 @@ Zoner::ISpace::ISpace() : camera(ok::graphics::CameraCoordinateSystem::ScreenCen
 	camera.BeginTransform();
 	camera.SetPosition(glm::vec3(0.f, 0.f, -500.0f));
 	camera.EndTransform(true);
+
+	isCurrent = false;
 }

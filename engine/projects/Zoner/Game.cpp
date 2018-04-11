@@ -377,6 +377,7 @@ void Zoner::Game::TimeStep()
 
 void Zoner::Game::UpdateGameScreen_Space(float dt)
 {
+	Zoner::CommandsList::AllListsExecute();
 
 	if (StateFalse(Zoner::GameStates::PauseEnabled))
 	{
@@ -386,90 +387,32 @@ void Zoner::Game::UpdateGameScreen_Space(float dt)
 
 		if (_current_player_ship != nullptr)
 		{
+			if (_current_space != nullptr)
+			{
+				_current_space->isCurrent = false;
+				_current_space = nullptr;
+			}
+
 			_current_space = static_cast<Zoner::Space*>(_current_player_ship->Location());
+			_current_space->isCurrent = true;
 		}
 
 		//update all spaces here
-		//current space update in realtime
-		if (_current_space != nullptr)
-		{
-			//_current_space->PassTime(day_progress_delta*24.0f);
-			_current_space->PassToTime(24.0f * day_progress);
-			_current_space->ApplyPassedTime();
-		}
-
-		//other spaces update 4 times per day (every 6 hours, every second in realtime)
-		if (hour >= 0 && daily_updates_done == 0)
-		{
-			//FIX: Dont update here because it's the same moment as 24 p.m.
-			daily_updates_done++;
-		}
-
-		if (hour >= 5 && daily_updates_done == 1)
-		{
-			//update outer spaces
-			for (auto& space : _spaces)
-			{
-				if (space.second != _current_space)
-				{
-					space.second->PassToTime(6);
-					space.second->ApplyPassedTime();
-				}
-			}
-			daily_updates_done++;
-		}
-
-		if (hour >= 11 && daily_updates_done == 2)
-		{
-			//update outer spaces
-			for (auto& space : _spaces)
-			{
-				if (space.second != _current_space)
-				{
-					space.second->PassToTime(12);
-					space.second->ApplyPassedTime();
-				}
-			}
-			daily_updates_done++;
-		}
-
-		if (hour >= 17 && daily_updates_done == 3)
-		{
-			//update outer spaces
-			for (auto& space : _spaces)
-			{
-				if (space.second != _current_space)
-				{
-					space.second->PassToTime(18);
-					space.second->ApplyPassedTime();
-				}
-			}
-			daily_updates_done++;
-		}
+		Zoner::CommandsList::AllListsPassTime(day_progress_delta*24.0f);
+		Zoner::CommandsList::AllListsApplyPassedTime();
 
 		if (hour >= 24)
 		{
-			for (auto& space : _spaces)
-			{
-				space.second->PassToTime(24);
-				space.second->ApplyPassedTime();
-			}
-
 			TimeStep();
 
 			//Reset some variables daily and etc, and allow everyone except player to do decisions here
-			for (auto& space : _spaces)
-			{
-				space.second->OnNewDay();
-			}
+			Zoner::CommandsList::AllListsOnNewDay();
 
 			if (StateTrue(Zoner::GameStates::PauseRequest))
 			{
 				State(Zoner::GameStates::PauseEnabled, true);
 				State(Zoner::GameStates::PauseRequest, false);
 			}
-
-			daily_updates_done = 0;
 		}
 
 		//------
@@ -483,13 +426,15 @@ void Zoner::Game::UpdateGameScreen_Space(float dt)
 			_current_player_ship->Player_UpdateDecisions(dt);
 		}
 
-
 		if (ok::Input::o().KeyPressed(ok::KKey::Space))
 		{
 			State(Zoner::GameStates::PauseEnabled, false);
 			State(Zoner::GameStates::PauseRequest, false);
 		}
 	}
+
+	//run animation commands
+	Zoner::CommandsList::AllListsUpdate(dt);
 
 	//animate and render current space here
 	if (_current_space != nullptr)

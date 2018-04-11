@@ -29,7 +29,7 @@ void Zoner::Cmd_Ship_MoveTo::OnEnterList()
 	}
 }
 
-bool Zoner::Cmd_Ship_MoveTo::Execute(float dt)
+bool Zoner::Cmd_Ship_MoveTo::Execute()
 {
 	return destination_reached;
 }
@@ -74,14 +74,14 @@ void Zoner::Cmd_Ship_WaitArrival::ReturnToPool()
 	pool.Inject(container);
 }
 
-bool Zoner::Cmd_Ship_WaitArrival::Execute(float dt)
+bool Zoner::Cmd_Ship_WaitArrival::Execute()
 {
 	owner->BeginTransform(ok::TransformSpace::WorldSpace);
 
 	if (glm::length2(glm::vec2(owner->GetPosition()) - destination) < 2.f)
 	{
 		owner->EndTransform(false);
-		owner->cmd_parallel.Remove(Zoner::Cmd_Groups::Movement);
+		owner->cmd_parallel.Remove(Zoner::Cmd_Groups::Movement, Zoner::CommandExecutionStrategy::daily_240);
 		return true;
 	}
 
@@ -106,7 +106,7 @@ void Zoner::Cmd_Ship_Relocate::ReturnToPool()
 	pool.Inject(container);
 }
 
-bool Zoner::Cmd_Ship_Relocate::Execute(float dt)
+bool Zoner::Cmd_Ship_Relocate::Execute()
 {
 	owner->relocationDestinationPosition = destination_position;
 	owner->Relocate(destination);
