@@ -89,6 +89,15 @@ Zoner::Collision::Point Zoner::ShipBlueprint::Bound(glm::vec3 world_position)
 	return Zoner::Collision::Point();
 }
 
+float Zoner::ShipBlueprint::GetBounderMaxRadiusInWorldSpace()
+{
+	BeginTransform(ok::TransformSpace::WorldSpace);
+	glm::vec3 world_radius_axis = GetScale() * bounder_axis;
+	EndTransform(false);
+	
+	return glm::max(glm::max(world_radius_axis.x, world_radius_axis.y), world_radius_axis.z);
+}
+
 void Zoner::ShipBlueprint::CalculateBounder()
 {
 	glm::vec3 min_axis(0.f,0.f,0.f);
@@ -157,6 +166,7 @@ Zoner::Collision::Point Zoner::IShip::Pick(glm::vec3 world_position)
 {
 	if (this_blueprint != nullptr)
 	{
+		UpdateChildrensTransform();
 		return this_blueprint->Bound(world_position);
 	}
 

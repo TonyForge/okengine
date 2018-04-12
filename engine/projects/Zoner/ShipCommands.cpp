@@ -58,7 +58,7 @@ void Zoner::Cmd_Ship_MoveTo::ApplyPassedTime()
 
 		owner->BeginTransform();
 		owner->SetPosition(trajectory_waypoint.position);
-		owner->EndTransform(true);
+		owner->EndTransform(false); //childrens will be updated later when necessary
 
 		owner->LookAt(trajectory_waypoint.tangent, glm::vec3(0.f, 0.f, 1.f), ok::LookAtAxis::Right, ok::LookAtAxis::Forward);
 

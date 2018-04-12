@@ -74,6 +74,9 @@ namespace ok
 		void UpdateAbsoluteTransform(bool updateChildrens = true);
 		glm::mat4 GetAbsoluteTransformMatrix();
 
+		void UpdateChildrensTransform(bool force = false);
+		bool IsUpdateChildrensTransformNeeded();
+
 		void BeginTransform(ok::TransformSpace space = ok::TransformSpace::LocalSpace);
 		void EndTransform(bool updateChildrens);
 
@@ -127,6 +130,8 @@ namespace ok
 		glm::vec3 _up;
 		glm::vec3 _right;
 		bool _orientation_dirty;
+
+		bool _childrens_absolute_transform_dirty;
 
 		bool _transformSequenceEnabled;
 		bool _transformSequenceNoChanges;

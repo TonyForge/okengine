@@ -58,6 +58,7 @@ namespace Zoner
 		glm::vec3 bounder_axis;
 
 		Zoner::Collision::Point Bound(glm::vec3 world_position);
+		float GetBounderMaxRadiusInWorldSpace();
 
 		void CalculateBounder();
 	private:
@@ -90,6 +91,7 @@ namespace Zoner
 		float trajectory_progress;
 		//tmp end
 
+		bool isInViewport = true;
 		bool isNPC = true;
 		bool relocationInProgress = false;
 		glm::vec2 relocationDestinationPosition;

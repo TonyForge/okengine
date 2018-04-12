@@ -69,15 +69,7 @@ void Zoner::Ship::RelocationComplete()
 	EndTransform(true);
 
 	relocationInProgress = false;
-}
 
-Zoner::ISpace *& Zoner::Ship::Location()
-{
-	return location;
-}
-
-void Zoner::Ship::Update(float dt)
-{
 	if (location != nullptr && location->isCurrent)
 	{
 		cmd_sequence.restriction_a = true;
@@ -94,16 +86,51 @@ void Zoner::Ship::Update(float dt)
 		cmd_sequence.restriction_b = false;
 		cmd_parallel.restriction_b = false;
 	}
-		
+}
+
+Zoner::ISpace *& Zoner::Ship::Location()
+{
+	return location;
+}
+
+void Zoner::Ship::Update(float dt)
+{
+	if (this_blueprint) this_blueprint->enabled = false;
+
 	switch (this_type)
 	{
 		case Zoner::ShipType::ST_Spacecraft :
 		{
+			BeginTransform(ok::TransformSpace::WorldSpace);
+			isInViewport = ok::graphics::Camera::GetCurrent()->IsInViewport(GetPosition(), this_blueprint->GetBounderMaxRadiusInWorldSpace());
+			EndTransform(false);
+
 			this_blueprint->BeginTransform();
 			this_blueprint->SetRotation(this_blueprint->GetRotation() + glm::vec3(15.f * dt, 0.f, 0.f));
-			this_blueprint->EndTransform(true);
+			this_blueprint->EndTransform(false);
+
+			if (isInViewport == true)
+			{
+				this_blueprint->enabled = true;
+
+				if (IsUpdateChildrensTransformNeeded())
+					UpdateChildrensTransform();
+				else
+					this_blueprint->UpdateChildrensTransform();
+			}
 		}
 		break;
+	}
+
+	if (isInViewport)
+	{
+		cmd_sequence.restriction_b = true;
+		cmd_parallel.restriction_b = true;
+	}
+	else
+	{
+		cmd_sequence.restriction_b = false;
+		cmd_parallel.restriction_b = false;
 	}
 
 	ok::GameObject::Update(dt);
@@ -166,9 +193,9 @@ void Zoner::Ship::ClickOnceAt(glm::vec2 space_xy, bool ignore_objects)
 					cmd_relocate->destination_position = *static_cast<glm::vec2*>(picked_object->GetPtr(Zoner::Requests::JumpHole_DestinationPosition)) + (space_xy - glm::vec2(picked_object->GetPosition()));
 					picked_object->EndTransform(false);
 
-					cmd_sequence.Clear(Zoner::CommandExecutionStrategy::daily_96);
-					cmd_sequence.Push(cmd_arrival, -1, Zoner::CommandExecutionStrategy::daily_96);
-					cmd_sequence.Push(cmd_relocate, -1, Zoner::CommandExecutionStrategy::daily_96);
+					cmd_sequence.Clear(Zoner::CommandExecutionStrategy::daily_4);
+					cmd_sequence.Push(cmd_arrival, -1, Zoner::CommandExecutionStrategy::daily_4);
+					cmd_sequence.Push(cmd_relocate, -1, Zoner::CommandExecutionStrategy::daily_4);
 				}
 			}
 		}

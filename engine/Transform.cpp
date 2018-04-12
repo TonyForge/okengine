@@ -21,7 +21,8 @@ ok::Transform::Transform() :
 	_parent(nullptr),
 	_rotation_direction(ok::RotationDirection::CCW),
 	_transform_combine_order(ok::TransformCombineOrder::SRT),
-	_gameObject(nullptr)
+	_gameObject(nullptr),
+	_childrens_absolute_transform_dirty(false)
 {
 
 }
@@ -200,20 +201,40 @@ void ok::Transform::UpdateAbsoluteTransform(bool updateChildrens)
 
 	if (updateChildrens)
 	{
-		std::list<ok::Transform*>::iterator it = _childrens.begin();
-		std::list<ok::Transform*>::iterator it_end = _childrens.end();
-
-		while (it != it_end)
-		{
-			(*it)->UpdateAbsoluteTransform(updateChildrens);
-			it++;
-		}
+		UpdateChildrensTransform();
 	}
 }
 
 glm::mat4 ok::Transform::GetAbsoluteTransformMatrix()
 {
 	return _absoluteTransformMatrix;
+}
+
+void ok::Transform::UpdateChildrensTransform(bool force)
+{
+	if (_parent != nullptr && _childrens_absolute_transform_dirty == false)
+	{
+		_childrens_absolute_transform_dirty = _parent->_childrens_absolute_transform_dirty;
+	}
+
+	if (_childrens_absolute_transform_dirty || force)
+	{
+		std::list<ok::Transform*>::iterator it = _childrens.begin();
+		std::list<ok::Transform*>::iterator it_end = _childrens.end();
+
+		while (it != it_end)
+		{
+			(*it)->UpdateAbsoluteTransform(true);
+			it++;
+		}
+
+		_childrens_absolute_transform_dirty = false;
+	}
+}
+
+bool ok::Transform::IsUpdateChildrensTransformNeeded()
+{
+	return _childrens_absolute_transform_dirty;
 }
 
 void ok::Transform::BeginTransform(ok::TransformSpace space)
@@ -228,6 +249,7 @@ void ok::Transform::EndTransform(bool updateChildrens)
 	if (false == _transformSequenceNoChanges)
 	{
 		_UpdateRelativeTransformMatrix();
+		_childrens_absolute_transform_dirty = true;
 
 		if (updateChildrens)
 		{
