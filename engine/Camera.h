@@ -36,6 +36,9 @@ namespace ok
 			glm::vec3 ScreenToWorldPosition(glm::vec3 normalized_screen_position);
 			glm::vec3 WorldToScreenPosition(glm::vec3 world_position);
 			bool IsInViewport(glm::vec3 world_position, float world_radius);
+
+			float GetViewportWidth();
+			float GetViewportHeight();
 		protected:
 		private:
 			glm::mat4 mProj;

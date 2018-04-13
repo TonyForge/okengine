@@ -34,6 +34,8 @@ namespace ok
 		void GetLTRB(T& _l, T& _t, T& _r, T& _b);
 		glm::tvec2<T, glm::packed_highp> GetXY();
 		glm::tvec2<T, glm::packed_highp> GetSize();
+		glm::tvec2<T, glm::packed_highp> GetCenter();
+		glm::tvec2<T, glm::packed_highp> PickRayFromCenter(glm::tvec2<T, glm::packed_highp> ray);
 		//operator = with yup difference realisation
 	protected:
 	private:

@@ -329,6 +329,11 @@ void Zoner::Game::State(Zoner::GameStates state, bool value)
 	_game_states[static_cast<int>(state)] = value;
 }
 
+Zoner::IShip * Zoner::Game::GetCurrentPlayerShip()
+{
+	return _current_player_ship;
+}
+
 void Zoner::Game::TimeStep()
 {
 	day_progress = 0.f;
@@ -430,6 +435,11 @@ void Zoner::Game::UpdateGameScreen_Space(float dt)
 		{
 			State(Zoner::GameStates::PauseEnabled, false);
 			State(Zoner::GameStates::PauseRequest, false);
+
+			if (_current_space != nullptr)
+			{
+				_current_space->DoCameraFollow();
+			}
 		}
 	}
 

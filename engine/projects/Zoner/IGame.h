@@ -23,6 +23,8 @@ namespace Zoner
 		Count
 	};
 
+	class IShip;
+
 	class IGame
 	{
 	public:
@@ -34,6 +36,8 @@ namespace Zoner
 		virtual bool StateTrue(Zoner::GameStates state) = 0;
 		virtual bool StateFalse(Zoner::GameStates state) = 0;
 		virtual void State(Zoner::GameStates state, bool value) = 0;
+
+		virtual Zoner::IShip* GetCurrentPlayerShip() = 0;
 
 		static Zoner::IGame& o();
 	protected:

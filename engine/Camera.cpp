@@ -269,3 +269,13 @@ bool ok::graphics::Camera::IsInViewport(glm::vec3 world_position, float world_ra
 	float delta_y = screen_position.y - glm::max(0.f, glm::min(screen_position.y, 1.f));
 	return (delta_x * delta_x + delta_y * delta_y) < (screen_radius * screen_radius);
 }
+
+float ok::graphics::Camera::GetViewportWidth()
+{
+	return projection_width;
+}
+
+float ok::graphics::Camera::GetViewportHeight()
+{
+	return projection_height;
+}

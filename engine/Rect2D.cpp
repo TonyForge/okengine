@@ -102,6 +102,42 @@ glm::tvec2<T, glm::packed_highp> ok::Rect2D<T>::GetSize()
 	return glm::tvec2<T, glm::packed_highp>(w, h);
 }
 
+template<class T>
+glm::tvec2<T, glm::packed_highp> ok::Rect2D<T>::GetCenter()
+{
+	return glm::tvec2<T, glm::packed_highp>(x + w / static_cast<T>(2), y + h / static_cast<T>(2));
+}
+
+template<class T>
+glm::tvec2<T, glm::packed_highp> ok::Rect2D<T>::PickRayFromCenter(glm::tvec2<T, glm::packed_highp> ray)
+{
+	T cx = x + w / static_cast<T>(2);
+	T cy = y + h / static_cast<T>(2);
+
+	if (ray.x == 0) return glm::tvec2<T, glm::packed_highp>(cx, cy + glm::sign(ray.y)*h*0.5f);
+	if (ray.y == 0) return glm::tvec2<T, glm::packed_highp>(cx + glm::sign(ray.x)*h*0.5f, cy);
+
+	T rect_slope = (glm::sign(ray.y)*h) / (glm::sign(ray.x)*w);
+	T slope = ray.y / ray.x;
+
+	T rx, ry;
+
+	if (slope >= rect_slope)
+	{
+		//up
+		rx = static_cast<T>(glm::sign(ray.x)*h*0.5f / glm::abs(slope));
+		ry = static_cast<T>(h*0.5f*glm::sign(ray.y));
+	}
+	else
+	{
+		//side
+		ry = static_cast<T>(glm::sign(ray.y)*w*0.5f * glm::abs(slope));
+		rx = static_cast<T>(w*0.5f*glm::sign(ray.x));
+	}
+
+	return glm::tvec2<T, glm::packed_highp>(cx+rx, cy+ry);
+}
+
 template <class T>
 ok::Rect2D<T>::Rect2D() : yup(false), merge_empty(false)
 {

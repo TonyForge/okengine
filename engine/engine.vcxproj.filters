@@ -183,6 +183,9 @@
     <ClCompile Include="projects\Zoner\JumpHole.cpp">
       <Filter>projects\Zoner</Filter>
     </ClCompile>
+    <ClCompile Include="projects\Zoner\SpaceCommands.cpp">
+      <Filter>projects\Zoner</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -339,6 +342,9 @@
       <Filter>projects\Zoner</Filter>
     </ClInclude>
     <ClInclude Include="projects\Zoner\RequestsDispatcher.h">
+      <Filter>projects\Zoner</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Zoner\SpaceCommands.h">
       <Filter>projects\Zoner</Filter>
     </ClInclude>
   </ItemGroup>

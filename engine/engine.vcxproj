@@ -469,6 +469,7 @@
     <ClCompile Include="projects\Zoner\ShipCommands.cpp" />
     <ClCompile Include="projects\Zoner\SmoothPath.cpp" />
     <ClCompile Include="projects\Zoner\Space.cpp" />
+    <ClCompile Include="projects\Zoner\SpaceCommands.cpp" />
     <ClCompile Include="projects\Zoner\UID.cpp" />
     <ClCompile Include="pystring.cpp" />
     <ClCompile Include="Quad.cpp" />
@@ -530,6 +531,7 @@
     <ClInclude Include="projects\Zoner\ShipCommands.h" />
     <ClInclude Include="projects\Zoner\SmoothPath.h" />
     <ClInclude Include="projects\Zoner\Space.h" />
+    <ClInclude Include="projects\Zoner\SpaceCommands.h" />
     <ClInclude Include="projects\Zoner\UID.h" />
     <ClInclude Include="pystring.h" />
     <ClInclude Include="Quad.h" />

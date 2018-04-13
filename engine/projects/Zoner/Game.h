@@ -86,5 +86,7 @@ namespace Zoner
 		bool StateTrue(Zoner::GameStates state);
 		bool StateFalse(Zoner::GameStates state);
 		void State(Zoner::GameStates state, bool value);
+
+		Zoner::IShip* GetCurrentPlayerShip();
 	};
 }

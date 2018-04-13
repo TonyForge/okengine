@@ -11,4 +11,15 @@ Zoner::ISpace::ISpace() : camera(ok::graphics::CameraCoordinateSystem::ScreenCen
 	camera.EndTransform(true);
 
 	isCurrent = false;
+
+	camera_follow_start = glm::vec3(0.f,0.f,0.f);
+	camera_follow_enabled = false;
+
+	camera_grab_start = glm::vec2(0.f, 0.f);
+	camera_grab_enabled = false;
+
+	cmd_sequence.sleep = false;
+	cmd_sequence.sequence = true;
+	cmd_parallel.sleep = false;
+	cmd_parallel.parallel = true;
 }

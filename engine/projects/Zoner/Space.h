@@ -3,6 +3,7 @@
 #include "..\..\GameObject.h"
 #include "..\..\LayeredRenderer.h"
 #include "..\..\Rect2D.h"
+#include "..\..\Input.h"
 
 #include "IGame.h"
 #include "IShip.h"
@@ -33,6 +34,9 @@ namespace Zoner
 
 		std::vector<Zoner::IShip*>& WhoIsThere(glm::vec2 space_xy);
 		std::vector<Zoner::IShip*>& Visitors();
+
+		void DoCameraFollow();
+		void CameraUpdate(float dt);
 	protected:
 	private:
 	};
