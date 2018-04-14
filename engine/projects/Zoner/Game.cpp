@@ -270,6 +270,13 @@ void Zoner::Game::LoadGameUpdate()
 
 			ship->this_type = Zoner::ShipType::ST_Spacecraft;
 			ship->Rename(_game_file_element_iterator->Attribute("name"));
+			ship->isNPC = _game_file_element_iterator->BoolAttribute("isNPC");
+
+			if (ship->isNPC == false)
+			{
+				_current_player_ship = ship;
+			}
+
 			ship->Relocate(_spaces[_game_file_element_iterator->FirstChildElement("location")->Attribute("space_id")]);
 
 			tinyxml2::XMLElement* position = _game_file_element_iterator->FirstChildElement("position");
@@ -280,16 +287,16 @@ void Zoner::Game::LoadGameUpdate()
 			ship->SetRotation(glm::vec3(rotation->FloatAttribute("x"), rotation->FloatAttribute("y"), rotation->FloatAttribute("z")));
 			ship->EndTransform(true);
 
-			ship->this_blueprint = static_cast<Zoner::ShipBlueprint*>(_ship_blueprints[_game_file_element_iterator->Attribute("blueprint")]->Duplicate());
-			ship->AddChild(ship->this_blueprint);
-
-			ship->isNPC = _game_file_element_iterator->BoolAttribute("isNPC");
-
+			//Potom sdelat chtobi vmesto etogo sohranalos pologenie cameri v xml i ottuda zagrugalos
 			if (ship->isNPC == false)
 			{
-				//_current_space = static_cast<Zoner::Space*>(ship->Location());
-				_current_player_ship = ship;
+				glm::vec3& cam_pos = ship->GetPosition();
+				cam_pos.z = ship->location->camera.GetPosition().z;
+				ship->location->camera.SetPosition(cam_pos);
 			}
+
+			ship->this_blueprint = static_cast<Zoner::ShipBlueprint*>(_ship_blueprints[_game_file_element_iterator->Attribute("blueprint")]->Duplicate());
+			ship->AddChild(ship->this_blueprint);
 
 			_load_save_game_step++;
 			_game_file_element_iterator = _game_file_element_iterator->NextSiblingElement("spacecraft");
@@ -303,6 +310,9 @@ void Zoner::Game::LoadGameUpdate()
 	if (_load_save_game_stage == 6)
 	{
 		State(Zoner::GameStates::LoadGameCompleted, true);
+
+		State(Zoner::GameStates::PauseRequest, true);
+		State(Zoner::GameStates::PauseEnabled, true);
 	}
 
 	_preloader.Task_ShowProgress_Update(_load_save_game_step, _load_save_game_step_max);
@@ -332,6 +342,18 @@ void Zoner::Game::State(Zoner::GameStates state, bool value)
 Zoner::IShip * Zoner::Game::GetCurrentPlayerShip()
 {
 	return _current_player_ship;
+}
+
+void Zoner::Game::ChangeCurrentLocation(Zoner::ISpace * location)
+{
+	if (_current_space != nullptr)
+	{
+		_current_space->isCurrent = false;
+		_current_space = nullptr;
+	}
+
+	_current_space = static_cast<Zoner::Space*>(location);
+	_current_space->isCurrent = true;
 }
 
 void Zoner::Game::TimeStep()
@@ -390,7 +412,7 @@ void Zoner::Game::UpdateGameScreen_Space(float dt)
 		day_progress += day_progress_delta;
 		hour = static_cast<unsigned int>(glm::floor(24.0f * day_progress));
 
-		if (_current_player_ship != nullptr)
+		/*if (_current_player_ship != nullptr)
 		{
 			if (_current_space != nullptr)
 			{
@@ -400,7 +422,7 @@ void Zoner::Game::UpdateGameScreen_Space(float dt)
 
 			_current_space = static_cast<Zoner::Space*>(_current_player_ship->Location());
 			_current_space->isCurrent = true;
-		}
+		}*/
 
 		//update all spaces here
 		Zoner::CommandsList::AllListsPassTime(day_progress_delta*24.0f);
@@ -416,7 +438,7 @@ void Zoner::Game::UpdateGameScreen_Space(float dt)
 			if (StateTrue(Zoner::GameStates::PauseRequest))
 			{
 				State(Zoner::GameStates::PauseEnabled, true);
-				State(Zoner::GameStates::PauseRequest, false);
+				//State(Zoner::GameStates::PauseRequest, false);
 			}
 		}
 
@@ -434,7 +456,7 @@ void Zoner::Game::UpdateGameScreen_Space(float dt)
 		if (ok::Input::o().KeyPressed(ok::KKey::Space))
 		{
 			State(Zoner::GameStates::PauseEnabled, false);
-			State(Zoner::GameStates::PauseRequest, false);
+			//State(Zoner::GameStates::PauseRequest, true);
 
 			if (_current_space != nullptr)
 			{

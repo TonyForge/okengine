@@ -24,6 +24,7 @@ namespace Zoner
 	};
 
 	class IShip;
+	class ISpace;
 
 	class IGame
 	{
@@ -38,6 +39,7 @@ namespace Zoner
 		virtual void State(Zoner::GameStates state, bool value) = 0;
 
 		virtual Zoner::IShip* GetCurrentPlayerShip() = 0;
+		virtual void ChangeCurrentLocation(Zoner::ISpace* location) = 0;
 
 		static Zoner::IGame& o();
 	protected:

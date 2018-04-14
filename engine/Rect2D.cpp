@@ -114,6 +114,8 @@ glm::tvec2<T, glm::packed_highp> ok::Rect2D<T>::PickRayFromCenter(glm::tvec2<T, 
 	T cx = x + w / static_cast<T>(2);
 	T cy = y + h / static_cast<T>(2);
 
+	if (ray.x == 0 && ray.y == 0) 
+		return glm::tvec2<T, glm::packed_highp>(cx, cy);
 	if (ray.x == 0) return glm::tvec2<T, glm::packed_highp>(cx, cy + glm::sign(ray.y)*h*0.5f);
 	if (ray.y == 0) return glm::tvec2<T, glm::packed_highp>(cx + glm::sign(ray.x)*h*0.5f, cy);
 
@@ -122,7 +124,7 @@ glm::tvec2<T, glm::packed_highp> ok::Rect2D<T>::PickRayFromCenter(glm::tvec2<T, 
 
 	T rx, ry;
 
-	if (slope >= rect_slope)
+	if (glm::abs(slope) >= glm::abs(rect_slope))
 	{
 		//up
 		rx = static_cast<T>(glm::sign(ray.x)*h*0.5f / glm::abs(slope));

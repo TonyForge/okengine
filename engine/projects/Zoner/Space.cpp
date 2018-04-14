@@ -86,9 +86,12 @@ std::vector<Zoner::IShip*>& Zoner::Space::Visitors()
 
 void Zoner::Space::DoCameraFollow()
 {
-	if (camera_follow_enabled == false)
+	camera_follow_enabled = false;
+
+	Zoner::IShip* _current_player_ship = Zoner::IGame::o().GetCurrentPlayerShip();
+
+	if (_current_player_ship != nullptr && camera_follow_enabled == false)
 	{
-		camera_follow_start = camera.GetPosition();
 		camera_follow_enabled = true;
 	}
 }
@@ -101,6 +104,8 @@ void Zoner::Space::CameraUpdate(float dt)
 	float camera_shift_x = 0.f;
 	float camera_shift_y = 0.f;
 
+	glm::vec3 camera_position = camera.GetPosition();
+
 	glm::vec3 camera_grab_target;
 
 	if (ok::Input::o().KeyDown(ok::MKey::Right))
@@ -112,7 +117,7 @@ void Zoner::Space::CameraUpdate(float dt)
 		}
 		else
 		{
-			camera_follow_start = camera.GetPosition();
+			camera_previous_position = camera_position;
 			camera_grab_start.x = ok::Input::o().MouseX();
 			camera_grab_start.y = ok::Input::o().MouseY();
 			camera_grab_enabled = true;
@@ -126,15 +131,10 @@ void Zoner::Space::CameraUpdate(float dt)
 	
 	if (camera_grab_enabled)
 	{
-		camera.SetPosition(camera_follow_start - glm::vec3(camera_shift_x, camera_shift_y, 0.f));
+		camera.SetPosition(camera_previous_position - glm::vec3(camera_shift_x, camera_shift_y, 0.f));
 	}
 	else
 	{
-		/*if (Zoner::IGame::o().StateFalse(Zoner::GameStates::PauseEnabled))
-		{
-			DoCameraFollow();
-		}*/
-
 		if (ok::Input::o().MouseX() <= camera_border_x)
 		{
 			camera_shift_x -= camera_shift_speed * dt;
@@ -159,7 +159,7 @@ void Zoner::Space::CameraUpdate(float dt)
 			camera_follow_enabled = false;
 		}
 
-		if (camera_follow_enabled)
+		if (camera_follow_enabled && Zoner::IGame::o().StateFalse(Zoner::GameStates::PauseEnabled))
 		{
 			Zoner::IShip* _current_player_ship = Zoner::IGame::o().GetCurrentPlayerShip();
 
@@ -172,35 +172,63 @@ void Zoner::Space::CameraUpdate(float dt)
 				else
 					camera_follow_end = _current_player_ship->GetPosition();
 
-				glm::vec3& camera_position = camera.GetPosition();
 				ok::Rect2Df camera_follow_rect;
 				camera_follow_rect.SetXYWH(
-					camera_position.x - camera.GetViewportWidth()*0.5f,
-					camera_position.y - camera.GetViewportHeight()*0.5f,
-					camera.GetViewportWidth(),
-					camera.GetViewportHeight()
+					camera_position.x - camera.GetViewportWidth()*0.5f+128,
+					camera_position.y - camera.GetViewportHeight()*0.5f+128,
+					camera.GetViewportWidth()-256,
+					camera.GetViewportHeight()-256
 				);
 
-				glm::vec2 camera_follow_rect_pick = camera_follow_rect.PickRayFromCenter(camera_follow_start - camera_follow_end) - camera_follow_rect.GetCenter();
+				glm::vec2 camera_follow_rect_pick = camera_follow_rect.PickRayFromCenter(_current_player_ship->GetPosition() - camera_follow_end) - camera_follow_rect.GetCenter();
 
 				if (glm::length2(_current_player_ship->GetPosition() - camera_follow_end) >= glm::length2(camera_follow_rect_pick))
 				{
 					camera_follow_end = _current_player_ship->GetPosition() - glm::vec3(camera_follow_rect_pick, 0.f);
+					camera_follow_end.z = camera_position.z;
 
-					camera_follow_end.z = camera.GetPosition().z;
-					camera.SetPosition(camera_follow_end);
+					glm::vec3 camera_delta = camera_follow_end - camera_position;
+					camera_delta.z = 0.f;
+
+					float camera_delta_length = glm::min(glm::length(camera_delta), 600.f);
+
+					if (camera_delta_length > 0.f)
+					{
+						camera_delta = glm::normalize(camera_delta) * camera_delta_length;
+
+						camera.SetPosition(camera_position + camera_delta * dt * 2.f);
+					}
+					else
+					{
+						//do nothing
+					}
 				}
 				else
 				{
-					camera_follow_end.z = camera.GetPosition().z;
-					camera.SetPosition(camera_follow_end);
+					camera_follow_end.z = camera_position.z;
+
+					glm::vec3 camera_delta = camera_follow_end - camera_position;
+					camera_delta.z = 0.f;
+
+					float camera_delta_length = glm::min(glm::length(camera_delta), 600.f);
+
+					if (camera_delta_length > 0.f)
+					{
+						camera_delta = glm::normalize(camera_delta) * camera_delta_length;
+
+						camera.SetPosition(camera_position + camera_delta * dt * 2.f);
+					}
+					else
+					{
+						//do nothing
+					}
 				}
 				
 			}
 		}
 		else
 		{
-			camera.SetPosition(camera.GetPosition() + glm::vec3(camera_shift_x, camera_shift_y, 0.f));
+			camera.SetPosition(camera_position + glm::vec3(camera_shift_x, camera_shift_y, 0.f));
 		}
 	}
 	

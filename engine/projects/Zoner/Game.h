@@ -88,5 +88,6 @@ namespace Zoner
 		void State(Zoner::GameStates state, bool value);
 
 		Zoner::IShip* GetCurrentPlayerShip();
+		void ChangeCurrentLocation(Zoner::ISpace* location);
 	};
 }

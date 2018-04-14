@@ -20,7 +20,7 @@ namespace Zoner
 		virtual void VisitorOut(Zoner::IShip* visitor, Zoner::ISpace* destination) = 0;
 
 		ok::graphics::Camera camera;
-		glm::vec3 camera_follow_start;
+		glm::vec3 camera_previous_position;
 		bool camera_follow_enabled;
 		glm::vec2 camera_grab_start;
 		bool camera_grab_enabled;

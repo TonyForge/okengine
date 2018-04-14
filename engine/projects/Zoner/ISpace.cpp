@@ -12,7 +12,7 @@ Zoner::ISpace::ISpace() : camera(ok::graphics::CameraCoordinateSystem::ScreenCen
 
 	isCurrent = false;
 
-	camera_follow_start = glm::vec3(0.f,0.f,0.f);
+	camera_previous_position = glm::vec3(0.f,0.f,0.f);
 	camera_follow_enabled = false;
 
 	camera_grab_start = glm::vec2(0.f, 0.f);

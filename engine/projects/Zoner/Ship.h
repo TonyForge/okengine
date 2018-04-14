@@ -12,10 +12,6 @@ namespace Zoner
 	class Ship : public Zoner::IShip
 	{
 	public:
-		void PassTime(float hours_passed);
-		void ApplyPassedTime();
-		void OnNewDay();
-
 		void Relocate(Zoner::ISpace* to);
 		void RelocationComplete();
 		Zoner::ISpace*& Location();

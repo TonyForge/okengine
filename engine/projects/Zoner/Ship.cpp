@@ -70,6 +70,16 @@ void Zoner::Ship::RelocationComplete()
 
 	relocationInProgress = false;
 
+	if (isNPC)
+	{
+		//do nothing
+	}
+	else
+	{
+		Zoner::IGame::o().ChangeCurrentLocation(location);
+		location->camera.SetPosition(glm::vec3(relocationDestinationPosition, location->camera.GetPosition().z));
+	}
+
 	if (location != nullptr && location->isCurrent)
 	{
 		cmd_sequence.restriction_a = true;
@@ -85,6 +95,15 @@ void Zoner::Ship::RelocationComplete()
 
 		cmd_sequence.restriction_b = false;
 		cmd_parallel.restriction_b = false;
+	}
+
+	if (isNPC)
+	{
+		//do nothing
+	}
+	else
+	{
+		Zoner::IGame::o().State(Zoner::GameStates::PauseRequest, true);
 	}
 }
 
@@ -208,13 +227,7 @@ void Zoner::Ship::Player_UpdateDecisions(float dt)
 	{
 		glm::vec3 click_world_position = location->camera.ScreenToWorldPosition(glm::vec3(ok::Input::o().MouseX(), ok::Input::o().MouseY(),0.f));
 		ClickOnceAt(click_world_position);
-		//ClickOnceAt(click_world_position);
 	}
-
-	/*if (ok::Input::o().KeyPressed(ok::KKey::J))
-	{
-		Relocate(_spaces[_game_file_element_iterator->FirstChildElement("location")->Attribute("space_id")]);
-	}*/
 }
 
 void Zoner::Ship::NPC_MakeDecisions()
