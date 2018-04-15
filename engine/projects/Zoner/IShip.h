@@ -84,7 +84,9 @@ namespace Zoner
 		Zoner::CommandsList cmd_parallel;
 
 		//tmp begin
+		float accumulated_speed; 
 		float engine_speed; //distance per hour
+		float engine_thrust; //speed per hour
 		float trajectory_progress;
 		//tmp end
 

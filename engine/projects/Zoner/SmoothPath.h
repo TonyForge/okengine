@@ -24,6 +24,7 @@ namespace Zoner
 
 		glm::vec3 position;
 		glm::vec3 tangent;
+		float curvature = 0.f;
 	};
 
 	class SmoothPath
@@ -55,6 +56,7 @@ namespace Zoner
 		void _CollectWaypointsFromArc(glm::vec2 circle_center, float circle_radius, glm::vec2 arc_begin, glm::vec2 arc_end, bool use_cache = false, bool force_ccw = false, bool force_cw = false);
 		void _CollectWaypointsFromLineSegment(glm::vec2 line_begin, glm::vec2 line_end, bool use_cache = false);
 		void _CalculateTangents();
+		void _ResampleCurvature();
 		void _RescaleCircle(glm::vec2& circle_center, float& circle_radius, glm::vec2 scale_hotspot, float scale);
 
 		//must be non parallel
