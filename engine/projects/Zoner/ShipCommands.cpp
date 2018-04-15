@@ -97,6 +97,26 @@ void Zoner::Cmd_Ship_MoveTo::ApplyPassedTime()
 	}
 }
 
+void Zoner::Cmd_Ship_MoveTo::OnNewDay()
+{
+	if (destination_reached)
+	{
+		//do nothing
+	}
+	else
+	{
+		if (owner->isNPC)
+		{
+			//do nothing
+		}
+		else
+		{
+			Zoner::IGame::o().State(Zoner::GameStates::CancelAutoPause, true);
+		}
+		
+	}
+}
+
 void Zoner::Cmd_Ship_WaitArrival::ReturnToPool()
 {
 	pool.Inject(container);

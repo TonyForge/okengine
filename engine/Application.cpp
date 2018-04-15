@@ -112,7 +112,7 @@ void ok::Application::Run()
 		{
 			switch (e.type)
 			{
-				case sf::Event::Closed :
+			case sf::Event::Closed :
 				{
 					running = false;
 				}

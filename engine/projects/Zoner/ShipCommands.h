@@ -36,6 +36,7 @@ namespace Zoner
 
 		void PassTime(float hours_passed);
 		void ApplyPassedTime();
+		void OnNewDay();
 
 		Zoner::IShip* owner;
 		glm::vec2 destination;

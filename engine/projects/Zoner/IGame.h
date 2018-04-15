@@ -13,6 +13,7 @@ namespace Zoner
 	{
 		PreloaderVisible = 0,
 		DefaultResourcesLoaded,
+		CancelAutoPause,
 		PauseEnabled,
 		PauseRequest,
 		LoadGame,

@@ -432,8 +432,19 @@ void Zoner::Game::UpdateGameScreen_Space(float dt)
 		{
 			TimeStep();
 
+			State(Zoner::GameStates::CancelAutoPause, false);
+
 			//Reset some variables daily and etc, and allow everyone except player to do decisions here
 			Zoner::CommandsList::AllListsOnNewDay();
+
+			if (StateTrue(Zoner::GameStates::CancelAutoPause))
+			{
+				State(Zoner::GameStates::PauseEnabled, false);	
+			}
+			else
+			{
+				State(Zoner::GameStates::PauseEnabled, true);
+			}
 
 			if (StateTrue(Zoner::GameStates::PauseRequest))
 			{
@@ -456,7 +467,7 @@ void Zoner::Game::UpdateGameScreen_Space(float dt)
 		if (ok::Input::o().KeyPressed(ok::KKey::Space))
 		{
 			State(Zoner::GameStates::PauseEnabled, false);
-			//State(Zoner::GameStates::PauseRequest, true);
+			State(Zoner::GameStates::PauseRequest, false);
 
 			if (_current_space != nullptr)
 			{
