@@ -35,14 +35,14 @@ Zoner::SmoothPathWaypoint Zoner::SmoothPath::Pick(float pick)
 
 	result.position = glm::lerp(waypoint.position, waypoint_post.position, path_piece_progress);
 	result.tangent = glm::lerp(waypoint.tangent, waypoint_post.tangent, path_piece_progress);
-	result.curvature = glm::lerp(waypoint.curvature, waypoint_post.curvature, path_piece_progress);
 
 	return result;
 }
 
-void Zoner::SmoothPath::BeginWay(glm::vec2 begin_position, glm::vec2 begin_direction, float seg_length)
+void Zoner::SmoothPath::BeginWay(glm::vec2 begin_position, glm::vec2 begin_direction, float seg_length, float section_length)
 {
 	_seg_length = seg_length;
+	_section_length = section_length;
 	_total_length = 0;
 
 	_waypoints.clear();
@@ -89,8 +89,25 @@ void Zoner::SmoothPath::EndWay()
 		_CollectWaypointsFromLineSegment(wp1.position, wp2.position, false);
 	}
 
+	if (_section_length > 0.f && _total_length > _section_length)
+	{
+		_section_length = glm::ceil(_section_length / _seg_length) * _seg_length;
+
+		float discard_pick = (_total_length - glm::mod(_total_length, _section_length)) / _total_length;
+
+		if (_waypoints.size() > 0)
+		{
+			float path_position = static_cast<float>(_waypoints.size() - 1) * discard_pick;
+			size_t waypoint_index = static_cast<size_t>(glm::floor(path_position));
+
+			_total_length -= (_waypoints.size() - waypoint_index) * _seg_length;
+
+			_waypoints.resize(waypoint_index);
+		}
+
+	}
+
 	_CalculateTangents();
-	_ResampleCurvature();
 }
 
 float Zoner::SmoothPath::Length()
@@ -445,8 +462,6 @@ void Zoner::SmoothPath::_CollectWaypointsFromArc(glm::vec2 circle_center, float 
 
 	Zoner::SmoothPathWaypoint waypoint = Zoner::SmoothPathWaypoint(glm::vec3(arc_begin, 0.f));
 
-	waypoint.curvature = 1.f;
-
 	if (collection.size() == 0 || collection.size() > 0 && false == collection[collection.size() - 1].IsEqualTo(waypoint))
 	collection.push_back(waypoint);
 
@@ -462,8 +477,6 @@ void Zoner::SmoothPath::_CollectWaypointsFromArc(glm::vec2 circle_center, float 
 		_total_length += _seg_length;
 
 		waypoint = Zoner::SmoothPathWaypoint(glm::vec3(circle_center + arc_begin, 0.f));
-
-		waypoint.curvature = 1.f;
 
 		if (collection.size() == 0 || collection.size() > 0 && false == collection[collection.size() - 1].IsEqualTo(waypoint))
 		collection.push_back(waypoint);
@@ -494,8 +507,6 @@ void Zoner::SmoothPath::_CollectWaypointsFromLineSegment(glm::vec2 line_begin, g
 
 	Zoner::SmoothPathWaypoint waypoint = Zoner::SmoothPathWaypoint(glm::vec3(line_begin, 0.f));
 
-	waypoint.curvature = 0.f;
-
 	if (collection.size() == 0 || collection.size() > 0 && false == collection[collection.size()-1].IsEqualTo(waypoint))
 	collection.push_back(waypoint);
 
@@ -510,8 +521,6 @@ void Zoner::SmoothPath::_CollectWaypointsFromLineSegment(glm::vec2 line_begin, g
 		_total_length += _step_len;
 
 		waypoint = Zoner::SmoothPathWaypoint(glm::vec3(line_begin, 0.f));
-
-		waypoint.curvature = 0.f;
 
 		if (collection.size() == 0 || collection.size() > 0 && false == collection[collection.size() - 1].IsEqualTo(waypoint))
 		collection.push_back(waypoint);
@@ -547,42 +556,6 @@ void Zoner::SmoothPath::_CalculateTangents()
 			{
 				waypoint.tangent = glm::normalize(waypoint_post.position - waypoint_pre.position);
 			}
-
-		index++;
-	}
-}
-
-void Zoner::SmoothPath::_ResampleCurvature()
-{
-	int index_post;
-
-	int index = 0;
-
-	int resample_first_index;
-	int resample_last_index;
-
-	for (auto& waypoint : _waypoints)
-	{
-		index_post = glm::clamp(index + 1, 0, static_cast<int>(_waypoints.size() - 1));
-
-		Zoner::SmoothPathWaypoint& waypoint_post = _waypoints[index_post];
-
-		if (glm::abs(waypoint.curvature - waypoint_post.curvature) == 1.f)
-		{
-			float curvature_first = waypoint.curvature;
-			float curvature_last = waypoint_post.curvature;
-
-			resample_first_index = glm::max(index - 12, 0);
-			resample_last_index = index_post;// glm::min(index_post + 3, static_cast<int>(_waypoints.size() - 1));
-
-			float progress = 0.f;
-
-			for (int i = resample_first_index; i <= resample_last_index; i++)
-			{
-				progress = static_cast<float>(i - resample_first_index) / static_cast<float>(resample_last_index - resample_first_index);
-				_waypoints[i].curvature = glm::clamp((_waypoints[i].curvature + glm::lerp(curvature_first, curvature_last, progress)) * 0.5f, 0.f, 1.f);
-			}
-		}
 
 		index++;
 	}

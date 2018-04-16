@@ -112,6 +112,8 @@ Zoner::ISpace *& Zoner::Ship::Location()
 	return location;
 }
 
+ok::graphics::LineBatch* lb = nullptr;
+
 void Zoner::Ship::Update(float dt)
 {
 	if (this_blueprint) this_blueprint->enabled = false;
@@ -153,6 +155,29 @@ void Zoner::Ship::Update(float dt)
 	}
 
 	ok::GameObject::Update(dt);
+
+	if (isNPC == false)
+	{
+		if (lb == nullptr)
+		{
+			lb = new ok::graphics::LineBatch();
+			lb->SetBrushColor(ok::Color::Green);
+			lb->SetBrushThickness(2.f);
+			lb->SetBrushSoftness(0.0001f);
+		}
+
+		if (trajectory.Length() > 0)
+		{
+			lb->BatchBegin();
+			int steps = 100.f;
+			lb->MoveTo(trajectory.Pick(0.f).position);
+			for (int i = 0; i <= steps; i++)
+			{
+				lb->LineTo(trajectory.Pick(static_cast<float>(i) / static_cast<float>(steps)).position);
+			}
+			lb->BatchEnd();
+		}
+	}
 }
 
 void Zoner::Ship::ClickOnceAt(glm::vec2 space_xy, bool ignore_objects)
@@ -172,6 +197,7 @@ void Zoner::Ship::ClickOnceAt(glm::vec2 space_xy, bool ignore_objects)
 
 			_cmd_ship_moveto.owner = this;
 			_cmd_ship_moveto.destination = space_xy;
+			_cmd_ship_moveto.exact_arrival = false;
 			cmd_parallel.Replace(&_cmd_ship_moveto, Zoner::Cmd_Groups::Movement, Zoner::CommandExecutionStrategy::daily_240);
 		}
 		else
@@ -198,6 +224,7 @@ void Zoner::Ship::ClickOnceAt(glm::vec2 space_xy, bool ignore_objects)
 				{
 					_cmd_ship_moveto.owner = this;
 					_cmd_ship_moveto.destination = space_xy;
+					_cmd_ship_moveto.exact_arrival = true;
 					cmd_parallel.Replace(&_cmd_ship_moveto, Zoner::Cmd_Groups::Movement, Zoner::CommandExecutionStrategy::daily_240);
 
 					Zoner::Cmd_Ship_WaitArrival* cmd_arrival = Zoner::Cmd_Ship_WaitArrival::New();

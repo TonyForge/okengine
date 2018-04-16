@@ -41,6 +41,11 @@ namespace Zoner
 		Zoner::IShip* owner;
 		glm::vec2 destination;
 		bool destination_reached;
+
+		float travel_speed;
+		float travel_time_passed;
+		float travel_distance_left;
+		bool exact_arrival;
 	};
 
 	class Cmd_Ship_Relocate : public Zoner::ICommand

@@ -24,7 +24,6 @@ namespace Zoner
 
 		glm::vec3 position;
 		glm::vec3 tangent;
-		float curvature = 0.f;
 	};
 
 	class SmoothPath
@@ -32,9 +31,10 @@ namespace Zoner
 	public:
 		Zoner::SmoothPathWaypoint Pick(float pick);
 
-		void BeginWay(glm::vec2 begin_position, glm::vec2 begin_direction, float seg_length);
+		void BeginWay(glm::vec2 begin_position, glm::vec2 begin_direction, float seg_length, float section_length = 0.f);
 		void AdvanceWay(glm::vec2 next_position);
 		void EndWay();
+		
 
 		float Length();
 		void Clear();
@@ -56,7 +56,6 @@ namespace Zoner
 		void _CollectWaypointsFromArc(glm::vec2 circle_center, float circle_radius, glm::vec2 arc_begin, glm::vec2 arc_end, bool use_cache = false, bool force_ccw = false, bool force_cw = false);
 		void _CollectWaypointsFromLineSegment(glm::vec2 line_begin, glm::vec2 line_end, bool use_cache = false);
 		void _CalculateTangents();
-		void _ResampleCurvature();
 		void _RescaleCircle(glm::vec2& circle_center, float& circle_radius, glm::vec2 scale_hotspot, float scale);
 
 		//must be non parallel
@@ -72,6 +71,7 @@ namespace Zoner
 		glm::vec2 _CalculatePassageFirstSection(const glm::vec2& from, const glm::vec2& from_direction, glm::vec2 to);
 
 		float _seg_length;
+		float _section_length;
 		float _total_length;
 
 		static bool _pfs_confluent_arc;
