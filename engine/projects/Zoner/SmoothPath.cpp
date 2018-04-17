@@ -39,11 +39,11 @@ Zoner::SmoothPathWaypoint Zoner::SmoothPath::Pick(float pick)
 	return result;
 }
 
-void Zoner::SmoothPath::BeginWay(glm::vec2 begin_position, glm::vec2 begin_direction, float seg_length, float section_length, float section_discard_threshold)
+void Zoner::SmoothPath::BeginWay(glm::vec2 begin_position, glm::vec2 begin_direction, float seg_length, float section_length, float section_discard_limit_length)
 {
 	_seg_length = seg_length;
 	_section_length = section_length;
-	_section_discard_threshold = section_discard_threshold;
+	_section_discard_limit_length = section_discard_limit_length;
 	_total_length = 0;
 
 	_waypoints.clear();
@@ -98,7 +98,7 @@ void Zoner::SmoothPath::EndWay()
 
 		float discarded_section_length = _total_length * (1.f - discard_pick);
 
-		if (discarded_section_length / _section_length > _section_discard_threshold)
+		if (discarded_section_length > _section_discard_limit_length)
 		{
 			//dont discard at all
 		}

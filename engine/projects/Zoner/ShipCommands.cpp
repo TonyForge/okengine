@@ -13,9 +13,8 @@ void Zoner::Cmd_Ship_MoveTo::OnEnterList()
 	if (exact_arrival)
 		owner->trajectory.BeginWay(this_position, owner->GetRight(), 10.0f);
 	else
-		owner->trajectory.BeginWay(this_position, owner->GetRight(), 10.0f, owner->engine_speed*24.f, 80.f / (owner->engine_speed*24.f));
+		owner->trajectory.BeginWay(this_position, owner->GetRight(), 10.0f, owner->engine_speed*24.f, 70.f);
 
-	//owner->trajectory.BeginWay(this_position, owner->GetRight(), 10.0f, 0.f);
 	//avoid negative objects here...
 
 	owner->trajectory.AdvanceWay(destination);
@@ -116,7 +115,10 @@ void Zoner::Cmd_Ship_MoveTo::OnNewDay()
 		}
 		else
 		{
-			Zoner::IGame::o().State(Zoner::GameStates::CancelAutoPause, true);
+			if (travel_distance_left > 70.f*2.f)
+			{
+				Zoner::IGame::o().State(Zoner::GameStates::CancelAutoPause, true);
+			}
 		}
 		
 	}
