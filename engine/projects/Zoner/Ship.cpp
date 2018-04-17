@@ -169,7 +169,7 @@ void Zoner::Ship::Update(float dt)
 		if (trajectory.Length() > 0)
 		{
 			lb->BatchBegin();
-			int steps = 100.f;
+			int steps = 100;
 			lb->MoveTo(trajectory.Pick(0.f).position);
 			for (int i = 0; i <= steps; i++)
 			{

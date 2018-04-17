@@ -31,7 +31,7 @@ namespace Zoner
 	public:
 		Zoner::SmoothPathWaypoint Pick(float pick);
 
-		void BeginWay(glm::vec2 begin_position, glm::vec2 begin_direction, float seg_length, float section_length = 0.f);
+		void BeginWay(glm::vec2 begin_position, glm::vec2 begin_direction, float seg_length, float section_length = 0.f, float section_discard_threshold = 0.f);
 		void AdvanceWay(glm::vec2 next_position);
 		void EndWay();
 		
@@ -72,6 +72,7 @@ namespace Zoner
 
 		float _seg_length;
 		float _section_length;
+		float _section_discard_threshold;
 		float _total_length;
 
 		static bool _pfs_confluent_arc;

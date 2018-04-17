@@ -39,10 +39,11 @@ Zoner::SmoothPathWaypoint Zoner::SmoothPath::Pick(float pick)
 	return result;
 }
 
-void Zoner::SmoothPath::BeginWay(glm::vec2 begin_position, glm::vec2 begin_direction, float seg_length, float section_length)
+void Zoner::SmoothPath::BeginWay(glm::vec2 begin_position, glm::vec2 begin_direction, float seg_length, float section_length, float section_discard_threshold)
 {
 	_seg_length = seg_length;
 	_section_length = section_length;
+	_section_discard_threshold = section_discard_threshold;
 	_total_length = 0;
 
 	_waypoints.clear();
@@ -95,15 +96,28 @@ void Zoner::SmoothPath::EndWay()
 
 		float discard_pick = (_total_length - glm::mod(_total_length, _section_length)) / _total_length;
 
-		if (_waypoints.size() > 0)
+		float discarded_section_length = _total_length * (1.f - discard_pick);
+
+		if (discarded_section_length / _section_length > _section_discard_threshold)
 		{
-			float path_position = static_cast<float>(_waypoints.size() - 1) * discard_pick;
-			size_t waypoint_index = static_cast<size_t>(glm::floor(path_position));
-
-			_total_length -= (_waypoints.size() - waypoint_index) * _seg_length;
-
-			_waypoints.resize(waypoint_index);
+			//dont discard at all
 		}
+		else
+		{
+			if (_waypoints.size() > 0)
+			{
+				float path_position = static_cast<float>(_waypoints.size() - 1) * discard_pick;
+				size_t waypoint_index = static_cast<size_t>(glm::floor(path_position));
+
+				_total_length -= (_waypoints.size() - waypoint_index) * _seg_length;
+
+				_waypoints.resize(waypoint_index);
+			}
+		}
+		//float discard_undo_length = _section_length * glm::min(discarded_section_length / _section_length, _section_discard_threshold);
+
+		//discard_pick += discard_undo_length / _total_length;
+
 
 	}
 

@@ -10,17 +10,18 @@ void Zoner::Cmd_Ship_MoveTo::OnEnterList()
 	owner->EndTransform(false);
 
 	//calculate path to space_xy
-	/*if (exact_arrival)
-		owner->trajectory.BeginWay(this_position, owner->GetRight(), 10.0f, 0.f);
+	if (exact_arrival)
+		owner->trajectory.BeginWay(this_position, owner->GetRight(), 10.0f);
 	else
-		owner->trajectory.BeginWay(this_position, owner->GetRight(), 10.0f, 80.f);*/
+		owner->trajectory.BeginWay(this_position, owner->GetRight(), 10.0f, owner->engine_speed*24.f, 80.f / (owner->engine_speed*24.f));
 
-	owner->trajectory.BeginWay(this_position, owner->GetRight(), 10.0f, 0.f);
+	//owner->trajectory.BeginWay(this_position, owner->GetRight(), 10.0f, 0.f);
 	//avoid negative objects here...
 
 	owner->trajectory.AdvanceWay(destination);
 	owner->trajectory.EndWay();
 
+	destination = owner->trajectory.Pick(1.f).position;
 	owner->trajectory_progress = 0.f;
 
 	if (owner->trajectory.Length() == 0.f)
