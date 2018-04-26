@@ -22,7 +22,40 @@ namespace ok
 
 		class SpriteInfo
 		{
+		public:
+			ok::graphics::TextureRect rect;
+			glm::vec2 hotspot;
+			glm::vec2 scale;
+			ok::Color tint_color;
+			float tint_power;
+			bool flip_x, flip_y;
+		};
 
+		enum class SpriteAtlasPickMode
+		{
+			Loop,
+			Clamp,
+			Pong
+		};
+
+		class SpriteAtlas
+		{
+		public:
+			void AddSprite(ok::graphics::SpriteInfo& sprite, ok::String& name);
+			ok::graphics::SpriteInfo& Get(ok::String& name);
+			ok::graphics::SpriteInfo* Search(ok::String& name);
+			ok::graphics::SpriteInfo& Get(size_t index);
+
+			ok::graphics::SpriteInfo& Pick(float pick, bool reverse = false);
+			ok::graphics::SpriteInfo& Pick(float pick, ok::graphics::SpriteAtlasPickMode mode, bool reverse = false);
+			ok::graphics::SpriteInfo& Pick(float pick, int first_index, int last_index, bool reverse = false);
+			ok::graphics::SpriteInfo& Pick(float pick, int first_index, int last_index, ok::graphics::SpriteAtlasPickMode mode, bool reverse = false);
+			
+			int IndexOf(ok::String& name);
+		protected:
+		private:
+			std::vector<ok::graphics::SpriteInfo> _items;
+			std::unordered_map<std::string, size_t> _items_indexes;
 		};
 
 		class SpriteBatch : public ok::graphics::ShaderAliasDispatcher

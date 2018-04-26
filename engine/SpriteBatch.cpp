@@ -223,3 +223,113 @@ void ok::graphics::SpriteBatch::PushQuad()
 
 	batch_quads_in_use++;
 }
+
+void ok::graphics::SpriteAtlas::AddSprite(ok::graphics::SpriteInfo & sprite, ok::String & name)
+{
+	_items.push_back(sprite);
+	_items_indexes[name] = _items.size() - 1;
+}
+
+ok::graphics::SpriteInfo & ok::graphics::SpriteAtlas::Get(ok::String & name)
+{
+	return _items[_items_indexes[name]];
+}
+
+ok::graphics::SpriteInfo * ok::graphics::SpriteAtlas::Search(ok::String & name)
+{
+	auto item = _items_indexes.find(name);
+
+	if (item == _items_indexes.end())
+	{
+		//do nothing
+	}
+	else
+	{
+		return &_items[(*item).second];
+	}
+	
+	return nullptr;
+}
+
+ok::graphics::SpriteInfo & ok::graphics::SpriteAtlas::Get(size_t index)
+{
+	return _items[index];
+}
+
+ok::graphics::SpriteInfo & ok::graphics::SpriteAtlas::Pick(float pick, bool reverse)
+{
+	return Pick(pick, -1, -1, ok::graphics::SpriteAtlasPickMode::Loop, reverse);
+}
+
+ok::graphics::SpriteInfo & ok::graphics::SpriteAtlas::Pick(float pick, ok::graphics::SpriteAtlasPickMode mode, bool reverse)
+{
+	return Pick(pick, -1, -1, mode, reverse);
+}
+
+ok::graphics::SpriteInfo & ok::graphics::SpriteAtlas::Pick(float pick, int first_index, int last_index, bool reverse)
+{
+	return Pick(pick, first_index, last_index, ok::graphics::SpriteAtlasPickMode::Loop, reverse);
+}
+
+ok::graphics::SpriteInfo & ok::graphics::SpriteAtlas::Pick(float pick, int first_index, int last_index, ok::graphics::SpriteAtlasPickMode mode, bool reverse)
+{
+	if (first_index == -1) first_index = 0;
+	if (last_index == -1) last_index = _items.size() - 1;
+
+	if (mode == ok::graphics::SpriteAtlasPickMode::Loop)
+	{
+		pick = glm::fract(pick);
+	}
+	else if (mode == ok::graphics::SpriteAtlasPickMode::Clamp)
+	{
+		pick = glm::clamp(pick, 0.f, 1.f);
+	}
+	else //if (mode == ok::graphics::SpriteAtlasPickMode::Pong)
+	{
+		float full_picks;
+		pick = glm::modf(pick, full_picks);
+
+		if (glm::mod(full_picks + 1.f, 2.f) > std::numeric_limits<float>::epsilon())
+		{
+			//do nothing
+		}
+		else
+		{
+			pick = 1.f - pick;
+		}
+	}
+
+	if (reverse == true)
+	{
+		std::swap(first_index, last_index);
+	}
+
+	int frame = static_cast<int>(glm::floor(static_cast<float>(last_index - first_index) * glm::clamp(pick, 0.f, 1.f)));
+
+	if (frame < 0)
+	{
+		frame = last_index + frame;
+	}
+	else
+	{
+		frame = first_index + frame;
+	}
+
+	return Get(static_cast<size_t>(frame));
+}
+
+int ok::graphics::SpriteAtlas::IndexOf(ok::String & name)
+{
+	auto item = _items_indexes.find(name);
+
+	if (item == _items_indexes.end())
+	{
+		//do nothing
+	}
+	else
+	{
+		return (*item).second;
+	}
+
+	return -1;
+}
