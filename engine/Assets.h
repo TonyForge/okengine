@@ -6,6 +6,7 @@
 #include "VertexAnimation.h"
 #include "TransformAnimation.h"
 #include "Sound.h"
+#include "SpriteBatch.h"
 
 namespace ok
 {
@@ -46,6 +47,8 @@ namespace ok
 
 		ok::graphics::ShaderOptions* GetBlendTemplate(ok::String path);
 
+		ok::graphics::SpriteAtlas* GetSpriteAtlas(ok::String path);
+
 		GLenum GetAliasGL(ok::String alias);
 		ok::String GetAliasName(ok::String alias);
 
@@ -80,6 +83,8 @@ namespace ok
 
 		std::unordered_map<std::string, ok::sound::SoundAsset*> sound_samples;
 		std::unordered_map<std::string, ok::sound::SoundAsset*> sound_streams;
+
+		std::unordered_map<std::string, ok::graphics::SpriteAtlas*> sprite_atlases;
 
 		std::unordered_map<std::string, GLenum> _glname_alias;
 		std::unordered_map<std::string, ok::String> _name_alias;

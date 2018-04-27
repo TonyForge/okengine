@@ -15,16 +15,21 @@ namespace ok
 			ok::graphics::Texture* texture;
 			int left, top, width, height;
 			glm::vec4 uv_rect;
+
+			TextureRect();
+			TextureRect(ok::graphics::Texture* _texture, int _left, int _top, int _width, int _height);
+			TextureRect(ok::graphics::Texture* _texture);
 		protected:
 		private:
-
 		};
 
 		class SpriteInfo
 		{
 		public:
+			SpriteInfo();
+
 			ok::graphics::TextureRect rect;
-			glm::vec2 hotspot;
+			glm::vec2 hotspot; //normalized 0..1
 			glm::vec2 scale;
 			ok::Color tint_color;
 			float tint_power;
@@ -40,8 +45,16 @@ namespace ok
 
 		class SpriteAtlas
 		{
+		private:
+			struct SpriteAtlasSequence
+			{
+				size_t begin;
+				size_t end;
+			};
 		public:
 			void AddSprite(ok::graphics::SpriteInfo& sprite, ok::String& name);
+			void AddSequence(ok::graphics::SpriteInfo& frame_template, ok::String& name, int region_left, int region_top, int region_width, int region_height, int frame_width, int frame_height, int frames_count);
+
 			ok::graphics::SpriteInfo& Get(ok::String& name);
 			ok::graphics::SpriteInfo* Search(ok::String& name);
 			ok::graphics::SpriteInfo& Get(size_t index);
@@ -51,11 +64,15 @@ namespace ok
 			ok::graphics::SpriteInfo& Pick(float pick, int first_index, int last_index, bool reverse = false);
 			ok::graphics::SpriteInfo& Pick(float pick, int first_index, int last_index, ok::graphics::SpriteAtlasPickMode mode, bool reverse = false);
 			
+			ok::graphics::SpriteInfo& PickSequence(ok::String& name, float pick, bool reverse = false);
+			ok::graphics::SpriteInfo& PickSequence(ok::String& name, float pick, ok::graphics::SpriteAtlasPickMode mode, bool reverse = false);
+
 			int IndexOf(ok::String& name);
 		protected:
 		private:
 			std::vector<ok::graphics::SpriteInfo> _items;
 			std::unordered_map<std::string, size_t> _items_indexes;
+			std::unordered_map<std::string, ok::graphics::SpriteAtlas::SpriteAtlasSequence> _sequences;
 		};
 
 		class SpriteBatch : public ok::graphics::ShaderAliasDispatcher
@@ -65,7 +82,7 @@ namespace ok
 			~SpriteBatch();
 
 			void Draw(ok::graphics::TextureRect* tex_rect, glm::vec2 position, float rotation_degrees, glm::vec2 scale, bool flip_y = false, glm::vec2 hotspot = glm::vec2(0.5f, 0.5f));
-			void Draw(ok::graphics::SpriteInfo* sprite_info, glm::vec2 position, float rotation_deg, glm::vec2 scale);
+			void Draw(ok::graphics::SpriteInfo* sprite_info, glm::vec2 position, float rotation_degrees, glm::vec2 scale);
 			void Draw(ok::graphics::Texture* tex, glm::vec2 position, glm::vec2 size, bool flip_y = false);
 			//void Flush();
 

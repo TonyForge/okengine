@@ -37,6 +37,11 @@ namespace ok
 
 namespace ok
 {
+	namespace graphics
+	{
+		class SpriteAtlas;
+	}
+
 	class AssetsBasic
 	{
 	public:
@@ -48,6 +53,7 @@ namespace ok
 		virtual ok::graphics::Material* GetMaterial(ok::String path) = 0;
 		virtual ok::sound::SoundAsset* GetSoundSample(ok::String path) = 0;
 		virtual ok::sound::SoundAsset* GetSoundStream(ok::String path) = 0;
+		virtual ok::graphics::SpriteAtlas* GetSpriteAtlas(ok::String path) = 0;
 		virtual GLenum GetAliasGL(ok::String alias) = 0;
 
 		static ok::AssetsBasic& instance();

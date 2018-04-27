@@ -18,6 +18,8 @@ namespace ok
 		void SetTransform(glm::vec2 translation, glm::vec2 scale);
 		void SetUVRect(glm::vec2 rect_left_top_corner, glm::vec2 rect_size, glm::vec2 texture_size);
 		void SetUVRect(glm::vec4 uv_rect);
+		void SetUVRectFlipXY(glm::vec4 uv_rect);
+		void SetUVRectFlipX(glm::vec4 uv_rect);
 		void SetUVRectFlipY(glm::vec4 uv_rect);
 		void SetColors(ok::Color color);
 		void SetColors(ok::Color left_top, ok::Color right_top, ok::Color left_bottom, ok::Color right_bottom);

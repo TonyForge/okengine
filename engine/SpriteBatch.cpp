@@ -75,9 +75,39 @@ void ok::graphics::SpriteBatch::Draw(ok::graphics::TextureRect * tex_rect, glm::
 	PushQuad();
 }
 
-void ok::graphics::SpriteBatch::Draw(ok::graphics::SpriteInfo * sprite_info, glm::vec2 position, float rotation_deg, glm::vec2 scale)
+void ok::graphics::SpriteBatch::Draw(ok::graphics::SpriteInfo * sprite_info, glm::vec2 position, float rotation_degrees, glm::vec2 scale)
 {
+	if (batch_texture != nullptr && batch_texture != sprite_info->rect.texture)
+	{
+		BatchEnd();
+	}
 
+	batch_texture = sprite_info->rect.texture;
+
+	if (batch_quads_in_use == batch_size)
+	{
+		BatchEnd();
+	}
+	if (batch_quads_in_use == 0)
+	{
+		BatchBegin();
+	}
+
+	quad.SetCenter(sprite_info->hotspot);
+	quad.SetSize(glm::vec2(sprite_info->rect.width, sprite_info->rect.height));
+
+	if (true == sprite_info->flip_x && true == sprite_info->flip_y)
+		quad.SetUVRectFlipXY(sprite_info->rect.uv_rect);
+	else if (true == sprite_info->flip_x)
+		quad.SetUVRectFlipX(sprite_info->rect.uv_rect);
+	else if (true == sprite_info->flip_y)
+		quad.SetUVRectFlipY(sprite_info->rect.uv_rect);
+	else
+		quad.SetUVRect(sprite_info->rect.uv_rect);
+
+	quad.SetTransform(glm::vec3(position.x, position.y, 0.0f), rotation_degrees, glm::vec3(sprite_info->scale.x*scale.x, sprite_info->scale.y*scale.y, 1.0f));
+
+	PushQuad();
 }
 
 void ok::graphics::SpriteBatch::Draw(ok::graphics::Texture* tex, glm::vec2 position, glm::vec2 size, bool flip_y)
@@ -230,6 +260,34 @@ void ok::graphics::SpriteAtlas::AddSprite(ok::graphics::SpriteInfo & sprite, ok:
 	_items_indexes[name] = _items.size() - 1;
 }
 
+void ok::graphics::SpriteAtlas::AddSequence(ok::graphics::SpriteInfo & frame_template, ok::String & name, int region_left, int region_top, int region_width, int region_height, int frame_width, int frame_height, int frames_count)
+{
+	ok::graphics::SpriteAtlas::SpriteAtlasSequence sequence;
+	sequence.begin = _items.size() - 1;
+	sequence.end = sequence.begin + frames_count;
+
+	_sequences[name] = sequence;
+
+	int frame_x, frame_y;
+
+	for (int i = 0; i < frames_count; i++)
+	{
+		frame_x = i * frame_width;
+		frame_y = static_cast<int>(glm::floor(static_cast<float>(frame_x) / static_cast<float>(region_width)));
+		frame_x -= frame_y * region_width;
+		frame_y *= frame_height;
+
+		frame_template.rect = ok::graphics::TextureRect(
+			frame_template.rect.texture,
+			region_left + frame_x,
+			region_top + frame_y,
+			frame_width,
+			frame_height);
+
+		AddSprite(frame_template, name + "_frame_" + std::to_string(i));
+	}
+}
+
 ok::graphics::SpriteInfo & ok::graphics::SpriteAtlas::Get(ok::String & name)
 {
 	return _items[_items_indexes[name]];
@@ -318,6 +376,20 @@ ok::graphics::SpriteInfo & ok::graphics::SpriteAtlas::Pick(float pick, int first
 	return Get(static_cast<size_t>(frame));
 }
 
+ok::graphics::SpriteInfo & ok::graphics::SpriteAtlas::PickSequence(ok::String & name, float pick, bool reverse)
+{
+	ok::graphics::SpriteAtlas::SpriteAtlasSequence& sequence = _sequences[name];
+
+	return Pick(pick, sequence.begin, sequence.end, ok::graphics::SpriteAtlasPickMode::Loop, reverse);
+}
+
+ok::graphics::SpriteInfo & ok::graphics::SpriteAtlas::PickSequence(ok::String & name, float pick, ok::graphics::SpriteAtlasPickMode mode, bool reverse)
+{
+	ok::graphics::SpriteAtlas::SpriteAtlasSequence& sequence = _sequences[name];
+
+	return Pick(pick, sequence.begin, sequence.end, mode, reverse);
+}
+
 int ok::graphics::SpriteAtlas::IndexOf(ok::String & name)
 {
 	auto item = _items_indexes.find(name);
@@ -332,4 +404,43 @@ int ok::graphics::SpriteAtlas::IndexOf(ok::String & name)
 	}
 
 	return -1;
+}
+
+ok::graphics::SpriteInfo::SpriteInfo() : 
+	hotspot(0.5f,0.5f),
+	scale(1.f,1.f),
+	tint_color(0.f,0.f,0.f,0.f),
+	tint_power(0.f),
+	flip_x(false),
+	flip_y(false)
+{
+}
+
+ok::graphics::TextureRect::TextureRect() :
+	texture(nullptr),
+	left(0), top(0), width(0), height(0),
+	uv_rect(0.f)
+{
+}
+
+ok::graphics::TextureRect::TextureRect(ok::graphics::Texture * _texture, int _left, int _top, int _width, int _height) :
+	texture(_texture),
+	left(_left), top(_top), width(_width), height(_height)
+{
+	glm::ivec2 size = texture->GetSize();
+
+	uv_rect.x = static_cast<float>(left) / static_cast<float>(size.x);
+	uv_rect.y = static_cast<float>(top) / static_cast<float>(size.y);
+	uv_rect.z = static_cast<float>(width) / static_cast<float>(size.x);
+	uv_rect.w = static_cast<float>(height) / static_cast<float>(size.y);
+}
+
+ok::graphics::TextureRect::TextureRect(ok::graphics::Texture * _texture) :
+	texture(_texture)
+{
+	glm::ivec2 size = texture->GetSize();
+
+	uv_rect = glm::vec4(0.f, 0.f, 1.f, 1.f);
+	left = 0; top = 0;
+	width = size.x; height = size.y;
 }

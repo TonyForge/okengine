@@ -72,6 +72,22 @@ void ok::Quad::SetUVRect(glm::vec4 uv_rect)
 	uvs[3].x = uv_rect.x;				uvs[3].y = uv_rect.y + uv_rect.w;
 }
 
+void ok::Quad::SetUVRectFlipXY(glm::vec4 uv_rect)
+{
+	uvs[3].x = uv_rect.x;				uvs[3].y = uv_rect.y;
+	uvs[2].x = uv_rect.x + uv_rect.z;	uvs[2].y = uv_rect.y;
+	uvs[1].x = uv_rect.x + uv_rect.z;	uvs[1].y = uv_rect.y + uv_rect.w;
+	uvs[0].x = uv_rect.x;				uvs[0].y = uv_rect.y + uv_rect.w;
+}
+
+void ok::Quad::SetUVRectFlipX(glm::vec4 uv_rect)
+{
+	uvs[3].x = uv_rect.x;				uvs[0].y = uv_rect.y;
+	uvs[2].x = uv_rect.x + uv_rect.z;	uvs[1].y = uv_rect.y;
+	uvs[1].x = uv_rect.x + uv_rect.z;	uvs[2].y = uv_rect.y + uv_rect.w;
+	uvs[0].x = uv_rect.x;				uvs[3].y = uv_rect.y + uv_rect.w;
+}
+
 void ok::Quad::SetUVRectFlipY(glm::vec4 uv_rect)
 {
 	uvs[0].x = uv_rect.x;				uvs[3].y = uv_rect.y;
