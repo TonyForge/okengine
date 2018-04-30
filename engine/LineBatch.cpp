@@ -217,41 +217,36 @@ glm::mat4 ok::graphics::LineBatch::DispatchAliasMat4(ok::graphics::ShaderAliasRe
 {
 	switch (alias_type)
 	{
-	case ok::graphics::ShaderAliasReference::ModelViewProjectionMatrix:
-	{
-		ok::graphics::Camera* camera = ok::graphics::Camera::GetCurrent();
+		case ok::graphics::ShaderAliasReference::ModelViewProjectionMatrix:
+		{
+			ok::graphics::Camera* camera = ok::graphics::Camera::GetCurrent();
 
-		if (camera != nullptr)
-			return camera->GetVPMatrix();
-		else
-			return glm::mat4(1.0f);
+			if (camera != nullptr)
+				return camera->GetVPMatrix();
+			else
+				return glm::mat4(1.0f);
+		}
+		break;
 	}
-	break;
-	default:
-	{
-		return glm::mat4(1.0f);
-	}
-	break;
-	}
+
+	unresolved_alias = true;
+	return glm::mat4(1.0f);
 }
 
 float ok::graphics::LineBatch::DispatchAliasFloat(ok::graphics::ShaderAliasReference alias_type)
 {
 	switch (alias_type)
 	{
-	case ok::graphics::ShaderAliasReference::Callback:
-	{
-		if (*callback_name_ptr == "softness")
-			return brush_softness;
-		else return 0.0f;
+		case ok::graphics::ShaderAliasReference::Callback:
+		{
+			if (*callback_name_ptr == "softness")
+				return brush_softness;
+		}
+		break;
 	}
-	break;
-	default:
-	{
-		return 0.0f;
-	}
-	break;
-	}
+
+	unresolved_alias = true;
+	return 0.0f;
 }
 
 void ok::graphics::LineBatch::PushLine()

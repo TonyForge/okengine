@@ -11,7 +11,7 @@ Zoner::Collision::Point Zoner::JumpHole::Pick(glm::vec3 world_position)
 	world_position = world_position - GetPosition();
 	EndTransform(false);
 
-	glm::vec3 point = glm::vec3(glm::inverse(GetAbsoluteTransformMatrix()) * glm::vec4(world_position, 0.f));
+	glm::vec3 point = glm::vec3(glm::inverse(GetAbsoluteTransformMatrix()) * glm::vec4(world_position, 0.f)); //w = 0.f but i dont know why, must be 1.f, but doesnt work
 	point = (point - glm::vec3(0.f,0.f,0.f)) / glm::vec3(radius, 1.f);
 	point *= point;
 

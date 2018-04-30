@@ -35,5 +35,6 @@
 #include "glm\gtx\norm.hpp"
 #include "glm\gtx\euler_angles.hpp"
 #include "glm\gtx\vector_angle.hpp"
+#include "glm\gtx\matrix_transform_2d.hpp"
 
 #include "String.h"

@@ -186,6 +186,9 @@
     <ClCompile Include="projects\Zoner\SpaceCommands.cpp">
       <Filter>projects\Zoner</Filter>
     </ClCompile>
+    <ClCompile Include="UI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -346,6 +349,9 @@
     </ClInclude>
     <ClInclude Include="projects\Zoner\SpaceCommands.h">
       <Filter>projects\Zoner</Filter>
+    </ClInclude>
+    <ClInclude Include="UI.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

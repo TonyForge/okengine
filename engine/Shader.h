@@ -43,6 +43,8 @@ namespace ok
 		class ShaderAliasDispatcher
 		{
 		public:
+			ShaderAliasDispatcher();
+
 			virtual glm::mat4 DispatchAliasMat4(ok::graphics::ShaderAliasReference alias_type);
 			virtual glm::vec4 DispatchAliasVec4(ok::graphics::ShaderAliasReference alias_type);
 			virtual glm::vec3 DispatchAliasVec3(ok::graphics::ShaderAliasReference alias_type);
@@ -54,6 +56,9 @@ namespace ok
 			virtual std::pair<unsigned int*, int> DispatchAliasSubroutineArray(ok::graphics::ShaderAliasReference alias_type);
 
 			const std::string* callback_name_ptr;
+
+			static bool unresolved_alias;
+			std::vector<ok::graphics::ShaderAliasDispatcher*> shader_alias_dispatcher_mirrors;
 		};
 
 		class ShaderOptions
@@ -94,8 +99,8 @@ namespace ok
 			void RegisterAlias(const std::string& uniform_name, const std::string& uniform_type, const std::string& alias_reference_name);
 			void RegisterAliasSubroutine(const std::string& uniform_name, const std::string& uniform_type, const std::string& alias_reference_name);
 
-			void Bind(ok::graphics::ShaderAliasDispatcher* dispatcher = nullptr);
-			void BindSubroutines(ok::graphics::ShaderAliasDispatcher* dispatcher = nullptr);
+			void Bind(ok::graphics::ShaderAliasDispatcher* _dispatcher = nullptr);
+			void BindSubroutines(ok::graphics::ShaderAliasDispatcher* _dispatcher = nullptr);
 			void Unbind();
 			bool IsBound();
 

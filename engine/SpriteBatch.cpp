@@ -110,7 +110,7 @@ void ok::graphics::SpriteBatch::Draw(ok::graphics::SpriteInfo * sprite_info, glm
 	PushQuad();
 }
 
-void ok::graphics::SpriteBatch::Draw(ok::graphics::Texture* tex, glm::vec2 position, glm::vec2 size, bool flip_y)
+void ok::graphics::SpriteBatch::Draw(ok::graphics::Texture* tex, glm::vec2 position, glm::vec2 size, bool flip_y, glm::vec2 hotspot)
 {
 	if (batch_texture != nullptr && batch_texture != tex)
 	{
@@ -128,7 +128,7 @@ void ok::graphics::SpriteBatch::Draw(ok::graphics::Texture* tex, glm::vec2 posit
 		BatchBegin();
 	}
 
-	quad.SetCenter(glm::vec2(0.5f,0.5f));
+	quad.SetCenter(hotspot);
 	quad.SetSize(size);
 
 	if (true == flip_y)
@@ -137,6 +137,72 @@ void ok::graphics::SpriteBatch::Draw(ok::graphics::Texture* tex, glm::vec2 posit
 		quad.SetUVRect(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
 
 	quad.SetTransform(glm::vec3(position.x, position.y, 0.0f), 0.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+	PushQuad();
+}
+
+void ok::graphics::SpriteBatch::Draw(ok::graphics::Texture * tex, glm::mat3 & transform_matrix, bool flip_y, glm::vec2 hotspot)
+{
+	if (batch_texture != nullptr && batch_texture != tex)
+	{
+		BatchEnd();
+	}
+
+	batch_texture = tex;
+
+	if (batch_quads_in_use == batch_size)
+	{
+		BatchEnd();
+	}
+	if (batch_quads_in_use == 0)
+	{
+		BatchBegin();
+	}
+
+	quad.SetCenter(hotspot);
+	quad.SetSize(tex->GetSize());
+
+	if (true == flip_y)
+		quad.SetUVRectFlipY(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+	else
+		quad.SetUVRect(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+
+	quad.SetTransform(transform_matrix);
+
+	PushQuad();
+}
+
+void ok::graphics::SpriteBatch::Draw(ok::graphics::SpriteInfo * sprite_info, glm::mat3 & transform_matrix)
+{
+	if (batch_texture != nullptr && batch_texture != sprite_info->rect.texture)
+	{
+		BatchEnd();
+	}
+
+	batch_texture = sprite_info->rect.texture;
+
+	if (batch_quads_in_use == batch_size)
+	{
+		BatchEnd();
+	}
+	if (batch_quads_in_use == 0)
+	{
+		BatchBegin();
+	}
+
+	quad.SetCenter(sprite_info->hotspot);
+	quad.SetSize(glm::vec2(sprite_info->rect.width*sprite_info->scale.x, sprite_info->rect.height*sprite_info->scale.y));
+
+	if (true == sprite_info->flip_x && true == sprite_info->flip_y)
+		quad.SetUVRectFlipXY(sprite_info->rect.uv_rect);
+	else if (true == sprite_info->flip_x)
+		quad.SetUVRectFlipX(sprite_info->rect.uv_rect);
+	else if (true == sprite_info->flip_y)
+		quad.SetUVRectFlipY(sprite_info->rect.uv_rect);
+	else
+		quad.SetUVRect(sprite_info->rect.uv_rect);
+
+	quad.SetTransform(transform_matrix);
 
 	PushQuad();
 }
@@ -211,12 +277,10 @@ glm::mat4 ok::graphics::SpriteBatch::DispatchAliasMat4(ok::graphics::ShaderAlias
 			return glm::mat4(1.0f);
 	}
 	break;
-	default:
-	{
-		return glm::mat4(1.0f);
 	}
-	break;
-	}
+
+	unresolved_alias = true;
+	return glm::mat4(1.0f);
 }
 
 float ok::graphics::SpriteBatch::DispatchAliasFloat(ok::graphics::ShaderAliasReference alias_type)
@@ -227,15 +291,12 @@ float ok::graphics::SpriteBatch::DispatchAliasFloat(ok::graphics::ShaderAliasRef
 	{
 		if (*callback_name_ptr == "default_z")
 			return _default_z;
-		else return 0.0f;
-	}
-	break;
-	default:
-	{
-		return 0.0f;
 	}
 	break;
 	}
+
+	unresolved_alias = true;
+	return 0.0f;
 }
 
 void ok::graphics::SpriteBatch::PushQuad()

@@ -769,6 +769,7 @@ glm::mat4 ok::graphics::TextBatch2D::DispatchAliasMat4(ok::graphics::ShaderAlias
 		break;
 	}
 
+	unresolved_alias = true;
 	return glm::mat4();
 }
 
@@ -786,6 +787,7 @@ std::pair<unsigned int*, int> ok::graphics::TextBatch2D::DispatchAliasSubroutine
 	break;
 	}
 
+	unresolved_alias = true;
 	return std::pair<unsigned int*, int>(nullptr, 0);
 }
 
@@ -806,6 +808,7 @@ std::pair<float*, int> ok::graphics::TextBatch2D::DispatchAliasFloatArray(ok::gr
 	break;
 	}
 
+	unresolved_alias = true;
 	return std::pair<float*, int>();
 }
 

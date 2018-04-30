@@ -494,6 +494,7 @@
     <ClCompile Include="tinyxml\tinyxml2.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="TransformAnimation.cpp" />
+    <ClCompile Include="UI.cpp" />
     <ClCompile Include="VertexAnimation.cpp" />
     <ClCompile Include="Zoner.cpp" />
   </ItemGroup>
@@ -549,6 +550,7 @@
     <ClInclude Include="tinyxml\tinyxml2.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="TransformAnimation.h" />
+    <ClInclude Include="UI.h" />
     <ClInclude Include="VertexAnimation.h" />
     <ClInclude Include="Zoner.h" />
   </ItemGroup>

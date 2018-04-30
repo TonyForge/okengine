@@ -700,9 +700,9 @@ void ok::Transform::_UpdateAbsoluteTransformMatrix()
 
 void ok::Transform::_UpdateOrientationVectors()
 {
-	_forward =	_absoluteRotationMatrix * glm::vec4(0.f, 0.f, 1.f, 0.f);
-	_up		 = _absoluteRotationMatrix * glm::vec4(0.f, 1.f, 0.f, 0.f);
-	_right	 = _absoluteRotationMatrix * glm::vec4(1.f, 0.f, 0.f, 0.f);
+	_forward =	_absoluteRotationMatrix * glm::vec4(0.f, 0.f, 1.f, 0.f); //w = 0.f because there is no translation in orientation vectors
+	_up		 = _absoluteRotationMatrix * glm::vec4(0.f, 1.f, 0.f, 0.f); //... same reason
+	_right	 = _absoluteRotationMatrix * glm::vec4(1.f, 0.f, 0.f, 0.f); //... same reason
 
 	_forward = glm::normalize(_forward);
 	_up		 = glm::normalize(_up);

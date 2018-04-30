@@ -135,31 +135,15 @@ glm::mat4 ok::graphics::MeshRenderer::DispatchAliasMat4(ok::graphics::ShaderAlia
 		return transform().GetAbsoluteTransformMatrix();
 	}
 	break;
-	default:
-	{
-		return glm::mat4(1.0f);
-	}
-	break;
 	}
 
+	unresolved_alias = true;
 	return glm::mat4(1.f);
 }
 
 glm::vec2 ok::graphics::MeshRenderer::DispatchAliasVec2(ok::graphics::ShaderAliasReference alias_type)
 {
-	switch (alias_type)
-	{
-	case ok::graphics::ShaderAliasReference::Callback :
-	{
-		return glm::vec2(0.f, 0.f);
-	}
-	break;
-	default:
-	{
-		return glm::vec2(0.f, 0.f);
-	}
-	break;
-	}
+	unresolved_alias = true;
 	return glm::vec2();
 }
 
@@ -175,13 +159,9 @@ float ok::graphics::MeshRenderer::DispatchAliasFloat(ok::graphics::ShaderAliasRe
 		}
 	}
 	break;
-	default:
-	{
-		return 0.f;
-	}
-	break;
 	}
 
+	unresolved_alias = true;
 	return 0.f;
 }
 
@@ -195,12 +175,8 @@ std::pair<glm::mat4*, int> ok::graphics::MeshRenderer::DispatchAliasMat4Array(ok
 			return std::pair<glm::mat4*, int>(_bones.data(), static_cast<int>(_bones.size()));
 		}
 		break;
-
-		default:
-		{
-			return std::pair<glm::mat4*, int>(nullptr, 0);
-		}
-		break;
 	}
+
+	unresolved_alias = true;
 	return std::pair<glm::mat4*, int>(nullptr, 0);
 }

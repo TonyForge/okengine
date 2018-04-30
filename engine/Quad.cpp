@@ -56,6 +56,14 @@ void ok::Quad::SetTransform(glm::vec2 translation, glm::vec2 scale)
 	vertices[3] = (((glm::vec2(0.0f, 1.0f) - _center) * _size * scale + translation));
 }
 
+void ok::Quad::SetTransform(glm::mat3 & matrix)
+{
+	vertices[0] = glm::vec2(matrix * glm::vec3((glm::vec2(0.0f, 0.0f) - _center) * _size, 1.0f));
+	vertices[1] = glm::vec2(matrix * glm::vec3((glm::vec2(1.0f, 0.0f) - _center) * _size, 1.0f));
+	vertices[2] = glm::vec2(matrix * glm::vec3((glm::vec2(1.0f, 1.0f) - _center) * _size, 1.0f));
+	vertices[3] = glm::vec2(matrix * glm::vec3((glm::vec2(0.0f, 1.0f) - _center) * _size, 1.0f));
+}
+
 void ok::Quad::SetUVRect(glm::vec2 rect_left_top_corner, glm::vec2 rect_size, glm::vec2 texture_size)
 {
 	uvs[0] = rect_left_top_corner / texture_size;

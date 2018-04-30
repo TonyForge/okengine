@@ -18,6 +18,9 @@ void Zoner::Game::Init()
 	time_bar = new ok::graphics::LineBatch(1);
 }
 
+/*ok::ui::widget test_image;
+ok::ui::widget test_button;
+bool test_button_drag = false;*/
 
 void Zoner::Game::Update(float dt)
 {
@@ -93,6 +96,53 @@ void Zoner::Game::Update(float dt)
 		time_bar->LineTo(glm::vec3(day_progress * static_cast<float>(screen_width), 4.f, 0.f));
 	time_bar->BatchEnd();
 	ok::graphics::Camera::PopCamera();
+
+	//ui test
+	/*ok::ui::BeginUI(screen_width, screen_height);
+
+	if (test_button_drag)
+		ok::ui::PushTranslate(ok::Input::o().MousePX()-50, ok::Input::o().MousePY()-50);
+	else
+		ok::ui::PushTranslate(100, 100);
+
+		auto btn_out = ok::ui::Dummy(test_button.ptr(), 0, 0, 100, 100);
+
+		if (btn_out.on_activate)
+		{
+			test_button_drag = !test_button_drag;
+		}
+
+		ok::ui::PushNonActivable(true);
+			if (btn_out.mouse_inside && !btn_out.mouse_down)
+			{
+				ok::ui::PushEffect_Power(1.5f);
+				ok::ui::Image(test_image.ptr(), ok::Assets::instance().GetTexture("test.png"), 0, 0, 100, 100);
+				ok::ui::PopEffect_Power();
+			}
+			else
+			if (btn_out.mouse_down)
+			{
+				ok::ui::PushEffect_Power(0.5f);
+				ok::ui::Image(test_image.ptr(), ok::Assets::instance().GetTexture("test.png"), 0, 0, 100, 100);
+				ok::ui::PopEffect_Power();
+			}
+			else
+			{
+				ok::ui::Image(test_image.ptr(), ok::Assets::instance().GetTexture("test.png"), 0, 0, 100, 100);
+			}
+		ok::ui::PopNonActivable();*/
+
+		/*auto out = ok::ui::Image(test_image.ptr(), ok::Assets::instance().GetTexture("test.png"), 0, 0, 100, 100);
+		if (ok::ui::Image(test_image.ptr(), ok::Assets::instance().GetTexture("test.png"), 0, 0, 100, 100).mouse_down)
+		{
+			ok::ui::PushEffect_Power(1.5f);
+			ok::ui::Image(test_image.ptr(), ok::Assets::instance().GetTexture("test.png"), 100, 100, 200, 200);
+			ok::ui::PopEffect_Power();
+		}*/
+
+		/*ok::ui::PopTranslate();
+
+	ok::ui::EndUI();*/
 }
 
 void Zoner::Game::LoadDefaultGame()

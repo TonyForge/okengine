@@ -13,6 +13,7 @@
 #include "Automator.h"
 #include "Pool.h"
 #include "Sound.h"
+#include "UI.h"
 
 namespace ok {
 

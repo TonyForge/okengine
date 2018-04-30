@@ -83,7 +83,10 @@ namespace ok
 
 			void Draw(ok::graphics::TextureRect* tex_rect, glm::vec2 position, float rotation_degrees, glm::vec2 scale, bool flip_y = false, glm::vec2 hotspot = glm::vec2(0.5f, 0.5f));
 			void Draw(ok::graphics::SpriteInfo* sprite_info, glm::vec2 position, float rotation_degrees, glm::vec2 scale);
-			void Draw(ok::graphics::Texture* tex, glm::vec2 position, glm::vec2 size, bool flip_y = false);
+			void Draw(ok::graphics::Texture* tex, glm::vec2 position, glm::vec2 size, bool flip_y = false, glm::vec2 hotspot = glm::vec2(0.5f,0.5f));
+			void Draw(ok::graphics::Texture* tex, glm::mat3& transform_matrix, bool flip_y = false, glm::vec2 hotspot = glm::vec2(0.5f, 0.5f));
+
+			void Draw(ok::graphics::SpriteInfo* sprite_info, glm::mat3& transform_matrix);
 			//void Flush();
 
 			void SetMaterial(ok::graphics::Material* material);

@@ -1,6 +1,7 @@
 #include "Shader.h"
 
 ok::graphics::Shader* ok::graphics::Shader::currentlyBoundShader = nullptr;
+bool ok::graphics::ShaderAliasDispatcher::unresolved_alias = false;
 
 ok::graphics::Shader::Shader()
 {
@@ -160,7 +161,7 @@ void ok::graphics::Shader::RegisterAliasSubroutine(const std::string& uniform_na
 	aliases_subroutines.push_back(std::tuple<int, ok::graphics::ShaderAliasType, ok::graphics::ShaderAliasReference, std::string>(index, type, reference, uniform_name));
 }
 
-void ok::graphics::Shader::Bind(ok::graphics::ShaderAliasDispatcher* dispatcher)
+void ok::graphics::Shader::Bind(ok::graphics::ShaderAliasDispatcher* _dispatcher)
 {
 	glUseProgram(shader_program_id);
 	currentlyBoundShader = this;
@@ -211,73 +212,168 @@ void ok::graphics::Shader::Bind(ok::graphics::ShaderAliasDispatcher* dispatcher)
 	ok::graphics::ShaderAliasType alias_type;
 	ok::graphics::ShaderAliasReference alias_reference;
 
+
 	for (auto&& alias : aliases)
 	{
 		alias_type = std::get<1>(alias);
 		alias_reference = std::get<2>(alias);
 
-		if (alias_reference == ok::graphics::ShaderAliasReference::Callback)
+		for (auto&& dispatcher : _dispatcher->shader_alias_dispatcher_mirrors)
 		{
-			dispatcher->callback_name_ptr = &std::get<3>(alias);
-		}
+			ok::graphics::ShaderAliasDispatcher::unresolved_alias = false;
 
-		switch (alias_type)
-		{
-		case ok::graphics::ShaderAliasType::alias_mat4:
-		{
-			SetUniform(std::get<0>(alias), dispatcher->DispatchAliasMat4(alias_reference));
-		}
-		break;
-		case ok::graphics::ShaderAliasType::alias_mat4_transpose:
-		{
-			SetUniform(std::get<0>(alias), dispatcher->DispatchAliasMat4(alias_reference), true);
-		}
-		break;
-		case ok::graphics::ShaderAliasType::alias_float:
-		{
-			SetUniform(std::get<0>(alias), dispatcher->DispatchAliasFloat(alias_reference));
-		}
-		break;
-		case ok::graphics::ShaderAliasType::alias_int:
-		{
-			SetUniform(std::get<0>(alias), dispatcher->DispatchAliasInt(alias_reference));
-		}
-		break;
-		case ok::graphics::ShaderAliasType::alias_vec4:
-		{
-			SetUniform(std::get<0>(alias), dispatcher->DispatchAliasVec4(alias_reference));
-		}
-		break;
-		case ok::graphics::ShaderAliasType::alias_vec3:
-		{
-			SetUniform(std::get<0>(alias), dispatcher->DispatchAliasVec3(alias_reference));
-		}
-		break;
-		case ok::graphics::ShaderAliasType::alias_vec2:
-		{
-			SetUniform(std::get<0>(alias), dispatcher->DispatchAliasVec2(alias_reference));
-		}
-		break;
-		case ok::graphics::ShaderAliasType::alias_float_array:
-		{
-			std::pair<float*, int> dispatch_result = dispatcher->DispatchAliasFloatArray(alias_reference);
-			SetUniform(std::get<0>(alias), dispatch_result.first, dispatch_result.second);
-		}
-		break;
-		case ok::graphics::ShaderAliasType::alias_mat4_array:
-		{
-			std::pair<glm::mat4*, int> dispatch_result = dispatcher->DispatchAliasMat4Array(alias_reference);
-			SetUniform(std::get<0>(alias), dispatch_result.first, dispatch_result.second);
-		}
-		break;
-		}
+			if (alias_reference == ok::graphics::ShaderAliasReference::Callback)
+			{
+				dispatcher->callback_name_ptr = &std::get<3>(alias);
+			}
+
+			switch (alias_type)
+			{
+			case ok::graphics::ShaderAliasType::alias_mat4:
+			{
+				const auto& dispatcher_output = dispatcher->DispatchAliasMat4(alias_reference);
+
+				if (ok::graphics::ShaderAliasDispatcher::unresolved_alias == true)
+				{
+					//do nothing
+				}
+				else
+				{
+					SetUniform(std::get<0>(alias), dispatcher_output);
+				}
+			}
+			break;
+			case ok::graphics::ShaderAliasType::alias_mat4_transpose:
+			{
+				const auto& dispatcher_output = dispatcher->DispatchAliasMat4(alias_reference);
+
+				if (ok::graphics::ShaderAliasDispatcher::unresolved_alias == true)
+				{
+					//do nothing
+				}
+				else
+				{
+					SetUniform(std::get<0>(alias), dispatcher_output, true);
+				}
+			}
+			break;
+			case ok::graphics::ShaderAliasType::alias_float:
+			{
+				const auto& dispatcher_output = dispatcher->DispatchAliasFloat(alias_reference);
+
+				if (ok::graphics::ShaderAliasDispatcher::unresolved_alias == true)
+				{
+					//do nothing
+				}
+				else
+				{
+					SetUniform(std::get<0>(alias), dispatcher_output);
+				}
+			}
+			break;
+			case ok::graphics::ShaderAliasType::alias_int:
+			{
+				const auto& dispatcher_output = dispatcher->DispatchAliasInt(alias_reference);
+
+				if (ok::graphics::ShaderAliasDispatcher::unresolved_alias == true)
+				{
+					//do nothing
+				}
+				else
+				{
+					SetUniform(std::get<0>(alias), dispatcher_output);
+				}
+			}
+			break;
+			case ok::graphics::ShaderAliasType::alias_vec4:
+			{
+				const auto& dispatcher_output = dispatcher->DispatchAliasVec4(alias_reference);
+
+				if (ok::graphics::ShaderAliasDispatcher::unresolved_alias == true)
+				{
+					//do nothing
+				}
+				else
+				{
+					SetUniform(std::get<0>(alias), dispatcher_output);
+				}
+			}
+			break;
+			case ok::graphics::ShaderAliasType::alias_vec3:
+			{
+				const auto& dispatcher_output = dispatcher->DispatchAliasVec3(alias_reference);
+
+				if (ok::graphics::ShaderAliasDispatcher::unresolved_alias == true)
+				{
+					//do nothing
+				}
+				else
+				{
+					SetUniform(std::get<0>(alias), dispatcher_output);
+				}
+			}
+			break;
+			case ok::graphics::ShaderAliasType::alias_vec2:
+			{
+				const auto& dispatcher_output = dispatcher->DispatchAliasVec2(alias_reference);
+
+				if (ok::graphics::ShaderAliasDispatcher::unresolved_alias == true)
+				{
+					//do nothing
+				}
+				else
+				{
+					SetUniform(std::get<0>(alias), dispatcher_output);
+				}
+			}
+			break;
+			case ok::graphics::ShaderAliasType::alias_float_array:
+			{
+				const auto& dispatcher_output = dispatcher->DispatchAliasFloatArray(alias_reference);
+
+				if (ok::graphics::ShaderAliasDispatcher::unresolved_alias == true)
+				{
+					//do nothing
+				}
+				else
+				{
+					SetUniform(std::get<0>(alias), dispatcher_output.first, dispatcher_output.second);
+				}
+			}
+			break;
+			case ok::graphics::ShaderAliasType::alias_mat4_array:
+			{
+				const auto& dispatcher_output = dispatcher->DispatchAliasMat4Array(alias_reference);
+
+				if (ok::graphics::ShaderAliasDispatcher::unresolved_alias == true)
+				{
+					//do nothing
+				}
+				else
+				{
+					SetUniform(std::get<0>(alias), dispatcher_output.first, dispatcher_output.second);
+				}
+			}
+			break;
+			}
 
 
-		dispatcher->callback_name_ptr = nullptr;
+			dispatcher->callback_name_ptr = nullptr;
+
+			if (ok::graphics::ShaderAliasDispatcher::unresolved_alias == true)
+			{
+				//continue
+			}
+			else
+			{
+				//assert here
+				break;
+			}
+		}
 	}
 }
 
-void ok::graphics::Shader::BindSubroutines(ok::graphics::ShaderAliasDispatcher * dispatcher)
+void ok::graphics::Shader::BindSubroutines(ok::graphics::ShaderAliasDispatcher * _dispatcher)
 {
 
 	ok::graphics::ShaderAliasType alias_type;
@@ -288,29 +384,61 @@ void ok::graphics::Shader::BindSubroutines(ok::graphics::ShaderAliasDispatcher *
 		alias_type = std::get<1>(alias);
 		alias_reference = std::get<2>(alias);
 
-		if (alias_reference == ok::graphics::ShaderAliasReference::Callback)
+		for (auto&& dispatcher : _dispatcher->shader_alias_dispatcher_mirrors)
 		{
-			dispatcher->callback_name_ptr = &std::get<3>(alias);
-		}
+			ok::graphics::ShaderAliasDispatcher::unresolved_alias = false;
 
-		switch (alias_type)
-		{
+			if (alias_reference == ok::graphics::ShaderAliasReference::Callback)
+			{
+				dispatcher->callback_name_ptr = &std::get<3>(alias);
+			}
+
+			switch (alias_type)
+			{
 			case ok::graphics::ShaderAliasType::alias_vx_subroutine_array:
 			{
-				std::pair<unsigned int*, int> dispatch_result = dispatcher->DispatchAliasSubroutineArray(alias_reference);
-				SetSubroutineUniform(std::get<0>(alias), GL_VERTEX_SHADER, dispatch_result.first, dispatch_result.second);
+				const auto& dispatcher_output = dispatcher->DispatchAliasSubroutineArray(alias_reference);
+
+				if (ok::graphics::ShaderAliasDispatcher::unresolved_alias == true)
+				{
+					//do nothing
+				}
+				else
+				{
+					SetSubroutineUniform(std::get<0>(alias), GL_VERTEX_SHADER, dispatcher_output.first, dispatcher_output.second);
+				}
 			}
 			break;
 			case ok::graphics::ShaderAliasType::alias_px_subroutine_array:
 			{
-				std::pair<unsigned int*, int> dispatch_result = dispatcher->DispatchAliasSubroutineArray(alias_reference);
-				SetSubroutineUniform(std::get<0>(alias), GL_FRAGMENT_SHADER, dispatch_result.first, dispatch_result.second);
+				const auto& dispatcher_output = dispatcher->DispatchAliasSubroutineArray(alias_reference);
+
+				if (ok::graphics::ShaderAliasDispatcher::unresolved_alias == true)
+				{
+					//do nothing
+				}
+				else
+				{
+					SetSubroutineUniform(std::get<0>(alias), GL_FRAGMENT_SHADER, dispatcher_output.first, dispatcher_output.second);
+				}
 			}
 			break;
+			}
+
+
+			dispatcher->callback_name_ptr = nullptr;
+
+			if (ok::graphics::ShaderAliasDispatcher::unresolved_alias == true)
+			{
+				//continue
+			}
+			else
+			{
+				//assert here
+				break;
+			}
 		}
-
-
-		dispatcher->callback_name_ptr = nullptr;
+		
 	}
 }
 
@@ -983,47 +1111,61 @@ void ok::graphics::Shader::_LinkSamplerToTextureChannelIndex(GLint sampler_locat
 	}
 }
 
+ok::graphics::ShaderAliasDispatcher::ShaderAliasDispatcher()
+{
+	shader_alias_dispatcher_mirrors.push_back(this);
+}
+
 glm::mat4 ok::graphics::ShaderAliasDispatcher::DispatchAliasMat4(ok::graphics::ShaderAliasReference alias_type)
 {
+	unresolved_alias = true;
 	return glm::mat4(1.f);
 }
 
 glm::vec4 ok::graphics::ShaderAliasDispatcher::DispatchAliasVec4(ok::graphics::ShaderAliasReference alias_type)
 {
+	unresolved_alias = true;
 	return glm::vec4();
 }
 
 glm::vec3 ok::graphics::ShaderAliasDispatcher::DispatchAliasVec3(ok::graphics::ShaderAliasReference alias_type)
 {
+	unresolved_alias = true;
 	return glm::vec3();
 }
 
 glm::vec2 ok::graphics::ShaderAliasDispatcher::DispatchAliasVec2(ok::graphics::ShaderAliasReference alias_type)
 {
+	unresolved_alias = true;
 	return glm::vec2();
 }
 
 float ok::graphics::ShaderAliasDispatcher::DispatchAliasFloat(ok::graphics::ShaderAliasReference alias_type)
 {
+	unresolved_alias = true;
 	return 0.0f;
 }
 
 int ok::graphics::ShaderAliasDispatcher::DispatchAliasInt(ok::graphics::ShaderAliasReference alias_type)
 {
+	unresolved_alias = true;
 	return 0;
 }
 
 std::pair<float*, int> ok::graphics::ShaderAliasDispatcher::DispatchAliasFloatArray(ok::graphics::ShaderAliasReference alias_type)
 {
+	unresolved_alias = true;
 	return std::pair<float*, int>(nullptr, 0);
 }
 
 std::pair<glm::mat4*, int> ok::graphics::ShaderAliasDispatcher::DispatchAliasMat4Array(ok::graphics::ShaderAliasReference alias_type)
 {
+	unresolved_alias = true;
 	return std::pair<glm::mat4*, int>(nullptr, 0);
 }
 
 std::pair<unsigned int*, int> ok::graphics::ShaderAliasDispatcher::DispatchAliasSubroutineArray(ok::graphics::ShaderAliasReference alias_type)
 {
+	unresolved_alias = true;
 	return std::pair<unsigned int*, int>();
 }

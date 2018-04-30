@@ -719,7 +719,7 @@ void ok::graphics::Mesh::_ApplySkinDeformer()
 					y_axis = glm::vec3(skin_matrix[1]);
 					z_axis = glm::vec3(skin_matrix[2]);
 
-					skinned_normal = glm::normalize(skin_matrix * (skinned_normal * glm::vec4(1.f / glm::dot(x_axis, x_axis), 1.f / glm::dot(y_axis, y_axis), 1.f / glm::dot(z_axis, z_axis), 0.f)));
+					skinned_normal = glm::normalize(skin_matrix * (skinned_normal * glm::vec4(1.f / glm::dot(x_axis, x_axis), 1.f / glm::dot(y_axis, y_axis), 1.f / glm::dot(z_axis, z_axis), 0.f))); //w = 0.f because there is no translation in normals vectors
 
 					memcpy(&_skin_software_buffer_positions[i * 3], skinned_position_ptr, sizeof(float) * 3);
 					memcpy(&_skin_software_buffer_normals[i * 3], skinned_normal_ptr, sizeof(float) * 3);
