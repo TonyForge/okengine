@@ -1,0 +1,1 @@
+make_atlas 1024 1024 2 RectBottomLeftRule images output/atlas.xml

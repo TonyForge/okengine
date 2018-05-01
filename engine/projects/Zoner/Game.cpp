@@ -534,6 +534,8 @@ void Zoner::Game::UpdateGameScreen_Space(float dt)
 	{
 		_current_space->Update(dt);
 	}
+
+	Zoner::SpaceScreenGUI::Update(dt);
 }
 
 int Zoner::Game::GetScreenWidth()
@@ -549,4 +551,9 @@ int Zoner::Game::GetScreenHeight()
 std::unordered_map<std::string, Zoner::ShipBlueprint*>& Zoner::Game::GetShipBlueprints()
 {
 	return _ship_blueprints;
+}
+
+std::unordered_map<std::string, ok::graphics::SpriteAtlas*>& Zoner::Game::GetSpriteAtlases()
+{
+	return _sprite_atlases;
 }

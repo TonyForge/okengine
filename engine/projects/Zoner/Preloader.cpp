@@ -95,6 +95,7 @@ void Zoner::Preloader::Task_DefaultResources_Object::Begin()
 	doc.LoadFile(std_path.c_str());
 
 	tinyxml2::XMLElement* elem;
+	tinyxml2::XMLElement* inner_elem;
 	tinyxml2::XMLElement* blueprint;
 
 	elem = doc.FirstChildElement("blueprints");
@@ -109,46 +110,72 @@ void Zoner::Preloader::Task_DefaultResources_Object::Begin()
 		steps_total++;
 	}
 
+	_atlases_begin_step = steps_total;
+
+	std_path = root_folder + "zoner.sprite_atlases.xml";
+	doc.LoadFile(std_path.c_str());
+
+	elem = doc.FirstChildElement("atlases");
+
+	for (inner_elem = elem->FirstChildElement("atlas"); inner_elem != nullptr; inner_elem = inner_elem->NextSiblingElement("atlas"))
+	{
+		_names.push_back(std::make_unique<std::string>(inner_elem->Attribute("name")));
+		_files.push_back(std::make_unique<std::string>(inner_elem->Attribute("file")));
+		steps_total++;
+	}
+
 	steps_left = steps_total;
 }
 
 void Zoner::Preloader::Task_DefaultResources_Object::Step()
 {
-	std::string& _name = *_names[steps_total - steps_left];
-	std::string& _file = *_files[steps_total - steps_left];
-	std::string& _type = *_types[steps_total - steps_left];
-
-	//load blueprint
-	ok::GameObject* root = nullptr;
-
-	ok::String& root_folder = ok::Assets::instance().assets_root_folder;
-	std::string std_path = root_folder + "ships\\blueprints\\" + _file;
-
-	tinyxml2::XMLDocument doc;
-	doc.LoadFile(std_path.c_str());
-
-	if (_type == "spaceship")
+	//blueprints loading
+	if (steps_total - steps_left < _atlases_begin_step)
 	{
-		root = LoadPart_Spaceship(doc.FirstChildElement("Ship")->FirstChildElement("Part"), nullptr);
+		std::string& _name = *_names[steps_total - steps_left];
+		std::string& _file = *_files[steps_total - steps_left];
+		std::string& _type = *_types[steps_total - steps_left];
+
+		//load blueprint
+		ok::GameObject* root = nullptr;
+
+		ok::String& root_folder = ok::Assets::instance().assets_root_folder;
+		std::string std_path = root_folder + "ships\\blueprints\\" + _file;
+
+		tinyxml2::XMLDocument doc;
+		doc.LoadFile(std_path.c_str());
+
+		if (_type == "spaceship")
+		{
+			root = LoadPart_Spaceship(doc.FirstChildElement("Ship")->FirstChildElement("Part"), nullptr);
+		}
+		//...
+
+		Zoner::ShipBlueprint* blueprint = new Zoner::ShipBlueprint();
+		blueprint->Rename(_name);
+
+		ok::GameObject* transformer = new ok::GameObject();
+
+		transformer->AddChild(root);
+		transformer->BeginTransform();
+		transformer->SetRotation(glm::vec3(-90.0f, 0.f, 0.f));
+		transformer->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
+		transformer->EndTransform(true);
+
+		blueprint->AddChild(transformer);
+
+		blueprint->CalculateBounder();
+
+		Zoner::IGame::o().GetShipBlueprints()[_name] = blueprint;
 	}
-	//...
+	else
+	{
+		//atlases loading
+		std::string& _name = *_names[steps_total - steps_left];
+		std::string& _file = *_files[steps_total - steps_left];
 
-	Zoner::ShipBlueprint* blueprint = new Zoner::ShipBlueprint();
-	blueprint->Rename(_name);
-
-	ok::GameObject* transformer = new ok::GameObject();
-
-	transformer->AddChild(root);
-	transformer->BeginTransform();
-	transformer->SetRotation(glm::vec3(-90.0f, 0.f, 0.f));
-	transformer->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
-	transformer->EndTransform(true);
-
-	blueprint->AddChild(transformer);
-	
-	blueprint->CalculateBounder();
-
-	Zoner::IGame::o().GetShipBlueprints()[_name] = blueprint;
+		Zoner::IGame::o().GetSpriteAtlases()[_name] = ok::Assets::instance().GetSpriteAtlas(_file);
+	}
 
 	steps_left--;
 }

@@ -935,6 +935,7 @@ namespace ok
 
 			tinyxml2::XMLElement* elem;
 			tinyxml2::XMLElement* inner_elem;
+			tinyxml2::XMLElement* sequence_inner_elem;
 
 			elem = doc.FirstChildElement("atlas");
 
@@ -967,33 +968,33 @@ namespace ok
 
 			for (inner_elem = elem->FirstChildElement("sequence"); inner_elem != nullptr; inner_elem = inner_elem->NextSiblingElement("sequence"))
 			{
-				sprite.rect = ok::graphics::TextureRect(
-					GetTexture(inner_elem->Attribute("texture")),0,0,0,0);
-				sprite.hotspot = glm::vec2(inner_elem->FloatAttribute("hotspot_x", 0.5f), inner_elem->FloatAttribute("hotspot_y", 0.5f));
-				sprite.scale = glm::vec2(inner_elem->FloatAttribute("scale_x", 1.0f), inner_elem->FloatAttribute("scale_y", 1.0f));
-				sprite.tint_color = ok::Color(
-					static_cast<unsigned char>(inner_elem->IntAttribute("tint_r", 0)),
-					static_cast<unsigned char>(inner_elem->IntAttribute("tint_g", 0)),
-					static_cast<unsigned char>(inner_elem->IntAttribute("tint_b", 0)),
-					static_cast<unsigned char>(inner_elem->IntAttribute("tint_a", 0))
-				);
-				sprite.tint_power = inner_elem->FloatAttribute("tint_a", 0.f) / 255.0f;
-				sprite.flip_x = inner_elem->BoolAttribute("flip_x", false);
-				sprite.flip_y = inner_elem->BoolAttribute("flip_y", false);
+				atlas->BeginSequence();
 
-				item_name = inner_elem->Attribute("name");
+					for (sequence_inner_elem = inner_elem->FirstChildElement("sprite"); sequence_inner_elem != nullptr; sequence_inner_elem = sequence_inner_elem->NextSiblingElement("sprite"))
+					{
+						sprite.rect = ok::graphics::TextureRect(
+							GetTexture(sequence_inner_elem->Attribute("texture")),
+							sequence_inner_elem->IntAttribute("left", 0),
+							sequence_inner_elem->IntAttribute("top", 0),
+							sequence_inner_elem->IntAttribute("width", 0),
+							sequence_inner_elem->IntAttribute("height", 0));
+						sprite.hotspot = glm::vec2(sequence_inner_elem->FloatAttribute("hotspot_x", 0.5f), sequence_inner_elem->FloatAttribute("hotspot_y", 0.5f));
+						sprite.scale = glm::vec2(sequence_inner_elem->FloatAttribute("scale_x", 1.0f), sequence_inner_elem->FloatAttribute("scale_y", 1.0f));
+						sprite.tint_color = ok::Color(
+							static_cast<unsigned char>(sequence_inner_elem->IntAttribute("tint_r", 0)),
+							static_cast<unsigned char>(sequence_inner_elem->IntAttribute("tint_g", 0)),
+							static_cast<unsigned char>(sequence_inner_elem->IntAttribute("tint_b", 0)),
+							static_cast<unsigned char>(sequence_inner_elem->IntAttribute("tint_a", 0))
+						);
+						sprite.tint_power = sequence_inner_elem->FloatAttribute("tint_a", 0.f) / 255.0f;
+						sprite.flip_x = sequence_inner_elem->BoolAttribute("flip_x", false);
+						sprite.flip_y = sequence_inner_elem->BoolAttribute("flip_y", false);
 
-				atlas->AddSequence(
-					sprite,
-					item_name,
-					inner_elem->IntAttribute("region_left",0),
-					inner_elem->IntAttribute("region_top", 0),
-					inner_elem->IntAttribute("region_width", 0),
-					inner_elem->IntAttribute("region_height", 0),
-					inner_elem->IntAttribute("frame_width", 0),
-					inner_elem->IntAttribute("frame_height", 0),
-					inner_elem->IntAttribute("frames_count", 0)
-				);
+						item_name = sequence_inner_elem->Attribute("name");
+						atlas->AddSprite(sprite, item_name);
+					}
+
+				atlas->EndSequence(ok::String(inner_elem->Attribute("name")));
 			}
 
 			sprite_atlases[path] = atlas;

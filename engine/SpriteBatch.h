@@ -51,9 +51,14 @@ namespace ok
 				size_t begin;
 				size_t end;
 			};
+
+			ok::graphics::SpriteAtlas::SpriteAtlasSequence _temp_sequence;
+
 		public:
 			void AddSprite(ok::graphics::SpriteInfo& sprite, ok::String& name);
-			void AddSequence(ok::graphics::SpriteInfo& frame_template, ok::String& name, int region_left, int region_top, int region_width, int region_height, int frame_width, int frame_height, int frames_count);
+
+			void BeginSequence();
+			void EndSequence(ok::String& name);
 
 			ok::graphics::SpriteInfo& Get(ok::String& name);
 			ok::graphics::SpriteInfo* Search(ok::String& name);

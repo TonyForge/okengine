@@ -10,6 +10,8 @@
 #include "Space.h"
 #include "JumpHole.h"
 
+#include "SpaceScreenGUI.h"
+
 //include ext classes
 #include "Preloader.h"
 
@@ -46,7 +48,9 @@ namespace Zoner
 		Zoner::Preloader _preloader;
 		bool _game_states[static_cast<int>(Zoner::GameStates::Count)];
 
+		//resources
 		std::unordered_map<std::string, Zoner::ShipBlueprint*> _ship_blueprints;
+		std::unordered_map<std::string, ok::graphics::SpriteAtlas*> _sprite_atlases;
 		
 		//planets, systems, spacecrafts etc here...
 		std::unordered_map<std::string, Zoner::Space*> _spaces;
@@ -82,6 +86,7 @@ namespace Zoner
 		int GetScreenWidth();
 		int GetScreenHeight();
 		std::unordered_map<std::string, Zoner::ShipBlueprint*>& GetShipBlueprints();
+		std::unordered_map<std::string, ok::graphics::SpriteAtlas*>& GetSpriteAtlases();
 
 		bool StateTrue(Zoner::GameStates state);
 		bool StateFalse(Zoner::GameStates state);

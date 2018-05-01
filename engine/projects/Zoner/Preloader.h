@@ -50,6 +50,8 @@ namespace Zoner
 			std::vector<std::unique_ptr<std::string>> _names;
 			std::vector<std::unique_ptr<std::string>> _files;
 			std::vector<std::unique_ptr<std::string>> _types;
+
+			int _atlases_begin_step;
 		};
 
 		Zoner::Preloader::Task_Object* _task = nullptr;

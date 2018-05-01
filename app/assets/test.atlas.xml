@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<atlas>
-	<sprite texture="test.png" name="sprite0" left="0" top="0" width="10" height="10" hotspot_x="0.5" hotspot_y="0.5" scale_x="1.0" scale_y="1.0" tint_r="255" tint_g="255" tint_b="255" tint_a="255"  flip_x="false" flip_y = "false"/>
-	<sequence texture="test.png" name="sequence0" region_left="0" region_top="0" region_width="256" region_height="256" frame_width="32" frame_height="32" frames_count="64" hotspot_x="0.5" hotspot_y="0.5" scale_x="1.0" scale_y="1.0" tint_r="255" tint_g="255" tint_b="255" tint_a="255"  flip_x="false" flip_y = "false" />
-</atlas>

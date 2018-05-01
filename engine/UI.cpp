@@ -231,6 +231,27 @@ ok::ui::widget_state & ok::ui::Image(ok::ui::widget_ptr widget, ok::graphics::Te
 	return o()._widget_state;
 }
 
+ok::ui::widget_state & ok::ui::Image(ok::ui::widget_ptr widget, ok::graphics::SpriteInfo * sprite, float x, float y, float width, float height)
+{
+	if (width == -1.f) width = static_cast<float>(sprite->rect.width);
+	if (height == -1.f) height = static_cast<float>(sprite->rect.height);
+
+	o()._fill_widget_state(widget, x, y, width, height);
+
+	ok::graphics::SpriteInfo _sprite = *sprite;
+	//sprite.rect = ok::graphics::TextureRect(texture);
+	//sprite.flip_y = false;
+
+	_sprite.scale.x *= width / sprite->rect.width;
+	_sprite.scale.y *= height / sprite->rect.height;
+
+	_sprite.hotspot = glm::vec2((-x / sprite->rect.width) / _sprite.scale.x, (-y / sprite->rect.height) / _sprite.scale.y);
+
+	o()._batch->Draw(&_sprite, o()._transform_stack.back());
+
+	return o()._widget_state;
+}
+
 ok::ui::widget_state & ok::ui::Dummy(ok::ui::widget_ptr widget, float x, float y, float width, float height)
 {
 	o()._fill_widget_state(widget, x, y, width, height);

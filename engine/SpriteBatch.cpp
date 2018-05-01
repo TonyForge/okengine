@@ -321,32 +321,16 @@ void ok::graphics::SpriteAtlas::AddSprite(ok::graphics::SpriteInfo & sprite, ok:
 	_items_indexes[name] = _items.size() - 1;
 }
 
-void ok::graphics::SpriteAtlas::AddSequence(ok::graphics::SpriteInfo & frame_template, ok::String & name, int region_left, int region_top, int region_width, int region_height, int frame_width, int frame_height, int frames_count)
+void ok::graphics::SpriteAtlas::BeginSequence()
 {
-	ok::graphics::SpriteAtlas::SpriteAtlasSequence sequence;
-	sequence.begin = _items.size() - 1;
-	sequence.end = sequence.begin + frames_count;
+	_temp_sequence.begin = _items.size() - 1;
+}
 
-	_sequences[name] = sequence;
+void ok::graphics::SpriteAtlas::EndSequence(ok::String & name)
+{
+	_temp_sequence.end = _items.size() - 1;
 
-	int frame_x, frame_y;
-
-	for (int i = 0; i < frames_count; i++)
-	{
-		frame_x = i * frame_width;
-		frame_y = static_cast<int>(glm::floor(static_cast<float>(frame_x) / static_cast<float>(region_width)));
-		frame_x -= frame_y * region_width;
-		frame_y *= frame_height;
-
-		frame_template.rect = ok::graphics::TextureRect(
-			frame_template.rect.texture,
-			region_left + frame_x,
-			region_top + frame_y,
-			frame_width,
-			frame_height);
-
-		AddSprite(frame_template, name + "_frame_" + std::to_string(i));
-	}
+	_sequences[name] = _temp_sequence;
 }
 
 ok::graphics::SpriteInfo & ok::graphics::SpriteAtlas::Get(ok::String & name)
