@@ -6,6 +6,7 @@
 #include "AssetsBasic.h"
 #include "SpriteBatch.h"
 #include "Input.h"
+#include "Material.h"
 
 namespace ok
 {
@@ -53,8 +54,14 @@ namespace ok
 		static void PushNonActivable(bool enabled = false);
 		static void PopNonActivable();
 
-		static ok::ui::widget_state& Image(ok::ui::widget_ptr widget, ok::graphics::Texture* texture, float x, float y, float width = -1.f, float height = -1.f);
-		static ok::ui::widget_state& Image(ok::ui::widget_ptr widget, ok::graphics::SpriteInfo* sprite, float x, float y, float width = -1.f, float height = -1.f);
+		static void EnableSmooth();
+		static void DisableSmooth();
+
+		static ok::ui::widget_state& Image(ok::ui::widget_ptr widget, ok::graphics::Texture* texture, float x = 0.f, float y = 0.f, float width = -1.f, float height = -1.f);
+		static ok::ui::widget_state& Image(ok::ui::widget_ptr widget, ok::graphics::SpriteInfo* sprite, float x = 0.f, float y = 0.f, float width = -1.f, float height = -1.f);
+
+		//no rotations, scales here... smooth disable recommended
+		static ok::ui::widget_state& BlitImage(ok::ui::widget_ptr widget, ok::graphics::SpriteInfo* sprite, float x = 0.f, float y = 0.f);
 
 		static ok::ui::widget_state& Dummy(ok::ui::widget_ptr widget, float x, float y, float width, float height);
 
@@ -75,9 +82,11 @@ namespace ok
 	private:
 		ui() : _camera(ok::graphics::CameraCoordinateSystem::Screen), _batch(nullptr) {}
 		~ui() {}
-		ok::ui(ok::ui const&) {}
+		ok::ui(ok::ui const&) : _camera(ok::graphics::CameraCoordinateSystem::Screen), _batch(nullptr) {}
 		ok::ui& operator= (ok::ui const&) {}
 
+		bool _smooth_enabled = true;
+		ok::graphics::Material* _default_material;
 		ok::graphics::SpriteBatch* _batch;
 
 		std::vector<glm::mat3> _transform_stack;

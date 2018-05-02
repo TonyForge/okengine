@@ -34,8 +34,11 @@ namespace ok
 			void BindSubroutines(ok::graphics::ShaderAliasDispatcher* dispatcher = nullptr);
 			unsigned int GetSubroutineIndex(GLenum shadertype, const std::string& name);
 			ok::graphics::Shader* GetShader();
+			void AllowTextureLinearFilter();
+			void ForbidTextureLinearFilter();
 		protected:
 		private:
+			bool _texture_linear_filter_allowed = true;
 			ok::graphics::Shader* _shader;
 			std::vector<std::pair<int, ok::graphics::MaterialTextureSlot>> _texture_slots;
 		};

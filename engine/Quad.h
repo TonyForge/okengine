@@ -17,6 +17,7 @@ namespace ok
 		void SetTransform(glm::vec3 translation, float rotation_degrees, glm::vec3 scale);
 		void SetTransform(glm::vec2 translation, glm::vec2 scale);
 		void SetTransform(glm::mat3& matrix);
+		void SetTransform(int x, int y, int w, int h);
 		void SetUVRect(glm::vec2 rect_left_top_corner, glm::vec2 rect_size, glm::vec2 texture_size);
 		void SetUVRect(glm::vec4 uv_rect);
 		void SetUVRectFlipXY(glm::vec4 uv_rect);

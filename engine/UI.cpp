@@ -6,7 +6,9 @@ void ok::ui::BeginUI(int screen_width, int screen_height)
 	{
 		o()._batch = new ok::graphics::SpriteBatch();
 		o()._batch->shader_alias_dispatcher_mirrors.push_back(&o());
-		o()._batch->SetMaterial("SpriteBatch.UIMaterial.xml");
+
+		o()._default_material = ok::AssetsBasic::instance().GetMaterial("SpriteBatch.UIMaterial.xml");
+		o()._batch->SetMaterial(o()._default_material);
 	}
 
 	o()._camera.SetProjectionOrtho(static_cast<float>(screen_width), static_cast<float>(screen_height), -1, 1);
@@ -15,6 +17,7 @@ void ok::ui::BeginUI(int screen_width, int screen_height)
 	o()._camera.SetPosition(glm::vec3(0.f, 0.f, -1.f));
 	o()._camera.SetForward(glm::vec3(0.f, 0.f, 1.f));
 	o()._camera.EndTransform(false);
+
 
 	ok::graphics::Camera::PushCamera(&o()._camera);
 
@@ -209,6 +212,36 @@ void ok::ui::PopNonActivable()
 	o()._non_activable_stack.pop_back();
 }
 
+void ok::ui::EnableSmooth()
+{
+	if (o()._smooth_enabled == true)
+	{
+		//do nothing
+	}
+	else
+	{
+		o()._batch->BatchEnd();
+		o()._batch->BatchBegin();
+		o()._smooth_enabled = true;
+	}
+	o()._default_material->AllowTextureLinearFilter();
+}
+
+void ok::ui::DisableSmooth()
+{
+	if (o()._smooth_enabled == true)
+	{
+		o()._batch->BatchEnd();
+		o()._batch->BatchBegin();
+		o()._smooth_enabled = false;
+	}
+	else
+	{
+		//do nothing
+	}
+	o()._default_material->ForbidTextureLinearFilter();
+}
+
 ok::ui::widget_state & ok::ui::Image(ok::ui::widget_ptr widget, ok::graphics::Texture * texture, float x, float y, float width, float height)
 {
 	if (width == -1.f) width = static_cast<float>(texture->GetSize().x);
@@ -245,9 +278,22 @@ ok::ui::widget_state & ok::ui::Image(ok::ui::widget_ptr widget, ok::graphics::Sp
 	_sprite.scale.x *= width / sprite->rect.width;
 	_sprite.scale.y *= height / sprite->rect.height;
 
-	_sprite.hotspot = glm::vec2((-x / sprite->rect.width) / _sprite.scale.x, (-y / sprite->rect.height) / _sprite.scale.y);
+	_sprite.hotspot += glm::vec2((-x / sprite->rect.width) / _sprite.scale.x, (-y / sprite->rect.height) / _sprite.scale.y);
 
 	o()._batch->Draw(&_sprite, o()._transform_stack.back());
+
+	return o()._widget_state;
+}
+
+ok::ui::widget_state & ok::ui::BlitImage(ok::ui::widget_ptr widget, ok::graphics::SpriteInfo * sprite, float x, float y)
+{
+	float width = static_cast<float>(sprite->rect.width);
+	float height = static_cast<float>(sprite->rect.height);
+
+	o()._fill_widget_state(widget, glm::floor(x), glm::floor(y), width, height);
+
+	glm::vec2 transformed_position = o()._transform_stack.back() * glm::vec3(x, y, 1.f);
+	o()._batch->Blit(sprite, static_cast<int>(glm::floor(transformed_position.x)), static_cast<int>(glm::floor(transformed_position.y)));
 
 	return o()._widget_state;
 }

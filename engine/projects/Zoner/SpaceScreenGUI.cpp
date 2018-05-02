@@ -24,8 +24,16 @@ void Zoner::SpaceScreenGUI::Update_Inventory(float dt)
 
 	ok::ui::BeginUI(Zoner::IGame::o().GetScreenWidth(), Zoner::IGame::o().GetScreenHeight());
 
-	ok::ui::Image(inventory_panel_top.ptr(), &spr_inventory_top_body_shadow, 100.f, 100.f);
-	ok::ui::Image(inventory_panel_top.ptr(), &spr_inventory_top_body, 100.f, 100.f);
+
+	ok::ui::PushTranslate(177.f, 121.f);
+
+	ok::ui::Image(inventory_panel_top.ptr(), &spr_inventory_top_body_shadow, 0, 0);
+
+	ok::ui::DisableSmooth();
+	ok::ui::BlitImage(inventory_panel_top.ptr(), &spr_inventory_top_body, 0, 0);
+	ok::ui::EnableSmooth();
+
+	ok::ui::PopTranslate();
 
 	ok::ui::EndUI();
 }

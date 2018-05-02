@@ -207,6 +207,73 @@ void ok::graphics::SpriteBatch::Draw(ok::graphics::SpriteInfo * sprite_info, glm
 	PushQuad();
 }
 
+void ok::graphics::SpriteBatch::Blit(ok::graphics::Texture * tex, int x, int y, glm::vec2 hotspot, bool flip_y)
+{
+	if (batch_texture != nullptr && batch_texture != tex)
+	{
+		BatchEnd();
+	}
+
+	batch_texture = tex;
+
+	if (batch_quads_in_use == batch_size)
+	{
+		BatchEnd();
+	}
+	if (batch_quads_in_use == 0)
+	{
+		BatchBegin();
+	}
+
+	glm::ivec2& tex_size = tex->GetSize();
+	int i_hotspot_x = static_cast<int>(glm::floor(hotspot.x * static_cast<float>(tex_size.x)));
+	int i_hotspot_y = static_cast<int>(glm::floor(hotspot.y * static_cast<float>(tex_size.y)));
+	quad.SetTransform(x - i_hotspot_x, y - i_hotspot_y, tex_size.x, tex_size.y);
+
+	if (true == flip_y)
+		quad.SetUVRectFlipY(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+	else
+		quad.SetUVRect(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+
+	PushQuad();
+}
+
+void ok::graphics::SpriteBatch::Blit(ok::graphics::SpriteInfo * sprite_info, int x, int y)
+{
+	if (batch_texture != nullptr && batch_texture != sprite_info->rect.texture)
+	{
+		BatchEnd();
+	}
+
+	batch_texture = sprite_info->rect.texture;
+
+	if (batch_quads_in_use == batch_size)
+	{
+		BatchEnd();
+	}
+	if (batch_quads_in_use == 0)
+	{
+		BatchBegin();
+	}
+
+	glm::ivec2& tex_size = glm::ivec2(sprite_info->rect.width, sprite_info->rect.height);
+	int i_hotspot_x = static_cast<int>(glm::floor(sprite_info->hotspot.x * static_cast<float>(tex_size.x)));
+	int i_hotspot_y = static_cast<int>(glm::floor(sprite_info->hotspot.y * static_cast<float>(tex_size.y)));
+	quad.SetTransform(x - i_hotspot_x, y - i_hotspot_y, tex_size.x, tex_size.y);
+
+
+	if (true == sprite_info->flip_x && true == sprite_info->flip_y)
+		quad.SetUVRectFlipXY(sprite_info->rect.uv_rect);
+	else if (true == sprite_info->flip_x)
+		quad.SetUVRectFlipX(sprite_info->rect.uv_rect);
+	else if (true == sprite_info->flip_y)
+		quad.SetUVRectFlipY(sprite_info->rect.uv_rect);
+	else
+		quad.SetUVRect(sprite_info->rect.uv_rect);
+
+	PushQuad();
+}
+
 void ok::graphics::SpriteBatch::SetMaterial(ok::graphics::Material * material)
 {
 	custom_material = material;

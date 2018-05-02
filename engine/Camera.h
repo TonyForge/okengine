@@ -31,7 +31,7 @@ namespace ok
 			glm::mat4 GetViewMatrix();
 			glm::mat4 GetVPMatrix();
 			void OnChange();
-			ok::GameObject* Duplicate(ok::GameObject* _clone = nullptr);
+			virtual ok::GameObject* Duplicate(ok::GameObject* _clone = nullptr);
 
 			glm::vec3 ScreenToWorldPosition(glm::vec3 normalized_screen_position);
 			glm::vec3 WorldToScreenPosition(glm::vec3 world_position);

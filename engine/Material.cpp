@@ -57,7 +57,7 @@ void ok::graphics::Material::Bind(ok::graphics::ShaderAliasDispatcher* dispatche
 		else
 		{
 			ok::graphics::Texture::BindTexture(slot.second.texture, slot.first);
-			slot.second.texture->SetProperties(slot.second.smooth, slot.second.wrapping, slot.second.background_color);
+			slot.second.texture->SetProperties((_texture_linear_filter_allowed) ? slot.second.smooth : false, slot.second.wrapping, slot.second.background_color);
 		}
 		
 	}
@@ -98,4 +98,14 @@ unsigned int ok::graphics::Material::GetSubroutineIndex(GLenum shadertype, const
 ok::graphics::Shader * ok::graphics::Material::GetShader()
 {
 	return _shader;
+}
+
+void ok::graphics::Material::AllowTextureLinearFilter()
+{
+	_texture_linear_filter_allowed = true;
+}
+
+void ok::graphics::Material::ForbidTextureLinearFilter()
+{
+	_texture_linear_filter_allowed = false;
 }
