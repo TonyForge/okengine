@@ -359,7 +359,7 @@ void ok::Application::LoadSettings()
 	fullscreen = elem->BoolAttribute("fullscreen", false);
 
 	inner_elem = elem->FirstChildElement("background");
-	background_color = ok::Color((unsigned char)inner_elem->IntAttribute("r"), (unsigned char)inner_elem->IntAttribute("g"), (unsigned char)inner_elem->IntAttribute("b"), 255);
+	background_color = ok::Color(inner_elem->IntAttribute("r"), inner_elem->IntAttribute("g"), inner_elem->IntAttribute("b"), 255);
 
 	inner_elem = elem->FirstChildElement("depth_clear_with");
 	depth_clear_with_value = inner_elem->FloatAttribute("value", 0.f);

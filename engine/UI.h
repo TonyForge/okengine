@@ -25,6 +25,7 @@ namespace ok
 			bool mouse_inside;
 			bool mouse_down;
 			ok::MKey mouse_key;
+			glm::vec2 mouse_relative_pos;
 
 			bool on_activate;
 			bool on_deactivate;
@@ -61,10 +62,17 @@ namespace ok
 		static ok::ui::widget_state& Image(ok::ui::widget_ptr widget, ok::graphics::SpriteInfo* sprite, float x = 0.f, float y = 0.f, float width = -1.f, float height = -1.f);
 
 		//no rotations, scales here... smooth disable recommended
-		static ok::ui::widget_state& BlitImage(ok::ui::widget_ptr widget, ok::graphics::SpriteInfo* sprite, float x = 0.f, float y = 0.f);
+		static ok::ui::widget_state& Blit(ok::ui::widget_ptr widget, ok::graphics::Texture* texture, float x = 0.f, float y = 0.f);
+		static ok::ui::widget_state& Blit(ok::ui::widget_ptr widget, ok::graphics::SpriteInfo* sprite, float x = 0.f, float y = 0.f);
 
 		static ok::ui::widget_state& Dummy(ok::ui::widget_ptr widget, float x, float y, float width, float height);
-
+		static ok::ui::widget_state& ScrollHorizontal(
+			ok::ui::widget_ptr widget, float x, float y, float width, float height,
+			int items_visible_count, int items_total,
+			int& out__items_visible_first_index,
+			float& out__scroll_button_relative_position,
+			float& out__scroll_button_relative_size
+			);
 		//static void BeginWidget();
 		//static void EndWidget();
 
@@ -74,11 +82,12 @@ namespace ok
 		static void PushEffect_Grayscale(float power);
 		static void PopEffect_Grayscale();
 
+		static ok::ui::widget_state& ws();
+
 		float DispatchAliasFloat(ok::graphics::ShaderAliasReference alias_type);
 
 		static ok::ui& instance();
 		static ok::ui& o();
-
 	private:
 		ui() : _camera(ok::graphics::CameraCoordinateSystem::Screen), _batch(nullptr) {}
 		~ui() {}
@@ -92,6 +101,7 @@ namespace ok
 		std::vector<glm::mat3> _transform_stack;
 		ok::graphics::Camera _camera;
 		glm::vec3 _mouse_xy;
+		glm::vec2 _mem_xy;
 
 		ok::ui::widget_ptr _active_widget = nullptr;
 		ok::ui::widget_ptr _deactivated_widget = nullptr;

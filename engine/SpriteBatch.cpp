@@ -93,6 +93,12 @@ void ok::graphics::SpriteBatch::Draw(ok::graphics::SpriteInfo * sprite_info, glm
 		BatchBegin();
 	}
 
+	if (sprite_info->tint_power > 0.f)
+	{
+		sprite_info->tint_color.a = sprite_info->tint_power;
+		quad.SetColors(sprite_info->tint_color);
+	}
+	
 	quad.SetCenter(sprite_info->hotspot);
 	quad.SetSize(glm::vec2(sprite_info->rect.width, sprite_info->rect.height));
 
@@ -107,7 +113,7 @@ void ok::graphics::SpriteBatch::Draw(ok::graphics::SpriteInfo * sprite_info, glm
 
 	quad.SetTransform(glm::vec3(position.x, position.y, 0.0f), rotation_degrees, glm::vec3(sprite_info->scale.x*scale.x, sprite_info->scale.y*scale.y, 1.0f));
 
-	PushQuad();
+	PushQuad(sprite_info->tint_power == 0.f);
 }
 
 void ok::graphics::SpriteBatch::Draw(ok::graphics::Texture* tex, glm::vec2 position, glm::vec2 size, bool flip_y, glm::vec2 hotspot)
@@ -190,6 +196,12 @@ void ok::graphics::SpriteBatch::Draw(ok::graphics::SpriteInfo * sprite_info, glm
 		BatchBegin();
 	}
 
+	if (sprite_info->tint_power > 0.f)
+	{
+		sprite_info->tint_color.a = sprite_info->tint_power;
+		quad.SetColors(sprite_info->tint_color);
+	}
+
 	quad.SetCenter(sprite_info->hotspot);
 	quad.SetSize(glm::vec2(sprite_info->rect.width*sprite_info->scale.x, sprite_info->rect.height*sprite_info->scale.y));
 
@@ -204,7 +216,7 @@ void ok::graphics::SpriteBatch::Draw(ok::graphics::SpriteInfo * sprite_info, glm
 
 	quad.SetTransform(transform_matrix);
 
-	PushQuad();
+	PushQuad(sprite_info->tint_power == 0.f);
 }
 
 void ok::graphics::SpriteBatch::Blit(ok::graphics::Texture * tex, int x, int y, glm::vec2 hotspot, bool flip_y)
@@ -228,7 +240,7 @@ void ok::graphics::SpriteBatch::Blit(ok::graphics::Texture * tex, int x, int y, 
 	glm::ivec2& tex_size = tex->GetSize();
 	int i_hotspot_x = static_cast<int>(glm::floor(hotspot.x * static_cast<float>(tex_size.x)));
 	int i_hotspot_y = static_cast<int>(glm::floor(hotspot.y * static_cast<float>(tex_size.y)));
-	quad.SetTransform(x - i_hotspot_x, y - i_hotspot_y, tex_size.x, tex_size.y);
+	quad.Place(x - i_hotspot_x, y - i_hotspot_y, tex_size.x, tex_size.y);
 
 	if (true == flip_y)
 		quad.SetUVRectFlipY(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
@@ -256,10 +268,16 @@ void ok::graphics::SpriteBatch::Blit(ok::graphics::SpriteInfo * sprite_info, int
 		BatchBegin();
 	}
 
+	if (sprite_info->tint_power > 0.f)
+	{
+		sprite_info->tint_color.a = sprite_info->tint_power;
+		quad.SetColors(sprite_info->tint_color);
+	}
+
 	glm::ivec2& tex_size = glm::ivec2(sprite_info->rect.width, sprite_info->rect.height);
 	int i_hotspot_x = static_cast<int>(glm::floor(sprite_info->hotspot.x * static_cast<float>(tex_size.x)));
 	int i_hotspot_y = static_cast<int>(glm::floor(sprite_info->hotspot.y * static_cast<float>(tex_size.y)));
-	quad.SetTransform(x - i_hotspot_x, y - i_hotspot_y, tex_size.x, tex_size.y);
+	quad.Place(x - i_hotspot_x, y - i_hotspot_y, tex_size.x, tex_size.y);
 
 
 	if (true == sprite_info->flip_x && true == sprite_info->flip_y)
@@ -271,7 +289,7 @@ void ok::graphics::SpriteBatch::Blit(ok::graphics::SpriteInfo * sprite_info, int
 	else
 		quad.SetUVRect(sprite_info->rect.uv_rect);
 
-	PushQuad();
+	PushQuad(sprite_info->tint_power == 0.f);
 }
 
 void ok::graphics::SpriteBatch::SetMaterial(ok::graphics::Material * material)
@@ -366,7 +384,7 @@ float ok::graphics::SpriteBatch::DispatchAliasFloat(ok::graphics::ShaderAliasRef
 	return 0.0f;
 }
 
-void ok::graphics::SpriteBatch::PushQuad()
+void ok::graphics::SpriteBatch::PushQuad(bool zero_color_data)
 {
 	float* ptr = nullptr;
 		
@@ -376,8 +394,17 @@ void ok::graphics::SpriteBatch::PushQuad()
 	ptr = &(texcoords[batch_quads_in_use * quad_texcoord_data_size]);
 	memcpy(ptr, quad.uvs, sizeof(float) * quad_texcoord_data_size);
 
-	ptr = &(colors[batch_quads_in_use * quad_color_data_size]);
-	memcpy(ptr, quad.colors_stride, sizeof(float) * quad_color_data_size);
+	if (zero_color_data == true)
+	{
+		ptr = &(colors[batch_quads_in_use * quad_color_data_size]);
+		memset(ptr, 0, sizeof(float) * quad_color_data_size);
+	}
+	else
+	{
+		ptr = &(colors[batch_quads_in_use * quad_color_data_size]);
+		memcpy(ptr, quad.colors_stride, sizeof(float) * quad_color_data_size);
+	}
+
 
 	batch_quads_in_use++;
 }

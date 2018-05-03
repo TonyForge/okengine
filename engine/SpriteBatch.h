@@ -110,7 +110,7 @@ namespace ok
 
 		protected:
 		private:
-			void PushQuad();
+			void PushQuad(bool zero_color_data = true);
 
 			static ok::Quad quad;
 			static const unsigned int quad_position_data_size = 4 * 2; //4 vertices, 2 floats XY per vertex

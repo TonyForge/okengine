@@ -64,7 +64,7 @@ void ok::Quad::SetTransform(glm::mat3 & matrix)
 	vertices[3] = glm::vec2(matrix * glm::vec3((glm::vec2(0.0f, 1.0f) - _center) * _size, 1.0f));
 }
 
-void ok::Quad::SetTransform(int x, int y, int w, int h)
+void ok::Quad::Place(int x, int y, int w, int h)
 {
 	vertices[0] = glm::vec2(static_cast<float>(x), static_cast<float>(y));
 	vertices[1] = glm::vec2(static_cast<float>(x + w), static_cast<float>(y));

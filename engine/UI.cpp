@@ -272,8 +272,6 @@ ok::ui::widget_state & ok::ui::Image(ok::ui::widget_ptr widget, ok::graphics::Sp
 	o()._fill_widget_state(widget, x, y, width, height);
 
 	ok::graphics::SpriteInfo _sprite = *sprite;
-	//sprite.rect = ok::graphics::TextureRect(texture);
-	//sprite.flip_y = false;
 
 	_sprite.scale.x *= width / sprite->rect.width;
 	_sprite.scale.y *= height / sprite->rect.height;
@@ -285,7 +283,26 @@ ok::ui::widget_state & ok::ui::Image(ok::ui::widget_ptr widget, ok::graphics::Sp
 	return o()._widget_state;
 }
 
-ok::ui::widget_state & ok::ui::BlitImage(ok::ui::widget_ptr widget, ok::graphics::SpriteInfo * sprite, float x, float y)
+ok::ui::widget_state & ok::ui::Blit(ok::ui::widget_ptr widget, ok::graphics::Texture * texture, float x, float y)
+{
+	float width = static_cast<float>(texture->GetSize().x);
+	float height = height = static_cast<float>(texture->GetSize().y);
+
+	o()._fill_widget_state(widget, glm::floor(x), glm::floor(y), width, height);
+
+	glm::vec2 transformed_position = o()._transform_stack.back() * glm::vec3(x, y, 1.f);
+	o()._batch->Blit(
+		texture,
+		static_cast<int>(glm::floor(transformed_position.x)),
+		static_cast<int>(glm::floor(transformed_position.y)),
+		glm::vec2(0.f,0.f),
+		false
+	);
+
+	return o()._widget_state;
+}
+
+ok::ui::widget_state & ok::ui::Blit(ok::ui::widget_ptr widget, ok::graphics::SpriteInfo * sprite, float x, float y)
 {
 	float width = static_cast<float>(sprite->rect.width);
 	float height = static_cast<float>(sprite->rect.height);
@@ -301,6 +318,34 @@ ok::ui::widget_state & ok::ui::BlitImage(ok::ui::widget_ptr widget, ok::graphics
 ok::ui::widget_state & ok::ui::Dummy(ok::ui::widget_ptr widget, float x, float y, float width, float height)
 {
 	o()._fill_widget_state(widget, x, y, width, height);
+
+	return o()._widget_state;
+}
+
+ok::ui::widget_state & ok::ui::ScrollHorizontal(
+	ok::ui::widget_ptr widget, float x, float y, float width, float height,
+	int items_visible_count, int items_total,
+	int & out__items_visible_first_index,
+	float & out__scroll_button_relative_position,
+	float & out__scroll_button_relative_size)
+{
+	//scroll dolgen diskretno perekluchat, seichas ne diskretno i ne poluchitsa vse posmotret
+	out__scroll_button_relative_size = glm::max(8.f, width * (static_cast<float>(items_visible_count) / static_cast<float>(items_total)));
+
+	o()._fill_widget_state(widget, x + out__scroll_button_relative_position, y, out__scroll_button_relative_size, height);
+
+	if (ws().on_activate)
+	{
+		o()._mem_xy = ws().mouse_relative_pos;
+	}
+
+	if (ws().mouse_down)
+	{
+		o()._fill_widget_state(widget, x, y, width, height);
+		out__scroll_button_relative_position = ws().mouse_relative_pos.x - o()._mem_xy.x;
+	}
+
+	out__items_visible_first_index = glm::floor((out__scroll_button_relative_position / width) * static_cast<float>(items_total));
 
 	return o()._widget_state;
 }
@@ -337,6 +382,11 @@ void ok::ui::PopEffect_Grayscale()
 	o()._effects_grayscale.pop_back();
 }
 
+ok::ui::widget_state & ok::ui::ws()
+{
+	return o()._widget_state;
+}
+
 float ok::ui::DispatchAliasFloat(ok::graphics::ShaderAliasReference alias_type)
 {
 	switch (alias_type)
@@ -371,6 +421,7 @@ void ok::ui::_fill_widget_state(ok::ui::widget_ptr widget, float left, float top
 	std::memset(&_widget_state, 0, sizeof(ok::ui::widget_state));
 
 	glm::vec2 local_mouse = glm::inverse(_transform_stack.back()) * glm::vec3(_mouse_xy.x, _mouse_xy.y, 1.f);
+	_widget_state.mouse_relative_pos = glm::clamp(local_mouse - glm::vec2(left, top), glm::vec2(0.f), glm::vec2(width, height));
 
 	if (local_mouse.x >= left && local_mouse.y >= top &&
 		local_mouse.x <= (left + width) && local_mouse.y <= (top + height))
