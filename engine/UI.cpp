@@ -342,10 +342,10 @@ ok::ui::widget_state & ok::ui::ScrollHorizontal(
 	if (ws().mouse_down)
 	{
 		o()._fill_widget_state(widget, x, y, width, height);
-		out__scroll_button_relative_position = ws().mouse_relative_pos.x - o()._mem_xy.x;
+		out__scroll_button_relative_position = glm::clamp(ws().mouse_relative_pos.x - o()._mem_xy.x, 0.f, width - out__scroll_button_relative_size);
 	}
 
-	out__items_visible_first_index = glm::floor((out__scroll_button_relative_position / width) * static_cast<float>(items_total));
+	out__items_visible_first_index = static_cast<int>(glm::floor((out__scroll_button_relative_position / (width - out__scroll_button_relative_size)) * static_cast<float>(items_total- items_visible_count)));
 
 	return o()._widget_state;
 }
