@@ -98,6 +98,8 @@ void Zoner::Space::DoCameraFollow()
 
 void Zoner::Space::CameraUpdate(float dt)
 {
+	ok::Input::o().SetCurrentLayer(1);
+
 	float camera_border_x = 8.f / camera.GetViewportWidth();
 	float camera_border_y = 8.f / camera.GetViewportHeight();
 	const float camera_shift_speed = 600.f; //pixels per second
@@ -232,4 +234,5 @@ void Zoner::Space::CameraUpdate(float dt)
 		}
 	}
 	
+	ok::Input::o().SetCurrentLayer(0);
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Rect2D.h"
+
 namespace ok
 {
 	enum class InputState
@@ -43,8 +45,20 @@ namespace ok
 		void OnMouseMove(float x, float y, float screen_width, float screen_height);
 		void Update();
 
+		void SetCurrentLayer(int layer = 0);
+		void AddBlockedArea(int layer, ok::Rect2Di area);
+		void RemoveBlockedArea(int layer, ok::Rect2Di area);
+		bool IsPointBlocked(int layer, float px, float py);
 	protected:
 	private:
+		struct input_layer
+		{
+			std::vector<ok::Rect2Di> blocked_areas;
+			int free_areas = 0;
+		};
+		std::vector<input_layer> _layers;
+		int _current_input_layer = 0;
+
 		int state_down;
 		int state_pressed;
 		int state_released;

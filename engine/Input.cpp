@@ -17,6 +17,8 @@ ok::Input::Input()
 	last_key_index = static_cast<int>(sf::Keyboard::KeyCount);
 
 	ClearStatesQueue();
+
+	SetCurrentLayer();
 }
 
 ok::Input & ok::Input::instance()
@@ -37,6 +39,8 @@ bool ok::Input::KeyDown(ok::KKey key)
 
 bool ok::Input::KeyDown(ok::MKey key)
 {
+	if (IsPointBlocked(_current_input_layer, MousePX(), MousePY())) return false;
+
 	return (states[last_key_index + static_cast<int>(key)] & state_down) ? true : false;
 }
 
@@ -52,6 +56,8 @@ bool ok::Input::KeyPressed(ok::KKey key)
 
 bool ok::Input::KeyPressed(ok::MKey key)
 {
+	if (IsPointBlocked(_current_input_layer, MousePX(), MousePY())) return false;
+
 	return (states[last_key_index + static_cast<int>(key)] & state_pressed) ? true : false;
 }
 
@@ -67,6 +73,8 @@ bool ok::Input::KeyReleased(ok::KKey key)
 
 bool ok::Input::KeyReleased(ok::MKey key)
 {
+	if (IsPointBlocked(_current_input_layer, MousePX(), MousePY())) return false;
+
 	return (states[last_key_index + static_cast<int>(key)] & state_released) ? true : false;
 }
 
@@ -164,6 +172,79 @@ void ok::Input::Update()
 	}
 
 	states_queue_position = 0;
+}
+
+void ok::Input::SetCurrentLayer(int layer)
+{
+	while (static_cast<int>(_layers.size()) - 1 < layer)
+	{
+		_layers.push_back(ok::Input::input_layer());
+	}
+
+	_current_input_layer = layer;
+}
+
+void ok::Input::AddBlockedArea(int layer, ok::Rect2Di area)
+{
+	int prev_layer = _current_input_layer;
+	SetCurrentLayer(layer);
+
+	ok::Input::input_layer& _layer = _layers[_current_input_layer];
+
+	if (_layer.free_areas == 0)
+	{
+		_layer.blocked_areas.push_back(area);
+	}
+	else
+	{
+		_layer.free_areas--;
+		_layer.blocked_areas[_layer.free_areas] = area;	
+	}
+
+	SetCurrentLayer(prev_layer);
+}
+
+void ok::Input::RemoveBlockedArea(int layer, ok::Rect2Di area)
+{
+	int prev_layer = _current_input_layer;
+	SetCurrentLayer(layer);
+
+	ok::Input::input_layer& _layer = _layers[_current_input_layer];
+
+	for (size_t i = _layer.free_areas; i < _layer.blocked_areas.size(); i++)
+	{
+		if (_layer.blocked_areas[i].GetXYWH() == area.GetXYWH())
+		{
+			std::swap(_layer.blocked_areas[i], _layer.blocked_areas[_layer.free_areas]);
+			_layer.free_areas++;
+			break;
+		}
+	}
+
+	SetCurrentLayer(prev_layer);
+}
+
+bool ok::Input::IsPointBlocked(int layer, float px, float py)
+{
+	int prev_layer = _current_input_layer;
+	SetCurrentLayer(layer);
+
+	bool result = false;
+	ok::Input::input_layer& _layer = _layers[_current_input_layer];
+
+	for (size_t i = _layer.free_areas; i < _layer.blocked_areas.size(); i++)
+	{
+		if (_layer.blocked_areas[i].Contains(px, py))
+		{
+			result = true;
+			break;
+		}
+	}
+
+	SetCurrentLayer(prev_layer);
+	
+	//bool result = false;
+	return result;
 }
 
 void ok::Input::PushStateToQueue(int key, int state)

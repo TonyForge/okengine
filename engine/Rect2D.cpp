@@ -91,6 +91,12 @@ void ok::Rect2D<T>::GetLTRB(T & _l, T & _t, T & _r, T & _b)
 }
 
 template<class T>
+glm::tvec4<T, glm::packed_highp> ok::Rect2D<T>::GetXYWH()
+{
+	return glm::tvec4<T, glm::packed_highp>(x,y,w,h);
+}
+
+template<class T>
 glm::tvec2<T, glm::packed_highp> ok::Rect2D<T>::GetXY()
 {
 	return glm::tvec2<T, glm::packed_highp>(x,y);
@@ -138,6 +144,12 @@ glm::tvec2<T, glm::packed_highp> ok::Rect2D<T>::PickRayFromCenter(glm::tvec2<T, 
 	}
 
 	return glm::tvec2<T, glm::packed_highp>(cx+rx, cy+ry);
+}
+
+template<class T>
+bool ok::Rect2D<T>::Contains(float _x, float _y)
+{
+	return _x >= x && _x <= x + w && _y >= y && _y <= y + h;
 }
 
 template <class T>

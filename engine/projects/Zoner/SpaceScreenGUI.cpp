@@ -7,6 +7,9 @@ void Zoner::SpaceScreenGUI::Update(float dt)
 
 void Zoner::SpaceScreenGUI::Update_Inventory(float dt)
 {
+	ok::Input::o().SetCurrentLayer(1);
+	
+
 	static ok::ui::widget inventory_panel_top;
 	static ok::ui::widget inventory_panel_top_button_close;
 	static ok::ui::widget inventory_panel_top_button_eject;
@@ -79,6 +82,12 @@ void Zoner::SpaceScreenGUI::Update_Inventory(float dt)
 		inventory_panel_top_scroll.items_visible_first_index = 0;
 		inventory_panel_top_scroll.scroll_button_relative_position = 0.f;
 		inventory_panel_top_scroll.scroll_button_relative_size = 0.f;
+
+		ok::Input::o().AddBlockedArea(0, ok::Rect2Di(114, 38, 107, 92));
+		ok::Input::o().AddBlockedArea(0, ok::Rect2Di(202, 26, 40, 40));
+		ok::Input::o().AddBlockedArea(0, ok::Rect2Di(22, 172, 40, 40));
+		ok::Input::o().AddBlockedArea(0, ok::Rect2Di(54, 119, 232, 88));
+		ok::Input::o().AddBlockedArea(0, ok::Rect2Di(35, 129, 266, 49));
 	}
 
 	ok::ui::BeginUI(Zoner::IGame::o().GetScreenWidth(), Zoner::IGame::o().GetScreenHeight());
@@ -223,6 +232,8 @@ void Zoner::SpaceScreenGUI::Update_Inventory(float dt)
 	}
 	ok::ui::PopTranslate();
 	ok::ui::EndUI();
+
+	ok::Input::o().SetCurrentLayer(0);
 }
 
 Zoner::SpaceScreenGUI & Zoner::SpaceScreenGUI::instance()
