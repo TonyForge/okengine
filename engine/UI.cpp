@@ -49,6 +49,9 @@ void ok::ui::EndUI()
 	PopResetTransform();
 
 	ok::graphics::Camera::PopCamera();
+
+	//for (int i = 0; i < _n)
+	//std::swap(o()._new_game_object_images, o()._old_game_object_images);
 }
 
 void ok::ui::PushCrop(float left, float top, float width, float height)
@@ -240,6 +243,13 @@ void ok::ui::DisableSmooth()
 		//do nothing
 	}
 	o()._default_material->ForbidTextureLinearFilter();
+}
+
+ok::ui::widget_state & ok::ui::Image(ok::ui::widget_ptr widget, ok::GameObject * game_object, float game_object_scale_to_fit_image, float image_x, float image_y, float image_width, float image_height)
+{
+	o()._fill_widget_state(widget, image_x, image_y, image_width, image_height);
+
+	return o()._widget_state;
 }
 
 ok::ui::widget_state & ok::ui::Image(ok::ui::widget_ptr widget, ok::graphics::Texture * texture, float x, float y, float width, float height)

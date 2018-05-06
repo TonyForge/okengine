@@ -1,0 +1,3 @@
+<blueprints>
+	<blueprint name="test" file="test.xml" type="item"/>
+</blueprints>

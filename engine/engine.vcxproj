@@ -461,8 +461,10 @@
     <ClCompile Include="projects\Zoner\Commands.cpp" />
     <ClCompile Include="projects\Zoner\Game.cpp" />
     <ClCompile Include="projects\Zoner\IGame.cpp" />
+    <ClCompile Include="projects\Zoner\IItem.cpp" />
     <ClCompile Include="projects\Zoner\IShip.cpp" />
     <ClCompile Include="projects\Zoner\ISpace.cpp" />
+    <ClCompile Include="projects\Zoner\Item.cpp" />
     <ClCompile Include="projects\Zoner\JumpHole.cpp" />
     <ClCompile Include="projects\Zoner\Preloader.cpp" />
     <ClCompile Include="projects\Zoner\Ship.cpp" />
@@ -524,8 +526,10 @@
     <ClInclude Include="projects\Zoner\Commands.h" />
     <ClInclude Include="projects\Zoner\Game.h" />
     <ClInclude Include="projects\Zoner\IGame.h" />
+    <ClInclude Include="projects\Zoner\IItem.h" />
     <ClInclude Include="projects\Zoner\IShip.h" />
     <ClInclude Include="projects\Zoner\ISpace.h" />
+    <ClInclude Include="projects\Zoner\Item.h" />
     <ClInclude Include="projects\Zoner\JumpHole.h" />
     <ClInclude Include="projects\Zoner\Preloader.h" />
     <ClInclude Include="projects\Zoner\RequestsDispatcher.h" />

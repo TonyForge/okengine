@@ -9,6 +9,7 @@
 #include "Ship.h"
 #include "Space.h"
 #include "JumpHole.h"
+#include "Item.h"
 
 #include "SpaceScreenGUI.h"
 
