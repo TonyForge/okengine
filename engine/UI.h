@@ -59,7 +59,6 @@ namespace ok
 		static void EnableSmooth();
 		static void DisableSmooth();
 
-		static ok::ui::widget_state& Image(ok::ui::widget_ptr widget, ok::GameObject* game_object, float game_object_scale_to_fit_image, float image_x, float image_y, float image_width, float image_height);
 		static ok::ui::widget_state& Image(ok::ui::widget_ptr widget, ok::graphics::Texture* texture, float x = 0.f, float y = 0.f, float width = -1.f, float height = -1.f);
 		static ok::ui::widget_state& Image(ok::ui::widget_ptr widget, ok::graphics::SpriteInfo* sprite, float x = 0.f, float y = 0.f, float width = -1.f, float height = -1.f);
 
@@ -123,18 +122,6 @@ namespace ok
 		std::vector<float> _effects_grayscale;
 
 		std::vector<bool> _non_activable_stack;
-
-		struct _game_object_image
-		{
-			ok::GameObject* game_object;
-			ok::graphics::SpriteInfo image;
-		};
-
-		std::vector<ok::ui::_game_object_image> _game_object_images_0;
-		std::vector<ok::ui::_game_object_image> _game_object_images_1;
-
-		std::vector<ok::ui::_game_object_image>* _old_game_object_images;
-		std::vector<ok::ui::_game_object_image>* _new_game_object_images;
 
 		void _fill_widget_state(ok::ui::widget_ptr widget, float left, float top, float width, float height);
 	protected:

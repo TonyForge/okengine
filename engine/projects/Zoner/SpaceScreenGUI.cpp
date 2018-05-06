@@ -2,6 +2,11 @@
 
 void Zoner::SpaceScreenGUI::Update(float dt)
 {
+	if (o()._icons_cache_32px == nullptr)
+	{
+		o()._icons_cache_32px = new ok::graphics::RenderTarget(256, 256, true, true, false, true);
+	}
+
 	Update_Inventory(dt);
 }
 
