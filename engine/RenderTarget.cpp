@@ -1,5 +1,7 @@
 #include "RenderTarget.h"
 
+std::vector<ok::graphics::RenderTarget*> ok::graphics::RenderTarget::_bind_stack;
+
 ok::graphics::RenderTarget::RenderTarget(int width, int height, bool smooth, bool depth_enabled, bool stencil_enabled, bool rbo_enabled)
 {
 	size.x = width;
@@ -150,12 +152,37 @@ ok::graphics::RenderTarget::~RenderTarget()
 
 void ok::graphics::RenderTarget::BindTarget()
 {
+	_previous_camera_viewport_settings.x = ok::graphics::Camera::_viewport_x;
+	_previous_camera_viewport_settings.y = ok::graphics::Camera::_viewport_y;
+	_previous_camera_viewport_settings.z = ok::graphics::Camera::_viewport_w;
+	_previous_camera_viewport_settings.w = ok::graphics::Camera::_viewport_h;
+
+	_bind_stack.push_back(this);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_id);
+
+	ok::graphics::Camera::_viewport_x = 0;
+	ok::graphics::Camera::_viewport_y = 0;
+	ok::graphics::Camera::_viewport_w = size.x;
+	ok::graphics::Camera::_viewport_h = size.y;
 }
 
 void ok::graphics::RenderTarget::UnbindTarget()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	_bind_stack.pop_back();
+
+	if (_bind_stack.size() > 0)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, _bind_stack.back()->framebuffer_id);
+	}
+	else
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	ok::graphics::Camera::_viewport_x = _previous_camera_viewport_settings.x;
+	ok::graphics::Camera::_viewport_y = _previous_camera_viewport_settings.y;
+	ok::graphics::Camera::_viewport_w = _previous_camera_viewport_settings.z;
+	ok::graphics::Camera::_viewport_h = _previous_camera_viewport_settings.w;
 }
 
 unsigned int ok::graphics::RenderTarget::GetTexture_Color()

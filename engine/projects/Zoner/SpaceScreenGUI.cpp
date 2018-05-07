@@ -2,9 +2,10 @@
 
 void Zoner::SpaceScreenGUI::Update(float dt)
 {
-	if (o()._icons_cache_32px == nullptr)
+	if (o()._icons_cache_64px == nullptr)
 	{
-		o()._icons_cache_32px = new ok::graphics::RenderTarget(256, 256, true, true, false, true);
+		o()._icons_cache_64px = new ok::graphics::RenderTarget(512, 512, true, true, false, true);
+		o()._icons_cache_64px_tex = new ok::graphics::Texture(o()._icons_cache_64px);
 	}
 
 	Update_Inventory(dt);
@@ -236,6 +237,20 @@ void Zoner::SpaceScreenGUI::Update_Inventory(float dt)
 		
 	}
 	ok::ui::PopTranslate();
+
+	//test
+	Zoner::ShipBlueprint* blueprint = Zoner::IGame::o().GetShipBlueprints()["nomad"];
+	o()._CacheIcon(
+		blueprint,
+		64.f / glm::max(blueprint->bounder_axis.x, glm::max(blueprint->bounder_axis.y, blueprint->bounder_axis.z)),
+		0, 0);
+
+	ok::ui::widget w;
+	ok::ui::PushTranslate(0, 0);
+	//ok::ui::Image(w.ptr(), &o()._GetIconCache(0, 0));
+	ok::ui::Image(w.ptr(), o()._icons_cache_64px_tex);
+	ok::ui::PopTranslate();
+
 	ok::ui::EndUI();
 
 	ok::Input::o().SetCurrentLayer(0);
@@ -250,4 +265,58 @@ Zoner::SpaceScreenGUI & Zoner::SpaceScreenGUI::instance()
 Zoner::SpaceScreenGUI & Zoner::SpaceScreenGUI::o()
 {
 	return instance();
+}
+
+void Zoner::SpaceScreenGUI::_CacheIcon(ok::GameObject * blueprint, float scale, int slot_x, int slot_y)
+{
+	_icons_cache_64px->BindTarget();
+
+	ok::graphics::Camera camera(ok::graphics::CameraCoordinateSystem::Screen);
+	camera.SetProjectionOrtho(512.f, 512.f, 1.f, 1000.f);
+
+	camera.BeginTransform();
+	camera.SetPosition(glm::vec3(0.f, 0.f, -500.0f));
+	camera.EndTransform(false);
+
+	ok::Transform _container;
+	_container.BeginTransform();
+	_container.SetScale(glm::vec3(1.f, 1.f, 1.f) * scale);
+	_container.SetPosition(glm::vec3(static_cast<float>(slot_x) * 64.f + 32.f, static_cast<float>(slot_y) * 64.f + 32.f, 0.f));
+	_container.EndTransform(false);
+
+	_container.AddChild(blueprint);
+
+	ok::graphics::Camera::PushCamera(&camera);
+	camera.BeginScissorTest(slot_x * 64, slot_y * 64, 64, 64);
+
+	glClearColor(1.f, 0.f, 0.f, 1.f);
+	glDepthMask(GL_TRUE);
+	glClearDepth(0.f);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	/*ok::graphics::LayeredRenderer::instance().BeginImmediateRender();
+	blueprint->Update(0.f);
+	ok::graphics::LayeredRenderer::instance().EndImmediateRender();*/
+
+	camera.EndScissorTest();
+	ok::graphics::Camera::PopCamera();
+
+	_container.RemoveChild(blueprint);
+
+	_icons_cache_64px->UnbindTarget();
+}
+
+ok::graphics::SpriteInfo Zoner::SpaceScreenGUI::_GetIconCache(int slot_x, int slot_y)
+{
+	ok::graphics::SpriteInfo sprite;
+
+	sprite.rect = ok::graphics::TextureRect(_icons_cache_64px_tex, slot_x * 64, slot_y * 64, 64, 64);
+	sprite.hotspot.x = 0.f;
+	sprite.hotspot.y = 0.f;
+	
+	sprite.scale.x = 0.5f;
+	sprite.scale.y = 0.5f;
+
+	return sprite;
 }

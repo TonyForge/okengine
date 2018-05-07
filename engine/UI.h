@@ -92,16 +92,12 @@ namespace ok
 	private:
 		ui() : 
 			_camera(ok::graphics::CameraCoordinateSystem::Screen),
-			_batch(nullptr), 
-			_new_game_object_images(&_game_object_images_0),
-			_old_game_object_images(&_game_object_images_1)
-			{}
+			_batch(nullptr)
+		{}
 		~ui() {}
 		ok::ui(ok::ui const&) : 
 			_camera(ok::graphics::CameraCoordinateSystem::Screen),
-			_batch(nullptr),
-			_new_game_object_images(&_game_object_images_0),
-			_old_game_object_images(&_game_object_images_1)
+			_batch(nullptr)
 		{}
 		ok::ui& operator= (ok::ui const&) {}
 

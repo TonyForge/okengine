@@ -56,6 +56,9 @@ namespace ok
 
 			void Flush();
 			void Render(ok::graphics::LayeredRendererRequest& request);
+
+			void BeginImmediateRender();
+			void EndImmediateRender();
 		protected:
 		private:
 			LayeredRenderer() {}
@@ -71,6 +74,18 @@ namespace ok
 
 			std::vector<std::pair<int, ok::graphics::LayeredRenderable*>> front_stage_opaque;
 			std::vector<std::tuple<int, float, ok::graphics::LayeredRenderable*>> front_stage_transparent;
+
+			//immediate mode collections
+			std::vector<std::pair<int, ok::graphics::LayeredRenderable*>> im_back_stage_opaque;
+			std::vector<std::tuple<int, float, ok::graphics::LayeredRenderable*>> im_back_stage_transparent;
+
+			std::vector<std::pair<int, ok::graphics::LayeredRenderable*>> im_stage_opaque;
+			std::vector<std::tuple<int, float, ok::graphics::LayeredRenderable*>> im_stage_transparent;
+
+			std::vector<std::pair<int, ok::graphics::LayeredRenderable*>> im_front_stage_opaque;
+			std::vector<std::tuple<int, float, ok::graphics::LayeredRenderable*>> im_front_stage_transparent;
+
+			bool _immediate_mode_enabled = false;
 
 			float _GetDistanceToCamera(glm::vec3 world_space_position);
 		};

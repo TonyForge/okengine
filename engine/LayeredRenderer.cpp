@@ -22,33 +22,104 @@ void ok::graphics::LayeredRenderer::Flush()
 		return std::get<0>(left) < std::get<0>(right);
 	};
 
-	std::stable_sort(back_stage_opaque.begin(), back_stage_opaque.end(), sort_function_opaque);
-	std::stable_sort(back_stage_transparent.begin(), back_stage_transparent.end(), sort_function_transparent);
-	std::stable_sort(stage_opaque.begin(), stage_opaque.end(), sort_function_opaque);
-	std::stable_sort(stage_transparent.begin(), stage_transparent.end(), sort_function_transparent);
-	std::stable_sort(front_stage_opaque.begin(), front_stage_opaque.end(), sort_function_opaque);
-	std::stable_sort(front_stage_transparent.begin(), front_stage_transparent.end(), sort_function_transparent);
+	if (_immediate_mode_enabled == true)
+	{
+		std::stable_sort(im_back_stage_opaque.begin(), im_back_stage_opaque.end(), sort_function_opaque);
+		std::stable_sort(im_back_stage_transparent.begin(), im_back_stage_transparent.end(), sort_function_transparent);
+		std::stable_sort(im_stage_opaque.begin(), im_stage_opaque.end(), sort_function_opaque);
+		std::stable_sort(im_stage_transparent.begin(), im_stage_transparent.end(), sort_function_transparent);
+		std::stable_sort(im_front_stage_opaque.begin(), im_front_stage_opaque.end(), sort_function_opaque);
+		std::stable_sort(im_front_stage_transparent.begin(), im_front_stage_transparent.end(), sort_function_transparent);
 
-	for (auto& ptr : back_stage_opaque) ptr.second->Render();
-	for (auto& ptr : back_stage_transparent) std::get<2>(ptr)->Render();
-	for (auto& ptr : stage_opaque) ptr.second->Render();
-	for (auto& ptr : stage_transparent) std::get<2>(ptr)->Render();
-	for (auto& ptr : front_stage_opaque) ptr.second->Render();
-	for (auto& ptr : front_stage_transparent) std::get<2>(ptr)->Render();
+		for (auto& ptr : im_back_stage_opaque) ptr.second->Render();
+		for (auto& ptr : im_back_stage_transparent) std::get<2>(ptr)->Render();
+		for (auto& ptr : im_stage_opaque) ptr.second->Render();
+		for (auto& ptr : im_stage_transparent) std::get<2>(ptr)->Render();
+		for (auto& ptr : im_front_stage_opaque) ptr.second->Render();
+		for (auto& ptr : im_front_stage_transparent) std::get<2>(ptr)->Render();
 
-	back_stage_opaque.resize(0);
-	back_stage_transparent.resize(0);
-	stage_opaque.resize(0);
-	stage_transparent.resize(0);
-	front_stage_opaque.resize(0);
-	front_stage_transparent.resize(0);
+		im_back_stage_opaque.resize(0);
+		im_back_stage_transparent.resize(0);
+		im_stage_opaque.resize(0);
+		im_stage_transparent.resize(0);
+		im_front_stage_opaque.resize(0);
+		im_front_stage_transparent.resize(0);
+	}
+	else
+	{
+		std::stable_sort(back_stage_opaque.begin(), back_stage_opaque.end(), sort_function_opaque);
+		std::stable_sort(back_stage_transparent.begin(), back_stage_transparent.end(), sort_function_transparent);
+		std::stable_sort(stage_opaque.begin(), stage_opaque.end(), sort_function_opaque);
+		std::stable_sort(stage_transparent.begin(), stage_transparent.end(), sort_function_transparent);
+		std::stable_sort(front_stage_opaque.begin(), front_stage_opaque.end(), sort_function_opaque);
+		std::stable_sort(front_stage_transparent.begin(), front_stage_transparent.end(), sort_function_transparent);
+
+		for (auto& ptr : back_stage_opaque) ptr.second->Render();
+		for (auto& ptr : back_stage_transparent) std::get<2>(ptr)->Render();
+		for (auto& ptr : stage_opaque) ptr.second->Render();
+		for (auto& ptr : stage_transparent) std::get<2>(ptr)->Render();
+		for (auto& ptr : front_stage_opaque) ptr.second->Render();
+		for (auto& ptr : front_stage_transparent) std::get<2>(ptr)->Render();
+
+		back_stage_opaque.resize(0);
+		back_stage_transparent.resize(0);
+		stage_opaque.resize(0);
+		stage_transparent.resize(0);
+		front_stage_opaque.resize(0);
+		front_stage_transparent.resize(0);
+	}
+	
 }
 
 void ok::graphics::LayeredRenderer::Render(ok::graphics::LayeredRendererRequest& request)
 {
-	switch (request.stage)
+	if (_immediate_mode_enabled)
 	{
-		case ok::graphics::LayeredRendererStage::BackStage :
+		switch (request.stage)
+		{
+		case ok::graphics::LayeredRendererStage::BackStage:
+		{
+			if (request.transparent)
+			{
+				im_back_stage_transparent.push_back(std::tuple<int, float, ok::graphics::LayeredRenderable*>(request.layer, _GetDistanceToCamera(request.world_space_position), request.GetOwner()));
+			}
+			else
+			{
+				im_back_stage_opaque.push_back(std::pair<int, ok::graphics::LayeredRenderable*>(request.layer, request.GetOwner()));
+			}
+		}
+		break;
+		case ok::graphics::LayeredRendererStage::Stage:
+		{
+			if (request.transparent)
+			{
+				im_stage_transparent.push_back(std::tuple<int, float, ok::graphics::LayeredRenderable*>(request.layer, _GetDistanceToCamera(request.world_space_position), request.GetOwner()));
+			}
+			else
+			{
+				im_stage_opaque.push_back(std::pair<int, ok::graphics::LayeredRenderable*>(request.layer, request.GetOwner()));
+			}
+		}
+		break;
+		case ok::graphics::LayeredRendererStage::FrontStage:
+		{
+			if (request.transparent)
+			{
+				im_front_stage_transparent.push_back(std::tuple<int, float, ok::graphics::LayeredRenderable*>(request.layer, _GetDistanceToCamera(request.world_space_position), request.GetOwner()));
+			}
+			else
+			{
+				im_front_stage_opaque.push_back(std::pair<int, ok::graphics::LayeredRenderable*>(request.layer, request.GetOwner()));
+			}
+		}
+		break;
+		}
+	}
+	else
+	{
+		switch (request.stage)
+		{
+		case ok::graphics::LayeredRendererStage::BackStage:
 		{
 			if (request.transparent)
 			{
@@ -84,7 +155,19 @@ void ok::graphics::LayeredRenderer::Render(ok::graphics::LayeredRendererRequest&
 			}
 		}
 		break;
+		}
 	}
+}
+
+void ok::graphics::LayeredRenderer::BeginImmediateRender()
+{
+	_immediate_mode_enabled = true;
+}
+
+void ok::graphics::LayeredRenderer::EndImmediateRender()
+{
+	Flush();
+	_immediate_mode_enabled = false;
 }
 
 float ok::graphics::LayeredRenderer::_GetDistanceToCamera(glm::vec3 world_space_position)

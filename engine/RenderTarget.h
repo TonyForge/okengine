@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Camera.h"
+
 namespace ok
 {
 	namespace graphics
@@ -22,6 +24,9 @@ namespace ok
 			unsigned int framebuffer_id;
 			unsigned int render_buffer_object_id;
 			glm::ivec2 size;
+
+			glm::ivec4 _previous_camera_viewport_settings;
+			static std::vector<ok::graphics::RenderTarget*> _bind_stack;
 		};
 	}
 }
