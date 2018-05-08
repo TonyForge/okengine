@@ -10,6 +10,11 @@ int ok::graphics::Camera::_viewport_w;
 int ok::graphics::Camera::_viewport_h;
 std::stack<glm::ivec4> ok::graphics::Camera::_scissorTest_stack;
 
+int ok::graphics::Camera::_gl_viewport_x;
+int ok::graphics::Camera::_gl_viewport_y;
+int ok::graphics::Camera::_gl_viewport_w;
+int ok::graphics::Camera::_gl_viewport_h;
+
 ok::graphics::Camera::Camera(ok::graphics::CameraCoordinateSystem coordinate_system) : mView(1.0f), mProj(1.0f), mVP(1.0f), _coordinate_system(coordinate_system)
 {
 	mP_dirty = false;
@@ -167,6 +172,44 @@ ok::graphics::Camera * ok::graphics::Camera::GetCurrent()
 void ok::graphics::Camera::_ResetCurrent()
 {
 	_currentCamera = nullptr;
+}
+
+void ok::graphics::Camera::SetGLViewport(int x, int y, int w, int h)
+{
+	_gl_viewport_x = x;
+	_gl_viewport_y = y;
+	_gl_viewport_w = w;
+	_gl_viewport_h = h;
+
+	glViewport(
+		static_cast<GLint>(x),
+		static_cast<GLint>(y),
+		static_cast<GLint>(w),
+		static_cast<GLint>(h)
+	);
+}
+
+void ok::graphics::Camera::SetGLViewport(float x, float y, float w, float h)
+{
+	SetGLViewport(
+		static_cast<int>(x),
+		static_cast<int>(y),
+		static_cast<int>(w),
+		static_cast<int>(h)
+		);
+}
+
+void ok::graphics::Camera::SetGLViewport(glm::ivec4 & xywh)
+{
+	SetGLViewport(xywh.x, xywh.y, xywh.z, xywh.w);
+}
+
+void ok::graphics::Camera::GetGLViewport(glm::ivec4 & out)
+{
+	out.x = _gl_viewport_x;
+	out.y = _gl_viewport_y;
+	out.z = _gl_viewport_w;
+	out.w = _gl_viewport_h;
 }
 
 void ok::graphics::Camera::PushCamera(ok::graphics::Camera * camera)

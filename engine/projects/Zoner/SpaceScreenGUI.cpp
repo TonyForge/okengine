@@ -247,8 +247,8 @@ void Zoner::SpaceScreenGUI::Update_Inventory(float dt)
 
 	ok::ui::widget w;
 	ok::ui::PushTranslate(0, 0);
-	//ok::ui::Image(w.ptr(), &o()._GetIconCache(0, 0));
-	ok::ui::Image(w.ptr(), o()._icons_cache_64px_tex);
+	ok::ui::Image(w.ptr(), &o()._GetIconCache(0, 0),0,0,128,128);
+	//ok::ui::Image(w.ptr(), o()._icons_cache_64px_tex);
 	ok::ui::PopTranslate();
 
 	ok::ui::EndUI();
@@ -271,7 +271,7 @@ void Zoner::SpaceScreenGUI::_CacheIcon(ok::GameObject * blueprint, float scale, 
 {
 	_icons_cache_64px->BindTarget();
 
-	ok::graphics::Camera camera(ok::graphics::CameraCoordinateSystem::Screen);
+	ok::graphics::Camera camera(ok::graphics::CameraCoordinateSystem::Cartesian);
 	camera.SetProjectionOrtho(512.f, 512.f, 1.f, 1000.f);
 
 	camera.BeginTransform();
@@ -279,28 +279,39 @@ void Zoner::SpaceScreenGUI::_CacheIcon(ok::GameObject * blueprint, float scale, 
 	camera.EndTransform(false);
 
 	ok::Transform _container;
-	_container.BeginTransform();
-	_container.SetScale(glm::vec3(1.f, 1.f, 1.f) * scale);
-	_container.SetPosition(glm::vec3(static_cast<float>(slot_x) * 64.f + 32.f, static_cast<float>(slot_y) * 64.f + 32.f, 0.f));
-	_container.EndTransform(false);
 
 	_container.AddChild(blueprint);
+
+	_container.BeginTransform();
+	_container.SetScale(glm::vec3(1.f, 1.f, 1.f) * scale * 0.4f);
+	_container.SetPosition(glm::vec3(static_cast<float>(slot_x) * 64.f + 32.f, static_cast<float>(slot_y) * 64.f + 32.f, 0.f));
+	_container.SetOrientation(glm::vec3(-1.f, 1.f, 1.f), glm::vec3(0.f, 0.f, -1.f));
+	//_container.SetRotation(glm::vec3(45.f, -60.f, 0.f));
+	_container.EndTransform(true);
 
 	ok::graphics::Camera::PushCamera(&camera);
 	camera.BeginScissorTest(slot_x * 64, slot_y * 64, 64, 64);
 
-	glClearColor(1.f, 0.f, 0.f, 1.f);
+	glClearColor(0.f, 0.f, 0.f, 0.f);
 	glDepthMask(GL_TRUE);
 	glClearDepth(0.f);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	/*ok::graphics::LayeredRenderer::instance().BeginImmediateRender();
+	ok::graphics::LayeredRenderer::instance().BeginImmediateRender();
 	blueprint->Update(0.f);
-	ok::graphics::LayeredRenderer::instance().EndImmediateRender();*/
+	ok::graphics::LayeredRenderer::instance().EndImmediateRender();
 
 	camera.EndScissorTest();
 	ok::graphics::Camera::PopCamera();
+
+	_container.AddChild(blueprint);
+
+	_container.BeginTransform();
+	_container.SetScale(glm::vec3(1.f, 1.f, 1.f));
+	_container.SetPosition(glm::vec3(0.f, 0.f, 0.f));
+	_container.SetRotation(glm::vec3(0.f, 0.f, 0.f));
+	_container.EndTransform(true);
 
 	_container.RemoveChild(blueprint);
 

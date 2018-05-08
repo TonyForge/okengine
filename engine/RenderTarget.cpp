@@ -164,6 +164,9 @@ void ok::graphics::RenderTarget::BindTarget()
 	ok::graphics::Camera::_viewport_y = 0;
 	ok::graphics::Camera::_viewport_w = size.x;
 	ok::graphics::Camera::_viewport_h = size.y;
+
+	ok::graphics::Camera::GetGLViewport(_previous_gl_viewport_settings);
+	ok::graphics::Camera::SetGLViewport(0, 0, size.x, size.y);
 }
 
 void ok::graphics::RenderTarget::UnbindTarget()
@@ -183,6 +186,8 @@ void ok::graphics::RenderTarget::UnbindTarget()
 	ok::graphics::Camera::_viewport_y = _previous_camera_viewport_settings.y;
 	ok::graphics::Camera::_viewport_w = _previous_camera_viewport_settings.z;
 	ok::graphics::Camera::_viewport_h = _previous_camera_viewport_settings.w;
+
+	ok::graphics::Camera::SetGLViewport(_previous_gl_viewport_settings);
 }
 
 unsigned int ok::graphics::RenderTarget::GetTexture_Color()

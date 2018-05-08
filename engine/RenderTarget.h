@@ -26,6 +26,7 @@ namespace ok
 			glm::ivec2 size;
 
 			glm::ivec4 _previous_camera_viewport_settings;
+			glm::ivec4 _previous_gl_viewport_settings;
 			static std::vector<ok::graphics::RenderTarget*> _bind_stack;
 		};
 	}

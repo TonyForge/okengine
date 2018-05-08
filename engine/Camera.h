@@ -61,6 +61,12 @@ namespace ok
 			static bool _fixed_resolution_enabled;
 			static bool _keep_aspect_ratio_enabled;
 			static int _viewport_x, _viewport_y, _viewport_w, _viewport_h;
+
+			static void SetGLViewport(int x, int y, int w, int h);
+			static void SetGLViewport(float x, float y, float w, float h);
+			static void SetGLViewport(glm::ivec4& xywh);
+			static void GetGLViewport(glm::ivec4& out);
+			static int _gl_viewport_x, _gl_viewport_y, _gl_viewport_w, _gl_viewport_h; //to keep glViewport values (it is not the same as _viewport above)
 		};
 	}
 }

@@ -33,7 +33,7 @@ void ok::Application::Run()
 	window->setActive(true);
 	glewInit();
 
-	glViewport(0, 0, window_width, window_height);
+	ok::graphics::Camera::SetGLViewport(0, 0, window_width, window_height);
 
 	ok::graphics::Camera::_viewport_x = 0;
 	ok::graphics::Camera::_viewport_y = 0;
@@ -86,7 +86,7 @@ void ok::Application::Run()
 		viewport_x = (static_cast<float>(window_width) - viewport_w) * 0.5f;
 		viewport_y = (static_cast<float>(window_height) - viewport_h) * 0.5f;
 
-		glViewport((GLint)viewport_x, (GLint)viewport_y, (GLint)viewport_w, (GLint)viewport_h);
+		ok::graphics::Camera::SetGLViewport(viewport_x, viewport_y, viewport_w, viewport_h);
 
 		ok::graphics::Camera::_viewport_x = static_cast<int>(viewport_x);
 		ok::graphics::Camera::_viewport_y = static_cast<int>(viewport_y);
@@ -95,7 +95,7 @@ void ok::Application::Run()
 	}
 	else
 	{
-		glViewport((GLint)0, (GLint)0, (GLint)window_width, (GLint)window_height);
+		ok::graphics::Camera::SetGLViewport(0, 0, window_width, window_height);
 
 		ok::graphics::Camera::_viewport_x = 0;
 		ok::graphics::Camera::_viewport_y = 0;
@@ -132,7 +132,7 @@ void ok::Application::Run()
 						viewport_x = (static_cast<float>(window_width) - viewport_w) * 0.5f;
 						viewport_y = (static_cast<float>(window_height) - viewport_h) * 0.5f;
 
-						glViewport((GLint)viewport_x, (GLint)viewport_y, (GLint)viewport_w, (GLint)viewport_h);
+						ok::graphics::Camera::SetGLViewport(viewport_x, viewport_y, viewport_w, viewport_h);
 
 						ok::graphics::Camera::_viewport_x = static_cast<int>(viewport_x);
 						ok::graphics::Camera::_viewport_y = static_cast<int>(viewport_y);
@@ -141,7 +141,7 @@ void ok::Application::Run()
 					}
 					else
 					{
-						glViewport((GLint)0, (GLint)0, (GLint)window_width, (GLint)window_height);
+						ok::graphics::Camera::SetGLViewport(0, 0, window_width, window_height);
 
 						ok::graphics::Camera::_viewport_x = 0;
 						ok::graphics::Camera::_viewport_y = 0;
@@ -193,16 +193,16 @@ void ok::Application::Run()
 				if (fixed_resolution_resample_enabled)
 				{
 					fixed_resolution_resample_framebuffer->BindTarget();
-					glViewport(
-						(GLint)0, 
-						(GLint)0, 
-						static_cast<GLint>(glm::round(static_cast<float>(screen_width) * fixed_resolution_resample_scale)),
-						static_cast<GLint>(glm::round(static_cast<float>(screen_height) * fixed_resolution_resample_scale)));
+					ok::graphics::Camera::SetGLViewport(
+						0, 
+						0, 
+						static_cast<int>(glm::round(static_cast<float>(screen_width) * fixed_resolution_resample_scale)),
+						static_cast<int>(glm::round(static_cast<float>(screen_height) * fixed_resolution_resample_scale)));
 				}
 				else
 				{
 					fixed_resolution_framebuffer->BindTarget();
-					glViewport((GLint)0, (GLint)0, (GLint)screen_width, (GLint)screen_height);
+					ok::graphics::Camera::SetGLViewport(0, 0, screen_width, screen_height);
 				}
 
 
@@ -250,7 +250,7 @@ void ok::Application::Run()
 					ok::graphics::Camera::PushCamera(&resample_camera);
 						fixed_resolution_framebuffer->BindTarget();
 
-						glViewport((GLint)0, (GLint)0, (GLint)screen_width, (GLint)screen_height);
+						ok::graphics::Camera::SetGLViewport(0, 0, screen_width, screen_height);
 
 						fixed_resolution_batch->BatchBegin(1.5f);
 							ok::graphics::Texture fixed_resolution_framebuffer_texture = ok::graphics::Texture(fixed_resolution_resample_framebuffer);
@@ -267,7 +267,7 @@ void ok::Application::Run()
 
 				if (keep_aspect_ratio)
 				{
-					glViewport((GLint)viewport_x, (GLint)viewport_y, (GLint)viewport_w, (GLint)viewport_h);
+					ok::graphics::Camera::SetGLViewport(viewport_x, viewport_y, viewport_w, viewport_h);
 
 					ok::graphics::Camera::_viewport_x = static_cast<int>(viewport_x);
 					ok::graphics::Camera::_viewport_y = static_cast<int>(viewport_y);
@@ -276,7 +276,7 @@ void ok::Application::Run()
 				}
 				else
 				{
-					glViewport((GLint)0, (GLint)0, (GLint)window_width, (GLint)window_height);
+					ok::graphics::Camera::SetGLViewport(0, 0, window_width, window_height);
 
 					ok::graphics::Camera::_viewport_x = 0;
 					ok::graphics::Camera::_viewport_y = 0;
