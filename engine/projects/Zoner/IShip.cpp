@@ -100,7 +100,7 @@ float Zoner::ShipBlueprint::GetBounderMaxRadiusInWorldSpace()
 
 void Zoner::ShipBlueprint::CalculateBounder()
 {
-	glm::vec3 min_axis(0.f,0.f,0.f);
+	glm::vec3 min_axis(0.f, 0.f, 0.f);
 	glm::vec3 max_axis(0.f, 0.f, 0.f);
 
 	_CalculateBounder(this, min_axis, max_axis);
@@ -127,7 +127,7 @@ void Zoner::ShipBlueprint::_CalculateBounder(ok::Transform * part, glm::vec3& mi
 		glm::vec4 part_axis4;
 		glm::vec3 part_axis;
 
-		part_axis4.w = 0.f;
+		part_axis4.w = 1.f; //if = 0 then translation wont work, so we use 1.f because we need translation
 
 		for (int i = 0; i < buf_info.vertex_count; i++)
 		{

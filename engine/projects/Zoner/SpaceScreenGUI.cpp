@@ -240,14 +240,11 @@ void Zoner::SpaceScreenGUI::Update_Inventory(float dt)
 
 	//test
 	Zoner::ShipBlueprint* blueprint = Zoner::IGame::o().GetShipBlueprints()["nomad"];
-	o()._CacheIcon(
-		blueprint,
-		64.f / glm::max(blueprint->bounder_axis.x, glm::max(blueprint->bounder_axis.y, blueprint->bounder_axis.z)),
-		0, 0);
+	o()._CacheIcon(blueprint, 0, 0);
 
 	ok::ui::widget w;
 	ok::ui::PushTranslate(0, 0);
-	ok::ui::Image(w.ptr(), &o()._GetIconCache(0, 0),0,0,128,128);
+	ok::ui::Image(w.ptr(), &o()._GetIconCache(0, 0));
 	//ok::ui::Image(w.ptr(), o()._icons_cache_64px_tex);
 	ok::ui::PopTranslate();
 
@@ -267,8 +264,10 @@ Zoner::SpaceScreenGUI & Zoner::SpaceScreenGUI::o()
 	return instance();
 }
 
-void Zoner::SpaceScreenGUI::_CacheIcon(ok::GameObject * blueprint, float scale, int slot_x, int slot_y)
+void Zoner::SpaceScreenGUI::_CacheIcon(ok::GameObject * blueprint, int slot_x, int slot_y)
 {
+	const glm::vec3 blueprint_rotation(90.f - 30.f, -41.5f, -20.18f);
+
 	_icons_cache_64px->BindTarget();
 
 	ok::graphics::Camera camera(ok::graphics::CameraCoordinateSystem::Cartesian);
@@ -283,10 +282,25 @@ void Zoner::SpaceScreenGUI::_CacheIcon(ok::GameObject * blueprint, float scale, 
 	_container.AddChild(blueprint);
 
 	_container.BeginTransform();
-	_container.SetScale(glm::vec3(1.f, 1.f, 1.f) * scale * 0.4f);
-	_container.SetPosition(glm::vec3(static_cast<float>(slot_x) * 64.f + 32.f, static_cast<float>(slot_y) * 64.f + 32.f, 0.f));
-	_container.SetOrientation(glm::vec3(-1.f, 1.f, 1.f), glm::vec3(0.f, 0.f, -1.f));
-	//_container.SetRotation(glm::vec3(45.f, -60.f, 0.f));
+	_container.SetRotation(blueprint_rotation);
+	_container.EndTransform(true);
+
+	glm::vec4 bounds;
+	_CalculateBlueprintBounds(blueprint, bounds);
+
+	bounds.x -= 2.f;
+	bounds.y -= 2.f;
+	bounds.z += 2.f;
+	bounds.w += 2.f;
+
+	glm::vec3 bounder_center((bounds.x + bounds.z)*0.5f, (bounds.y + bounds.w)*0.5f, 0.f);
+
+	float scale = 64.f / glm::max(bounds.z - bounds.x, bounds.w - bounds.y);
+
+
+	_container.BeginTransform();
+		_container.SetScale(glm::vec3(1.f, 1.f, 1.f) * scale);
+		_container.SetPosition(-bounder_center*scale+glm::vec3(static_cast<float>(slot_x) * 64.f + 32.f, static_cast<float>(slot_y) * 64.f + 32.f, 0.f));
 	_container.EndTransform(true);
 
 	ok::graphics::Camera::PushCamera(&camera);
@@ -316,6 +330,65 @@ void Zoner::SpaceScreenGUI::_CacheIcon(ok::GameObject * blueprint, float scale, 
 	_container.RemoveChild(blueprint);
 
 	_icons_cache_64px->UnbindTarget();
+}
+
+void Zoner::SpaceScreenGUI::_CalculateBlueprintBounds(ok::Transform * part, glm::vec4 & bounds)
+{
+	ok::graphics::MeshRenderer* mr = part->gameObject().GetComponent<ok::graphics::MeshRenderer>();
+
+	if (mr != nullptr)
+	{
+		GLBufferInfo buf_info = mr->GetMesh()->GetVertices();
+
+		struct f3
+		{
+			float x, y, z;
+		};
+
+		f3* positions = (f3*)(buf_info.vertices);
+
+		glm::vec4 part_axis4;
+		glm::vec3 part_axis;
+
+		part_axis4.w = 1.f; //if = 0 then translation wont work, so we use 1.f because we need translation
+
+		for (int i = 0; i < buf_info.vertex_count; i++)
+		{
+			part_axis4.x = positions->x;
+			part_axis4.y = positions->y;
+			part_axis4.z = positions->z;
+
+			part_axis = glm::vec3(part->GetAbsoluteTransformMatrix() * part_axis4);
+
+			bounds.x = glm::min(bounds.x, glm::dot(part_axis, glm::vec3(1.f, 0.f, 0.f)));
+			bounds.y = glm::min(bounds.y, glm::dot(part_axis, glm::vec3(0.f, 1.f, 0.f)));
+
+			bounds.z = glm::max(bounds.z, glm::dot(part_axis, glm::vec3(1.f, 0.f, 0.f)));
+			bounds.w = glm::max(bounds.w, glm::dot(part_axis, glm::vec3(0.f, 1.f, 0.f)));
+
+			positions++;
+		}
+	}
+	else
+	{
+		glm::vec3 part_axis;
+
+		part->BeginTransform(ok::TransformSpace::WorldSpace);
+		part_axis = part->GetPosition();
+		part->EndTransform(false);
+
+		bounds.x = glm::min(bounds.x, glm::dot(part_axis, glm::vec3(1.f, 0.f, 0.f)));
+		bounds.y = glm::min(bounds.y, glm::dot(part_axis, glm::vec3(0.f, 1.f, 0.f)));
+
+		bounds.z = glm::max(bounds.z, glm::dot(part_axis, glm::vec3(1.f, 0.f, 0.f)));
+		bounds.w = glm::max(bounds.w, glm::dot(part_axis, glm::vec3(0.f, 1.f, 0.f)));
+	}
+
+	std::list<ok::Transform*>& childrens = part->GetChildrens();
+	for (auto& child : childrens)
+	{
+		_CalculateBlueprintBounds(child, bounds);
+	}
 }
 
 ok::graphics::SpriteInfo Zoner::SpaceScreenGUI::_GetIconCache(int slot_x, int slot_y)
