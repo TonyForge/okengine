@@ -1,0 +1,1 @@
+make_sdf_font Rubik-Bold.ttf charsets/standart_charset.txt

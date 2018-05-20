@@ -9,6 +9,7 @@ void Zoner::SpaceScreenGUI::Update(float dt)
 	}
 
 	Update_Inventory(dt);
+	Update_Item_Spacecraft(dt);
 }
 
 void Zoner::SpaceScreenGUI::Update_Inventory(float dt)
@@ -250,6 +251,133 @@ void Zoner::SpaceScreenGUI::Update_Inventory(float dt)
 
 	ok::ui::EndUI();
 
+	ok::Input::o().SetCurrentLayer(0);
+}
+
+void Zoner::SpaceScreenGUI::Update_Item_Spacecraft(float dt)
+{
+	ok::Input::o().SetCurrentLayer(1);
+
+
+	static ok::ui::widget body_widget;
+	static ok::ui::widget layout_btn_widgets[4];
+
+	static ok::ui::widget* layout_btn_widget_activated = &layout_btn_widgets[0];
+
+	static ok::graphics::SpriteAtlas* atlas_ui = nullptr;
+
+	static ok::graphics::SpriteInfo spr_body;
+	static ok::graphics::SpriteInfo spr_body_shadow;
+	static ok::graphics::SpriteInfo spr_big_light;
+
+	static ok::graphics::SpriteInfo spr_btn_layout_up;
+	static ok::graphics::SpriteInfo spr_btn_layout_down;
+	static ok::graphics::SpriteInfo spr_btn_layout_light;
+
+	if (atlas_ui == nullptr)
+	{
+		atlas_ui = Zoner::IGame::o().GetSpriteAtlases()["ui"];
+
+		spr_body = atlas_ui->Get(ok::String("inventory_ship_body"));
+		spr_body_shadow = atlas_ui->Get(ok::String("inventory_ship_body_shadow"));
+
+		spr_body_shadow.scale.x = 2.f;
+		spr_body_shadow.scale.y = 2.f;
+
+		spr_body.hotspot.x = 0.f;
+		spr_body.hotspot.y = 0.f;
+
+		spr_body_shadow.hotspot.x = 0.f;
+		spr_body_shadow.hotspot.y = 0.f;
+
+		spr_big_light = atlas_ui->Get(ok::String("inventory_top_big_light"));
+		spr_big_light.tint_color = ok::Color(255, 162, 0, 255);
+		spr_big_light.tint_power = 1.f;
+
+		spr_btn_layout_up = atlas_ui->Get(ok::String("inventory_ship_layout_btn"));
+		spr_btn_layout_down = atlas_ui->Get(ok::String("inventory_ship_layout_btn_down"));
+
+		spr_btn_layout_light = atlas_ui->Get(ok::String("inventory_top_big_light"));
+		spr_btn_layout_light.tint_color = ok::Color(255, 162, 0, 255);
+		spr_btn_layout_light.tint_power = 1.f;
+	}
+
+	ok::ui::BeginUI(Zoner::IGame::o().GetScreenWidth(), Zoner::IGame::o().GetScreenHeight());
+
+	ok::ui::PushTranslate(0.f, 0.f);
+	{
+		ok::ui::PushTranslate(10.f, 216.f);
+		{
+			ok::ui::PushTranslate(-51.f, -50.f);
+			{
+				//shadow
+				ok::ui::Image(body_widget.ptr(), &spr_body_shadow);
+			}
+			ok::ui::PopTranslate();
+
+			ok::ui::DisableSmooth();
+			{
+				//top main
+				ok::ui::Blit(body_widget.ptr(), &spr_body);
+
+				//layout buttons
+				ok::ui::PushTranslate(131.f-24.f, 358.f);
+				{
+					for (auto& layout_btn : layout_btn_widgets)
+					{
+						ok::ui::PushTranslate(24.f, 0.f);
+						if (ok::ui::Dummy(layout_btn.ptr(), -10, -10, 21, 21).mouse_down)
+						{
+							if (ok::ui::ws().on_activate)
+							{
+								layout_btn_widget_activated = layout_btn.ptr();
+							}
+						}
+					}
+
+					ok::ui::PopTranslate();
+					ok::ui::PopTranslate();
+					ok::ui::PopTranslate();
+					ok::ui::PopTranslate();
+
+					ok::ui::PushNonActivable(true);
+					{
+						for (auto& layout_btn : layout_btn_widgets)
+						{
+							ok::ui::PushTranslate(24.f, 0.f);
+							if (layout_btn_widget_activated == layout_btn.ptr())
+							{
+								ok::ui::Blit(layout_btn.ptr(), &spr_btn_layout_down);
+							}
+							else
+							{
+								ok::ui::Blit(layout_btn.ptr(), &spr_btn_layout_up);
+							}
+						}
+
+						ok::ui::PopTranslate();
+						ok::ui::PopTranslate();
+						ok::ui::PopTranslate();
+						ok::ui::PopTranslate();
+					}
+					ok::ui::PopNonActivable();
+				}
+
+				ok::ui::PopTranslate();
+			}
+			ok::ui::EnableSmooth();
+
+			ok::ui::PushNonActivable(true);
+			{
+				ok::ui::Image(body_widget.ptr(), &spr_big_light, 318.f, 463.f);
+			}
+			ok::ui::PopNonActivable();
+		}
+		ok::ui::PopTranslate();
+	}
+	ok::ui::PopTranslate();
+
+	ok::ui::EndUI();
 	ok::Input::o().SetCurrentLayer(0);
 }
 

@@ -21,6 +21,7 @@ namespace Zoner
 
 		static void Update(float dt);
 		static void Update_Inventory(float dt);
+		static void Update_Item_Spacecraft(float dt);
 
 		static Zoner::SpaceScreenGUI& instance();
 		static Zoner::SpaceScreenGUI& o();
