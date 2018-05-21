@@ -72,6 +72,11 @@ ok::graphics::TextBatch2D::~TextBatch2D()
 	delete glBO;
 }
 
+void ok::graphics::TextBatch2D::ChangeResolution(int screen_width, int screen_height)
+{
+	_camera->SetProjectionOrtho(static_cast<float>(screen_width), static_cast<float>(screen_height), -1, 1);
+}
+
 void ok::graphics::TextBatch2D::CacheBegin()
 {
 	batch_quads_in_use = 0;
@@ -82,7 +87,7 @@ void ok::graphics::TextBatch2D::CacheBegin()
 	ResetTotalRect();
 }
 
-ok::graphics::TextCache * ok::graphics::TextBatch2D::CacheEnd()
+std::unique_ptr<ok::graphics::TextCache> ok::graphics::TextBatch2D::CacheEnd()
 {
 	if (batch_quads_in_use != 0)
 		CacheFlush();
@@ -96,7 +101,7 @@ ok::graphics::TextCache * ok::graphics::TextBatch2D::CacheEnd()
 
 	batch_quads_in_use = 0;
 
-	return _result;
+	return std::unique_ptr<ok::graphics::TextCache>(_result);
 }
 
 void ok::graphics::TextBatch2D::BatchBegin()
@@ -105,6 +110,8 @@ void ok::graphics::TextBatch2D::BatchBegin()
 	{
 		BatchEnd();
 	}
+
+	_batch_in_progress = true;
 }
 
 void ok::graphics::TextBatch2D::BatchEnd()
@@ -172,6 +179,8 @@ void ok::graphics::TextBatch2D::BatchEnd()
 
 	batch_quads_in_use = 0;
 	ok::graphics::Camera::PopCamera();
+
+	_batch_in_progress = false;
 }
 
 void ok::graphics::TextBatch2D::ResetTotalRect()
@@ -189,7 +198,7 @@ void ok::graphics::TextBatch2D::SetBrushFont(ok::graphics::Font * font)
 	_font = font;
 	_tex = _font->GetTexture();
 
-	ok::Color clr;
+	ok::Color clr,clr2;
 	float values[4];
 
 	if (_font->IsBrushSizeOverrideEnabled())
@@ -226,6 +235,9 @@ void ok::graphics::TextBatch2D::SetBrushFont(ok::graphics::Font * font)
 
 	_font->GetBrushOuterShadow(clr, values[0], values[1], values[2], values[3]);
 	SetBrushOuterShadow(clr, values[0], values[1], values[2], values[3]);
+
+	_font->GetBrushGradient(clr, clr2);
+	SetBrushGradient(clr, clr2);
 }
 
 void ok::graphics::TextBatch2D::SetBrushColor(ok::Color color)
@@ -671,6 +683,14 @@ void ok::graphics::TextBatch2D::Draw(ok::String & text, int from, int to)
 
 void ok::graphics::TextBatch2D::Draw(ok::graphics::TextCache * cache)
 {
+	bool _dont_forget_restart_batch = false;
+
+	if (_batch_in_progress == true)
+	{
+		BatchEnd(); //ensure that all previous rendering will be flushed
+		_dont_forget_restart_batch = true;
+	}
+
 	ok::graphics::Camera::PushCamera(_camera);
 
 	_camera->BeginTransform();
@@ -756,6 +776,11 @@ void ok::graphics::TextBatch2D::Draw(ok::graphics::TextCache * cache)
 	_total_rect.Merge(ok::Rect2Df(cache->_total_rect.GetX() + _brush_position.x, cache->_total_rect.GetY() + _brush_position.y, cache->_total_rect.GetWidth(), cache->_total_rect.GetHeight()));
 	_brush_position += cache->_brush_advance;
 	batch_quads_in_use = 0;
+
+	if (_dont_forget_restart_batch)
+	{
+		BatchBegin();
+	}
 }
 
 glm::mat4 ok::graphics::TextBatch2D::DispatchAliasMat4(ok::graphics::ShaderAliasReference alias_type)
@@ -839,4 +864,14 @@ void ok::graphics::TextBatch2D::PushQuad()
 	memcpy(ptr+2, &quad.uvs[0], sizeof(float) * 2);
 
 	batch_quads_in_use++;
+}
+
+float ok::graphics::TextCache::GetWidth()
+{
+	return _total_rect.GetWidth();
+}
+
+float ok::graphics::TextCache::GetHeight()
+{
+	return _total_rect.GetHeight();
 }

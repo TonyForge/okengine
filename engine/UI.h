@@ -8,6 +8,7 @@
 #include "Input.h"
 #include "Material.h"
 #include "GameObject.h"
+#include "TextBatch.h"
 
 namespace ok
 {
@@ -62,9 +63,18 @@ namespace ok
 		static ok::ui::widget_state& Image(ok::ui::widget_ptr widget, ok::graphics::Texture* texture, float x = 0.f, float y = 0.f, float width = -1.f, float height = -1.f);
 		static ok::ui::widget_state& Image(ok::ui::widget_ptr widget, ok::graphics::SpriteInfo* sprite, float x = 0.f, float y = 0.f, float width = -1.f, float height = -1.f);
 
+		static void Text(
+			ok::graphics::TextCache* text_cache,
+			float x = 0.f, float y = 0.f,
+			ok::graphics::TextAlign halign = ok::graphics::TextAlign::Left,
+			ok::graphics::TextAlign valign = ok::graphics::TextAlign::Top
+		);
+		static ok::graphics::TextBatch2D& GetTextBatch();
+
 		//no rotations, scales here... smooth disable recommended
 		static ok::ui::widget_state& Blit(ok::ui::widget_ptr widget, ok::graphics::Texture* texture, float x = 0.f, float y = 0.f);
 		static ok::ui::widget_state& Blit(ok::ui::widget_ptr widget, ok::graphics::SpriteInfo* sprite, float x = 0.f, float y = 0.f);
+		
 
 		static ok::ui::widget_state& Dummy(ok::ui::widget_ptr widget, float x, float y, float width, float height);
 		static ok::ui::widget_state& ScrollHorizontal(
@@ -92,18 +102,21 @@ namespace ok
 	private:
 		ui() : 
 			_camera(ok::graphics::CameraCoordinateSystem::Screen),
-			_batch(nullptr)
+			_batch(nullptr),
+			_text_batch(nullptr)
 		{}
 		~ui() {}
 		ok::ui(ok::ui const&) : 
 			_camera(ok::graphics::CameraCoordinateSystem::Screen),
-			_batch(nullptr)
+			_batch(nullptr),
+			_text_batch(nullptr)
 		{}
 		ok::ui& operator= (ok::ui const&) {}
 
 		bool _smooth_enabled = true;
 		ok::graphics::Material* _default_material;
 		ok::graphics::SpriteBatch* _batch;
+		ok::graphics::TextBatch2D* _text_batch;
 
 		std::vector<glm::mat3> _transform_stack;
 		ok::graphics::Camera _camera;

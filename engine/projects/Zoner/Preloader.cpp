@@ -110,6 +110,7 @@ void Zoner::Preloader::Task_DefaultResources_Object::Begin()
 		steps_total++;
 	}
 
+	//Atlases
 	_atlases_begin_step = steps_total;
 
 	std_path = root_folder + "zoner.sprite_atlases.xml";
@@ -123,6 +124,18 @@ void Zoner::Preloader::Task_DefaultResources_Object::Begin()
 		_files.push_back(std::make_unique<std::string>(inner_elem->Attribute("file")));
 		steps_total++;
 	}
+
+	//Fonts
+	_fonts_begin_step = steps_total;
+
+	_names.push_back(std::make_unique<std::string>("lt_steel_b_xl_01"));
+	_files.push_back(std::make_unique<std::string>(""));
+	steps_total++;
+
+	_names.push_back(std::make_unique<std::string>("plat_b_xxl_01"));
+	_files.push_back(std::make_unique<std::string>(""));
+	steps_total++;
+
 
 	steps_left = steps_total;
 }
@@ -170,11 +183,40 @@ void Zoner::Preloader::Task_DefaultResources_Object::Step()
 	}
 	else
 	{
-		//atlases loading
-		std::string& _name = *_names[steps_total - steps_left];
-		std::string& _file = *_files[steps_total - steps_left];
+		if (steps_total - steps_left < _fonts_begin_step)
+		{
+			//atlases loading
+			std::string& _name = *_names[steps_total - steps_left];
+			std::string& _file = *_files[steps_total - steps_left];
 
-		Zoner::IGame::o().GetSpriteAtlases()[_name] = ok::Assets::instance().GetSpriteAtlas(_file);
+			Zoner::IGame::o().GetSpriteAtlases()[_name] = ok::Assets::instance().GetSpriteAtlas(_file);
+		}
+		else
+		{
+			//fonts loading
+			std::string& _name = *_names[steps_total - steps_left];
+
+			if (_name == "lt_steel_b_xl_01")
+			{
+				ok::graphics::Font* fnt = ok::Assets::instance().GetFont("lt_steel_b_xl_01");
+				fnt->SetInternalFont(ok::Assets::instance().GetInternalFont("zoner_bold.font.xml"));
+
+				//fnt->
+				fnt->SetBrushSizeOverride(true, 16.f);
+				//fnt->SetBrushColor(ok::Color(187, 233, 250, 255));
+				fnt->SetBrushGradient(
+					ok::Color(187, 233, 250, 255),
+					ok::Color(110, 189, 218, 255)
+				);
+
+				fnt->SetBrushOuterShadow(ok::Color(6, 54, 87, 255), 0.5f, 0.1f, 0.f, 0.1f);
+			}
+			else if(_name == "plat_b_xxl_01")
+			{
+				ok::graphics::Font* fnt = ok::Assets::instance().GetFont("plat_b_xxl_01");
+				fnt->SetInternalFont(ok::Assets::instance().GetInternalFont("zoner_bold.font.xml"));
+			}
+		}
 	}
 
 	steps_left--;

@@ -274,6 +274,14 @@ void Zoner::SpaceScreenGUI::Update_Item_Spacecraft(float dt)
 	static ok::graphics::SpriteInfo spr_btn_layout_down;
 	static ok::graphics::SpriteInfo spr_btn_layout_light;
 
+	static ok::String text_spacecraft_type = L"Òðàíñïîðòíûé êîðàáëü";
+	static ok::String text_spacecraft_name = L"ÊÎÐÎËÅÂÀ ÇÈÎÍÀ";
+	static ok::String text_spacecraft_captain = "Êàïèòàí Êèðê";
+
+	static ok::graphics::TextCache text_spacecraft_type_cache;
+	static ok::graphics::TextCache text_spacecraft_name_cache;
+	static ok::graphics::TextCache text_spacecraft_captain_cache;
+
 	if (atlas_ui == nullptr)
 	{
 		atlas_ui = Zoner::IGame::o().GetSpriteAtlases()["ui"];
@@ -300,6 +308,16 @@ void Zoner::SpaceScreenGUI::Update_Item_Spacecraft(float dt)
 		spr_btn_layout_light = atlas_ui->Get(ok::String("inventory_top_big_light"));
 		spr_btn_layout_light.tint_color = ok::Color(255, 162, 0, 255);
 		spr_btn_layout_light.tint_power = 1.f;
+
+		//ok::graphics::Font* 
+
+		//Poka cechiruem text zdes, potom sravnivat texti s tekushim corablem i cechirovat esli otlichayutsa
+		ok::graphics::TextBatch2D& text_batch = ok::ui::GetTextBatch();
+
+		text_batch.CacheBegin();
+			text_batch.SetBrushFont(ok::Assets::instance().GetFont("lt_steel_b_xl_01"));
+			text_batch.Draw(text_spacecraft_type);
+		text_spacecraft_type_cache = *text_batch.CacheEnd();
 	}
 
 	ok::ui::BeginUI(Zoner::IGame::o().GetScreenWidth(), Zoner::IGame::o().GetScreenHeight());
@@ -376,6 +394,8 @@ void Zoner::SpaceScreenGUI::Update_Item_Spacecraft(float dt)
 		ok::ui::PopTranslate();
 	}
 	ok::ui::PopTranslate();
+
+	ok::ui::Text(&text_spacecraft_type_cache, 70+105, 228, ok::graphics::TextAlign::Center);
 
 	ok::ui::EndUI();
 	ok::Input::o().SetCurrentLayer(0);

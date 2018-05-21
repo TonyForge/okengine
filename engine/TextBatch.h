@@ -37,6 +37,8 @@ namespace ok
 		class TextCache
 		{
 		public:
+			float GetWidth();
+			float GetHeight();
 		protected:
 		private:
 			friend class ok::graphics::TextBatch2D;
@@ -52,8 +54,10 @@ namespace ok
 			TextBatch2D(int screen_width, int screen_height, int size = 1000);
 			~TextBatch2D();
 
+			void ChangeResolution(int screen_width, int screen_height);
+
 			void CacheBegin();
-			ok::graphics::TextCache* CacheEnd();
+			std::unique_ptr<ok::graphics::TextCache> CacheEnd();
 
 			void BatchBegin();
 			void BatchEnd();
@@ -89,6 +93,9 @@ namespace ok
 			void SetClipRect(ok::Rect2Df rect);
 
 			void Draw(ok::String& text, int from = 0, int to = -1);
+
+			//Caches itself never batched with each other or other quads,
+			//so no need to wrap them in BatchBegin, BatchEnd
 			void Draw(ok::graphics::TextCache* cache);
 
 			glm::mat4 DispatchAliasMat4(ok::graphics::ShaderAliasReference alias_type);
@@ -165,6 +172,8 @@ namespace ok
 
 			ok::graphics::Camera* _camera;
 			ok::graphics::TextCache* _cache;
+
+			bool _batch_in_progress = false;
 		};
 	}
 }

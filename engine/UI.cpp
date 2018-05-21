@@ -2,6 +2,15 @@
 
 void ok::ui::BeginUI(int screen_width, int screen_height)
 {
+	if (o()._text_batch == nullptr)
+	{
+		o()._text_batch = new ok::graphics::TextBatch2D(screen_width, screen_height);
+	}
+	else
+	{
+		o()._text_batch->ChangeResolution(screen_width, screen_height);
+	}
+
 	if (o()._batch == nullptr)
 	{
 		o()._batch = new ok::graphics::SpriteBatch();
@@ -281,6 +290,48 @@ ok::ui::widget_state & ok::ui::Image(ok::ui::widget_ptr widget, ok::graphics::Sp
 	o()._batch->Draw(&_sprite, o()._transform_stack.back());
 
 	return o()._widget_state;
+}
+
+void ok::ui::Text(
+	ok::graphics::TextCache * text_cache,
+	float x, float y,
+	ok::graphics::TextAlign halign,
+	ok::graphics::TextAlign valign)
+{
+	glm::vec2 transformed_position = o()._transform_stack.back() * glm::vec3(x, y, 1.f);
+
+	if (halign == ok::graphics::TextAlign::Center)
+	{
+		transformed_position.x -= text_cache->GetWidth() * 0.5f;
+	}
+	else if (halign == ok::graphics::TextAlign::Right)
+	{
+		transformed_position.x -= text_cache->GetWidth();
+	}
+
+	if (valign == ok::graphics::TextAlign::Center)
+	{
+		transformed_position.y -= text_cache->GetHeight() * 0.5f;
+	}
+	else if (halign == ok::graphics::TextAlign::Bottom)
+	{
+		transformed_position.y -= text_cache->GetHeight();
+	}
+
+	o()._text_batch->SetBrushPosition(transformed_position);
+	//o()._text_batch->SetBrushAlignHorizontal(halign);
+	//o()._text_batch->SetBrushAlignHorizontal(valign);
+	o()._text_batch->Draw(text_cache);
+}
+
+ok::graphics::TextBatch2D & ok::ui::GetTextBatch()
+{
+	if (o()._text_batch == nullptr)
+	{
+		o()._text_batch = new ok::graphics::TextBatch2D(0, 0);
+	}
+
+	return *o()._text_batch;
 }
 
 ok::ui::widget_state & ok::ui::Blit(ok::ui::widget_ptr widget, ok::graphics::Texture * texture, float x, float y)
