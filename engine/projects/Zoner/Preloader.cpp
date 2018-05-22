@@ -201,20 +201,29 @@ void Zoner::Preloader::Task_DefaultResources_Object::Step()
 				ok::graphics::Font* fnt = ok::Assets::instance().GetFont("lt_steel_b_xl_01");
 				fnt->SetInternalFont(ok::Assets::instance().GetInternalFont("zoner_bold.font.xml"));
 
-				//fnt->
+
 				fnt->SetBrushSizeOverride(true, 16.f);
-				//fnt->SetBrushColor(ok::Color(187, 233, 250, 255));
+
 				fnt->SetBrushGradient(
 					ok::Color(187, 233, 250, 255),
 					ok::Color(110, 189, 218, 255)
 				);
 
-				fnt->SetBrushOuterShadow(ok::Color(6, 54, 87, 255), 0.5f, 0.1f, 0.f, 0.1f);
+				fnt->SetBrushOuterShadow(ok::Color(2, 30, 50, 255), 0.5f, 0.35f, 0.f, 0.075f);
 			}
 			else if(_name == "plat_b_xxl_01")
 			{
 				ok::graphics::Font* fnt = ok::Assets::instance().GetFont("plat_b_xxl_01");
 				fnt->SetInternalFont(ok::Assets::instance().GetInternalFont("zoner_bold.font.xml"));
+
+				fnt->SetBrushSizeOverride(true, 20.f);
+
+				fnt->SetBrushGradient(
+					ok::Color(255, 255, 171, 255),
+					ok::Color(215, 172, 116, 255)
+				);
+
+				fnt->SetBrushOuterShadow(ok::Color(2, 30, 50, 255), 0.5f*0.8f, 0.35f*0.8f, 0.f, 0.075f*0.8f);
 			}
 		}
 	}

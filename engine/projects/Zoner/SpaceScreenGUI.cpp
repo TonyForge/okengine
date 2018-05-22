@@ -8,13 +8,19 @@ void Zoner::SpaceScreenGUI::Update(float dt)
 		o()._icons_cache_64px_tex = new ok::graphics::Texture(o()._icons_cache_64px);
 	}
 
-	Update_Inventory(dt);
-	Update_Item_Spacecraft(dt);
+	ok::Input::o().SetCurrentLayer(1);
+	ok::ui::BeginUI(Zoner::IGame::o().GetScreenWidth(), Zoner::IGame::o().GetScreenHeight());
+	{
+		Update_Inventory(dt);
+		Update_Item_Spacecraft(dt);
+	}
+	ok::ui::EndUI();
+	ok::Input::o().SetCurrentLayer(0);
 }
 
 void Zoner::SpaceScreenGUI::Update_Inventory(float dt)
 {
-	ok::Input::o().SetCurrentLayer(1);
+	
 	
 
 	static ok::ui::widget inventory_panel_top;
@@ -97,8 +103,8 @@ void Zoner::SpaceScreenGUI::Update_Inventory(float dt)
 		ok::Input::o().AddBlockedArea(0, ok::Rect2Di(35, 129, 266, 49));
 	}
 
-	ok::ui::BeginUI(Zoner::IGame::o().GetScreenWidth(), Zoner::IGame::o().GetScreenHeight());
-
+	//ok::ui::BeginUI(Zoner::IGame::o().GetScreenWidth(), Zoner::IGame::o().GetScreenHeight());
+	ok::ui::PushNonActivable(true);
 	ok::ui::PushTranslate(0.f, 0.f);
 	{
 		ok::ui::PushTranslate(177.f, 121.f);
@@ -127,52 +133,61 @@ void Zoner::SpaceScreenGUI::Update_Inventory(float dt)
 		
 		ok::ui::DisableSmooth();
 		{
-			//inventory close button
-			ok::ui::PushTranslate(202, 27);
-			if (ok::ui::Dummy(inventory_panel_top_button_close.ptr(), 0, 0, 39, 38).mouse_down)
+			ok::ui::PushNonActivable(false);
 			{
-				if (ok::ui::ws().on_activate)
+				//inventory close button
+				ok::ui::PushTranslate(202, 27);
+				if (ok::ui::Dummy(inventory_panel_top_button_close.ptr(), 0, 0, 39, 38).mouse_down)
 				{
-					//close inventory panel action
+					if (ok::ui::ws().on_activate)
+					{
+						//close inventory panel action
+					}
 				}
-			}
-			else
-			{
-				ok::ui::Blit(inventory_panel_top_button_close.ptr(), &spr_inventory_top_btn_close);
-			}
-			ok::ui::PopTranslate();
+				else
+				{
+					ok::ui::Blit(inventory_panel_top_button_close.ptr(), &spr_inventory_top_btn_close);
+				}
+				ok::ui::PopTranslate();
 
-			//inventory eject button
-			ok::ui::PushTranslate(23, 172);
-			if (ok::ui::Dummy(inventory_panel_top_button_eject.ptr(), 0, 0, 39, 39).mouse_down)
-			{
-				if (ok::ui::ws().on_activate)
+				//inventory eject button
+				ok::ui::PushTranslate(23, 172);
+				if (ok::ui::Dummy(inventory_panel_top_button_eject.ptr(), 0, 0, 39, 39).mouse_down)
 				{
-					//close inventory panel action
+					if (ok::ui::ws().on_activate)
+					{
+						//close inventory panel action
+					}
 				}
+				else
+				{
+					ok::ui::Blit(inventory_panel_top_button_eject.ptr(), &spr_inventory_top_btn_eject);
+				}
+				ok::ui::PopTranslate();
 			}
-			else
-			{
-				ok::ui::Blit(inventory_panel_top_button_eject.ptr(), &spr_inventory_top_btn_eject);
-			}
-			ok::ui::PopTranslate();
+			ok::ui::PopNonActivable();
+			
 
 			//scroll
 			ok::ui::PushTranslate(67, 184);
 			{
 				ok::ui::PushTranslate(1, 1);
 				{
-					ok::ui::ScrollHorizontal(
-						inventory_panel_top_scroll.widget.ptr(),
-						0, 0, 197, 10,
-						6, 12,
-						inventory_panel_top_scroll.items_visible_first_index,
-						inventory_panel_top_scroll.scroll_button_relative_position,
-						inventory_panel_top_scroll.scroll_button_relative_size
-					);
-
-					ok::ui::PushNonActivable(true);
+					ok::ui::PushNonActivable(false);
 					{
+						ok::ui::ScrollHorizontal(
+							inventory_panel_top_scroll.widget.ptr(),
+							0, 0, 197, 10,
+							6, 12,
+							inventory_panel_top_scroll.items_visible_first_index,
+							inventory_panel_top_scroll.scroll_button_relative_position,
+							inventory_panel_top_scroll.scroll_button_relative_size
+						);
+					}
+					ok::ui::PopNonActivable();
+
+					//ok::ui::PushNonActivable(true);
+					//{
 						//knob glow begin
 						ok::ui::Blit(
 							inventory_panel_top_scroll.widget.ptr(),
@@ -226,8 +241,8 @@ void Zoner::SpaceScreenGUI::Update_Inventory(float dt)
 							inventory_panel_top_scroll.scroll_button_relative_size - spr_inventory_top_knob_l.rect.width - spr_inventory_top_knob_r.rect.width + 2
 						);
 						//knob end
-					}
-					ok::ui::PopNonActivable();
+					//}
+					//ok::ui::PopNonActivable();
 				}
 				
 				ok::ui::PopTranslate();
@@ -249,16 +264,13 @@ void Zoner::SpaceScreenGUI::Update_Inventory(float dt)
 	//ok::ui::Image(w.ptr(), o()._icons_cache_64px_tex);
 	ok::ui::PopTranslate();
 
-	ok::ui::EndUI();
+	//ok::ui::EndUI();
 
-	ok::Input::o().SetCurrentLayer(0);
+	ok::ui::PopNonActivable();
 }
 
 void Zoner::SpaceScreenGUI::Update_Item_Spacecraft(float dt)
 {
-	ok::Input::o().SetCurrentLayer(1);
-
-
 	static ok::ui::widget body_widget;
 	static ok::ui::widget layout_btn_widgets[4];
 
@@ -276,7 +288,7 @@ void Zoner::SpaceScreenGUI::Update_Item_Spacecraft(float dt)
 
 	static ok::String text_spacecraft_type = L"Транспортный корабль";
 	static ok::String text_spacecraft_name = L"КОРОЛЕВА ЗИОНА";
-	static ok::String text_spacecraft_captain = "Капитан Кирк";
+	static ok::String text_spacecraft_captain = L"Капитан Кирк";
 
 	static ok::graphics::TextCache text_spacecraft_type_cache;
 	static ok::graphics::TextCache text_spacecraft_name_cache;
@@ -309,19 +321,46 @@ void Zoner::SpaceScreenGUI::Update_Item_Spacecraft(float dt)
 		spr_btn_layout_light.tint_color = ok::Color(255, 162, 0, 255);
 		spr_btn_layout_light.tint_power = 1.f;
 
+		ok::Input::o().AddBlockedArea(0, ok::Rect2Di(52, 216, 245, 497));
+		ok::Input::o().AddBlockedArea(0, ok::Rect2Di(19, 239, 314, 157));
+		ok::Input::o().AddBlockedArea(0, ok::Rect2Di(11, 440, 45, 88));
+		ok::Input::o().AddBlockedArea(0, ok::Rect2Di(285, 416, 81, 77));
+		ok::Input::o().AddBlockedArea(0, ok::Rect2Di(21, 560, 310, 61));
+		ok::Input::o().AddBlockedArea(0, ok::Rect2Di(31, 616, 288, 90));
 		//ok::graphics::Font* 
 
 		//Poka cechiruem text zdes, potom sravnivat texti s tekushim corablem i cechirovat esli otlichayutsa
 		ok::graphics::TextBatch2D& text_batch = ok::ui::GetTextBatch();
 
 		text_batch.CacheBegin();
+		{
 			text_batch.SetBrushFont(ok::Assets::instance().GetFont("lt_steel_b_xl_01"));
 			text_batch.Draw(text_spacecraft_type);
+		}
 		text_spacecraft_type_cache = *text_batch.CacheEnd();
+
+		text_batch.SetBrushPosition(0.f, 0.f);
+
+		text_batch.CacheBegin();
+		{
+			//text_batch.SetBrushFont(ok::Assets::instance().GetFont("lt_steel_b_xl_01"));
+			text_batch.Draw(text_spacecraft_captain);
+		}
+		text_spacecraft_captain_cache = *text_batch.CacheEnd();
+
+		text_batch.SetBrushPosition(0.f, 0.f);
+
+		text_batch.CacheBegin();
+		{
+			text_batch.SetBrushFont(ok::Assets::instance().GetFont("plat_b_xxl_01"));
+			text_batch.Draw(text_spacecraft_name);
+		}
+		text_spacecraft_name_cache = *text_batch.CacheEnd();
 	}
 
-	ok::ui::BeginUI(Zoner::IGame::o().GetScreenWidth(), Zoner::IGame::o().GetScreenHeight());
-
+	//ok::ui::BeginUI(Zoner::IGame::o().GetScreenWidth(), Zoner::IGame::o().GetScreenHeight());
+	
+	ok::ui::PushNonActivable(true);
 	ok::ui::PushTranslate(0.f, 0.f);
 	{
 		ok::ui::PushTranslate(10.f, 216.f);
@@ -341,64 +380,63 @@ void Zoner::SpaceScreenGUI::Update_Item_Spacecraft(float dt)
 				//layout buttons
 				ok::ui::PushTranslate(131.f-24.f, 358.f);
 				{
-					for (auto& layout_btn : layout_btn_widgets)
-					{
-						ok::ui::PushTranslate(24.f, 0.f);
-						if (ok::ui::Dummy(layout_btn.ptr(), -10, -10, 21, 21).mouse_down)
-						{
-							if (ok::ui::ws().on_activate)
-							{
-								layout_btn_widget_activated = layout_btn.ptr();
-							}
-						}
-					}
-
-					ok::ui::PopTranslate();
-					ok::ui::PopTranslate();
-					ok::ui::PopTranslate();
-					ok::ui::PopTranslate();
-
-					ok::ui::PushNonActivable(true);
+					ok::ui::PushNonActivable(false);
 					{
 						for (auto& layout_btn : layout_btn_widgets)
 						{
 							ok::ui::PushTranslate(24.f, 0.f);
-							if (layout_btn_widget_activated == layout_btn.ptr())
+							if (ok::ui::Dummy(layout_btn.ptr(), -10, -10, 21, 21).mouse_down)
 							{
-								ok::ui::Blit(layout_btn.ptr(), &spr_btn_layout_down);
-							}
-							else
-							{
-								ok::ui::Blit(layout_btn.ptr(), &spr_btn_layout_up);
+								if (ok::ui::ws().on_activate)
+								{
+									layout_btn_widget_activated = layout_btn.ptr();
+								}
 							}
 						}
-
-						ok::ui::PopTranslate();
-						ok::ui::PopTranslate();
-						ok::ui::PopTranslate();
-						ok::ui::PopTranslate();
 					}
 					ok::ui::PopNonActivable();
+
+					ok::ui::PopTranslate();
+					ok::ui::PopTranslate();
+					ok::ui::PopTranslate();
+					ok::ui::PopTranslate();
+
+					for (auto& layout_btn : layout_btn_widgets)
+					{
+						ok::ui::PushTranslate(24.f, 0.f);
+						if (layout_btn_widget_activated == layout_btn.ptr())
+						{
+							ok::ui::Blit(layout_btn.ptr(), &spr_btn_layout_down);
+						}
+						else
+						{
+							ok::ui::Blit(layout_btn.ptr(), &spr_btn_layout_up);
+						}
+					}
+
+					ok::ui::PopTranslate();
+					ok::ui::PopTranslate();
+					ok::ui::PopTranslate();
+					ok::ui::PopTranslate();
 				}
 
 				ok::ui::PopTranslate();
 			}
 			ok::ui::EnableSmooth();
 
-			ok::ui::PushNonActivable(true);
-			{
-				ok::ui::Image(body_widget.ptr(), &spr_big_light, 318.f, 463.f);
-			}
-			ok::ui::PopNonActivable();
+			ok::ui::Image(body_widget.ptr(), &spr_big_light, 318.f, 463.f);
+
+			ok::ui::Text(&text_spacecraft_type_cache, 70 + 105-10, 228-216, ok::graphics::TextAlign::Center);
+			ok::ui::Text(&text_spacecraft_name_cache, 70 + 105-10, 228 + 36-216, ok::graphics::TextAlign::Center, ok::graphics::TextAlign::Center);
+			ok::ui::Text(&text_spacecraft_captain_cache, 70 + 105-10, 228 + 65-216, ok::graphics::TextAlign::Center);
 		}
 		ok::ui::PopTranslate();
 	}
 	ok::ui::PopTranslate();
+	ok::ui::PopNonActivable();
 
-	ok::ui::Text(&text_spacecraft_type_cache, 70+105, 228, ok::graphics::TextAlign::Center);
-
-	ok::ui::EndUI();
-	ok::Input::o().SetCurrentLayer(0);
+	
+	//ok::ui::EndUI();
 }
 
 Zoner::SpaceScreenGUI & Zoner::SpaceScreenGUI::instance()

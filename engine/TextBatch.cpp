@@ -57,6 +57,7 @@ ok::graphics::TextBatch2D::TextBatch2D(int screen_width, int screen_height, int 
 	_early_batch_flush = false;
 	_custom_brush_size_proportions_enabled = false;
 	_line_spacing_scale = 1.f;
+	_row_spacing_px = 0.f;
 	_clip_rect_enabled = false;
 
 	_shader_settings_data.resize(_shader_settings_data_size);
@@ -425,6 +426,11 @@ void ok::graphics::TextBatch2D::SetLineSpacingScale(float scale)
 	_line_spacing_scale = scale;
 }
 
+void ok::graphics::TextBatch2D::SetRowSpacingPx(float px)
+{
+	_row_spacing_px = px;
+}
+
 void ok::graphics::TextBatch2D::SetClipRectEnabled(bool enabled)
 {
 	_clip_rect_enabled = enabled;
@@ -562,7 +568,7 @@ void ok::graphics::TextBatch2D::Draw(ok::String & text, int from, int to)
 				total_advance += _font->GetGlyphByCharCode(charcode).bounds.GetWidth();
 			}
 
-			_brush_position.x -= total_advance * rescale_x * 0.5f;
+			_brush_position.x -= (total_advance * rescale_x + _row_spacing_px * (characters_count - 2)) * 0.5f;
 		}
 		else if (_brush_align_horizontal == ok::graphics::TextAlign::Right)
 		{
@@ -582,7 +588,7 @@ void ok::graphics::TextBatch2D::Draw(ok::String & text, int from, int to)
 				}
 			}
 
-			_brush_position.x -= total_advance * rescale_x;
+			_brush_position.x -= total_advance * rescale_x + _row_spacing_px * (characters_count - 1);
 		}
 
 		//render quads
@@ -637,7 +643,7 @@ void ok::graphics::TextBatch2D::Draw(ok::String & text, int from, int to)
 				PushQuad();
 			}
 
-			_brush_position.x += glyph.advance*rescale_x;
+			_brush_position.x += glyph.advance*rescale_x + _row_spacing_px;
 		}
 
 		//advance to next line

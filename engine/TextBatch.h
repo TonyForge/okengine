@@ -88,6 +88,7 @@ namespace ok
 			void SetBrushSize(float px_width, float px_height);
 			void SetBrushSize(float px_height);
 			void SetLineSpacingScale(float scale);
+			void SetRowSpacingPx(float px);
 
 			void SetClipRectEnabled(bool enabled);
 			void SetClipRect(ok::Rect2Df rect);
@@ -169,6 +170,7 @@ namespace ok
 			glm::vec2 _brush_px_size;
 			bool _custom_brush_size_proportions_enabled;
 			float _line_spacing_scale;
+			float _row_spacing_px;
 
 			ok::graphics::Camera* _camera;
 			ok::graphics::TextCache* _cache;
