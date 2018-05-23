@@ -13,6 +13,7 @@ void Zoner::SpaceScreenGUI::Update(float dt)
 	{
 		Update_Inventory(dt);
 		Update_Item_Spacecraft(dt);
+		Update_Item_Container(dt);
 	}
 	ok::ui::EndUI();
 	ok::Input::o().SetCurrentLayer(0);
@@ -437,6 +438,117 @@ void Zoner::SpaceScreenGUI::Update_Item_Spacecraft(float dt)
 
 	
 	//ok::ui::EndUI();
+}
+
+void Zoner::SpaceScreenGUI::Update_Item_Container(float dt)
+{
+	static ok::ui::widget container_widget;
+
+	static ok::graphics::SpriteAtlas* atlas_ui = nullptr;
+
+	static ok::graphics::SpriteInfo spr_back;
+
+	static ok::graphics::SpriteInfo spr_right_side;
+	static ok::graphics::SpriteInfo spr_left_side;
+	static ok::graphics::SpriteInfo spr_top_side;
+	static ok::graphics::SpriteInfo spr_bottom_side;
+
+	static ok::graphics::SpriteInfo spr_right_side_shadow;
+	static ok::graphics::SpriteInfo spr_left_side_shadow;
+	static ok::graphics::SpriteInfo spr_top_side_shadow;
+	static ok::graphics::SpriteInfo spr_bottom_side_shadow;
+
+	if (atlas_ui == nullptr)
+	{
+		atlas_ui = Zoner::IGame::o().GetSpriteAtlases()["ui"];
+
+		spr_back = atlas_ui->Get(ok::String("inventory_container_back"));
+
+		spr_right_side = atlas_ui->Get(ok::String("inventory_container_right_side"));
+		spr_left_side = atlas_ui->Get(ok::String("inventory_container_left_side"));
+		spr_top_side = atlas_ui->Get(ok::String("inventory_container_top_side"));
+		spr_bottom_side = atlas_ui->Get(ok::String("inventory_container_bottom_side"));
+
+		spr_right_side_shadow = atlas_ui->Get(ok::String("inventory_container_right_side_shadow"));
+		spr_left_side_shadow = atlas_ui->Get(ok::String("inventory_container_left_side_shadow"));
+		spr_top_side_shadow = atlas_ui->Get(ok::String("inventory_container_top_side_shadow"));
+		spr_bottom_side_shadow = atlas_ui->Get(ok::String("inventory_container_bottom_side_shadow"));
+
+		spr_right_side_shadow.scale.x = 2.f;
+		//spr_right_side_shadow.scale.y = 2.f;
+
+		spr_left_side_shadow.scale.x = 2.f;
+		//spr_left_side_shadow.scale.y = 2.f;
+
+		spr_top_side_shadow.scale.x = 2.f;
+		spr_top_side_shadow.scale.y = 2.f;
+
+		spr_bottom_side_shadow.scale.x = 2.f;
+		spr_bottom_side_shadow.scale.y = 2.f;
+
+
+		spr_back.hotspot.x = 0.5f;
+		spr_back.hotspot.y = 0.f;
+
+		spr_right_side.hotspot.x = 0.5f;
+		spr_right_side.hotspot.y = 0.f;
+
+		spr_left_side.hotspot.x = 0.5f;
+		spr_left_side.hotspot.y = 0.f;
+
+		spr_top_side.hotspot.x = 0.5f;
+		spr_top_side.hotspot.y = 1.f;
+
+		spr_bottom_side.hotspot.x = 0.5f;
+		spr_bottom_side.hotspot.y = 0.f;
+
+
+		spr_top_side_shadow.hotspot.x = 0.5f;
+		spr_top_side_shadow.hotspot.y = 1.f;
+
+		spr_bottom_side_shadow.hotspot.x = 0.5f;
+		spr_bottom_side_shadow.hotspot.y = 0.f;
+
+		spr_right_side_shadow.hotspot.x = 0.5f;
+		spr_right_side_shadow.hotspot.y = 0.0f;
+
+		spr_left_side_shadow.hotspot.x = 0.5f;
+		spr_left_side_shadow.hotspot.y = 0.0f;
+	}
+
+	int container_blocks = 4;
+
+	ok::ui::PushNonActivable(true);
+	ok::ui::PushTranslate(0.f, 0.f);
+	{
+		ok::ui::PushTranslate(356.f, 291.f);
+		ok::ui::PushTranslate(293.f / 2.f, 58.f);
+		{
+			ok::ui::Image(container_widget.ptr(), &spr_back, 0.f, -32.f,-1.f,108.f+82.f*(container_blocks-1));
+
+			ok::ui::Image(container_widget.ptr(), &spr_top_side_shadow, 0.f, 0.f);
+			ok::ui::Image(container_widget.ptr(), &spr_bottom_side_shadow, 0.f, 53.f + 82.f*(container_blocks - 1));
+
+			ok::ui::DisableSmooth();
+			{
+				ok::ui::Image(container_widget.ptr(), &spr_left_side_shadow, -110.5f - 45.f, -0.5f, -1.f, 54.f + 82.f * (container_blocks - 1));
+				ok::ui::Image(container_widget.ptr(), &spr_right_side_shadow, -110.5f + 218.5f + 45.f, -0.5f, -1.f, 54.f + 82.f * (container_blocks - 1));
+
+				ok::ui::Blit(container_widget.ptr(), &spr_top_side, 0.f, 0.f);
+
+				ok::ui::Blit(container_widget.ptr(), &spr_bottom_side, 0.f, 53.f+82.f*(container_blocks-1));
+
+				ok::ui::Image(container_widget.ptr(), &spr_left_side, -110.5f, -0.5f, -1.f, 54.f + 82.f * (container_blocks-1));
+				ok::ui::Image(container_widget.ptr(), &spr_right_side, -110.5f+218.5f, -0.5f, -1.f, 54.f + 82.f * (container_blocks-1));
+			}
+			ok::ui::EnableSmooth();
+	
+		}
+		ok::ui::PopTranslate();
+		ok::ui::PopTranslate();
+	}
+	ok::ui::PopTranslate();
+	ok::ui::PopNonActivable();
 }
 
 Zoner::SpaceScreenGUI & Zoner::SpaceScreenGUI::instance()
