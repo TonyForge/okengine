@@ -281,3 +281,52 @@ void * Zoner::Ship::GetPtr(int id)
 {
 	return nullptr;
 }
+
+void Zoner::Ship::SaveTo(tinyxml2::XMLDocument & doc, tinyxml2::XMLElement & element)
+{
+	element.SetAttribute("type", "spacecraft");
+	element.SetAttribute("id", _gameengine_id.toAnsiString().c_str());
+	element.SetAttribute("name", name.toAnsiString().c_str());
+	element.SetAttribute("blueprint", this_blueprint->name.toAnsiString().c_str());
+	element.SetAttribute("isNPC", isNPC);
+
+	auto pos = doc.NewElement("position");
+	auto rot = doc.NewElement("rotation");
+	auto loc = doc.NewElement("location");
+
+	BeginTransform();
+	pos->SetAttribute("x", GetPosition().x);
+	pos->SetAttribute("y", GetPosition().y);
+	pos->SetAttribute("z", GetPosition().z);
+
+	rot->SetAttribute("x", GetRotation().x);
+	rot->SetAttribute("y", GetRotation().y);
+	rot->SetAttribute("z", GetRotation().z);
+	EndTransform(false);
+
+	loc->SetAttribute("space_id", location->_gameengine_id.toAnsiString().c_str());
+
+	element.InsertEndChild(pos);
+	element.InsertEndChild(rot);
+	element.InsertEndChild(loc);
+}
+
+void Zoner::Ship::LoadFrom(tinyxml2::XMLDocument & doc, tinyxml2::XMLElement & element)
+{
+	this_type = Zoner::ShipType::ST_Spacecraft;
+	Rename(element.Attribute("name"));
+	isNPC = element.BoolAttribute("isNPC");
+
+	_gameengine_id = element.Attribute("id");
+
+	this_blueprint = static_cast<Zoner::ShipBlueprint*>(Zoner::IGame::o().GetShipBlueprints()[element.Attribute("blueprint")]->Duplicate());
+	AddChild(this_blueprint);
+
+	//tinyxml2::XMLElement* position = element.FirstChildElement("position");
+	//tinyxml2::XMLElement* rotation = element.FirstChildElement("rotation");
+
+	/*BeginTransform();
+	SetPosition(glm::vec3(position->FloatAttribute("x"), position->FloatAttribute("y"), position->FloatAttribute("z")));
+	SetRotation(glm::vec3(rotation->FloatAttribute("x"), rotation->FloatAttribute("y"), rotation->FloatAttribute("z")));
+	EndTransform(true);*/
+}

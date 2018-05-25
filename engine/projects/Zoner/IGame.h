@@ -4,6 +4,15 @@
 
 namespace Zoner
 {
+	class ISaveable
+	{
+	public:
+		virtual void SaveTo(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) = 0;
+		virtual void LoadFrom(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) = 0;
+	private:
+	protected:
+	};
+
 	class ShipBlueprint;
 
 	enum class GameScreen
@@ -29,7 +38,7 @@ namespace Zoner
 	class IShip;
 	class ISpace;
 
-	class IGame
+	class IGame : public Zoner::ISaveable
 	{
 	public:
 		virtual int GetScreenWidth() = 0;
@@ -37,6 +46,9 @@ namespace Zoner
 
 		virtual std::unordered_map<std::string, Zoner::ShipBlueprint*>& GetShipBlueprints() = 0;
 		virtual std::unordered_map<std::string, ok::graphics::SpriteAtlas*>& GetSpriteAtlases() = 0;
+
+		virtual void SaveTo(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) = 0;
+		virtual void LoadFrom(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) = 0;
 
 		virtual bool StateTrue(Zoner::GameStates state) = 0;
 		virtual bool StateFalse(Zoner::GameStates state) = 0;

@@ -15,6 +15,7 @@
 
 //include ext classes
 #include "Preloader.h"
+#include <filesystem>
 
 namespace Zoner
 {
@@ -39,12 +40,22 @@ namespace Zoner
 		void ShowPreloader();
 		void HidePreloader();
 
+		void SaveTo(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element);
+		void LoadFrom(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element);
+
 		void LoadGameBegin();
 		void LoadGameUpdate();
 		void LoadGameEnd();
+
+		void SaveGameBegin();
+		void SaveGameUpdate();
+		void SaveGameEnd();
+
 		int _load_save_game_stage = 0;
+		int _load_save_game_substage = 0;
 		int _load_save_game_step = 0;
 		int _load_save_game_step_max = 0;
+
 
 		Zoner::Preloader _preloader;
 		bool _game_states[static_cast<int>(Zoner::GameStates::Count)];
@@ -55,6 +66,7 @@ namespace Zoner
 		
 		//planets, systems, spacecrafts etc here...
 		std::unordered_map<std::string, Zoner::Space*> _spaces;
+		std::unordered_map<std::string, Zoner::Space*>::iterator _spaces_iterator;
 		Zoner::Space* _current_space = nullptr;
 		Zoner::Ship* _current_player_ship = nullptr;
 
@@ -81,8 +93,9 @@ namespace Zoner
 
 		ok::String _current_game_name = "default";
 		tinyxml2::XMLDocument _game_file;
-		tinyxml2::XMLElement* _game_file_element;
-		tinyxml2::XMLElement* _game_file_element_iterator;
+		tinyxml2::XMLElement* _game_file_root_element;
+		tinyxml2::XMLElement * _game_file_element, * _game_file_element_2, * _game_file_element_3;
+		tinyxml2::XMLElement * _game_file_element_iterator, * _game_file_element_iterator_2;
 	public:
 		int GetScreenWidth();
 		int GetScreenHeight();

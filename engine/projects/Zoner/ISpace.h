@@ -35,6 +35,8 @@ namespace Zoner
 
 		Zoner::CommandsList cmd_sequence;
 		Zoner::CommandsList cmd_parallel;
+
+		ok::String _gameengine_id;
 	protected:
 	private:
 	};

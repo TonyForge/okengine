@@ -12,6 +12,7 @@
 #include "SmoothPath.h"
 #include "Commands.h"
 #include "RequestsDispatcher.h"
+#include "IItem.h"
 
 namespace Zoner
 {
@@ -65,7 +66,7 @@ namespace Zoner
 		void _CalculateBounder(ok::Transform* part, glm::vec3& min_axis, glm::vec3& max_axis);
 	};
 
-	class IShip : public ok::GameObject, public Zoner::UID, public Zoner::RequestsDispatcher
+	class IShip : public ok::GameObject, public Zoner::UID, public Zoner::RequestsDispatcher, public Zoner::ISaveable
 	{
 	public:
 		IShip();
@@ -79,6 +80,8 @@ namespace Zoner
 		Zoner::ShipType this_type;
 		Zoner::ShipBlueprint* this_blueprint;
 		Zoner::SmoothPath trajectory;
+
+		Zoner::IItem* this_item; //this is the key to all properties of object (spacecrafts, planets, everything keeps its properties as items).
 
 		Zoner::CommandsList cmd_sequence;
 		Zoner::CommandsList cmd_parallel;
@@ -101,6 +104,10 @@ namespace Zoner
 		virtual void Player_UpdateDecisions(float dt) = 0;
 		virtual void NPC_MakeDecisions() = 0;
 		
+		virtual void SaveTo(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) = 0;
+		virtual void LoadFrom(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) = 0;
+
+		ok::String _gameengine_id;
 	protected:
 	private:
 	};

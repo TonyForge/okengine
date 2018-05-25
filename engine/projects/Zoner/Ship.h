@@ -25,6 +25,10 @@ namespace Zoner
 		void NPC_MakeDecisions();
 
 		virtual void* GetPtr(int id);
+
+		virtual void SaveTo(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element);
+		virtual void LoadFrom(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element);
+
 	protected:
 	private:
 

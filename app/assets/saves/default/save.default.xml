@@ -1,33 +1,41 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <save>
-	<spaces count="3">
-		<space id="Tallaida" name="Таллаида">
-		</space>
-		<space id="Evgella" name="Евгелла">
-		</space>
-		<space id="Orgrill" name="Оргрилл">
-		</space>
-	</spaces>
-	
-	<space_jump_holes count="6">
-		<jump_hole x="0" y="0" dest_x="0" dest_y="0" rx="60" ry="100" rotation="0" from="Tallaida" to="Evgella" />
-		<jump_hole x="200" y="150" dest_x="0" dest_y="0" rx="60" ry="60" rotation="0" from="Tallaida" to="Orgrill" />
-		<jump_hole x="0" y="0" dest_x="0" dest_y="0" rx="60" ry="100" rotation="0" from="Evgella" to="Tallaida" />
-		<jump_hole x="200" y="150" dest_x="0" dest_y="0" rx="60" ry="60" rotation="0" from="Evgella" to="Orgrill" />
-		<jump_hole x="0" y="0" dest_x="0" dest_y="0" rx="60" ry="100" rotation="0" from="Orgrill" to="Tallaida" />
-		<jump_hole x="200" y="150" dest_x="0" dest_y="0" rx="60" ry="60" rotation="0" from="Orgrill" to="Evgella" />
-	</space_jump_holes>
-	
-	<spacecrafts count="2">
-		<spacecraft id="Sozdatel_Mirov" name="Создатель Миров" blueprint="nomad" isNPC="false">
-			<position x="-200" y="-200" z="0" />
-			<rotation x="0" y="0" z="10" />
-			<location space_id="Tallaida" />
-		</spacecraft>
-		<spacecraft id="Broshenniy_Ostov" name="Брошенный остов" blueprint="nomad" isNPC="true">
-			<position x="100" y="100" z="0" />
-			<rotation x="0" y="0" z="135" />
-			<location space_id="Evgella" />
-		</spacecraft>
-	</spacecrafts>
+    <spaces count="3">
+        <space id="Tallaida" name="Таллаида"/>
+        <space id="Evgella" name="Евгелла"/>
+        <space id="Orgrill" name="Оргрилл"/>
+    </spaces>
+    <objects count="8">
+        <space id="Tallaida">
+            <space_jump_holes count="2">
+                <jump_hole x="0" y="0" dest_x="0" dest_y="0" rx="60" ry="100" rotation="0" from="Tallaida" to="Evgella"/>
+                <jump_hole x="200" y="150" dest_x="0" dest_y="0" rx="60" ry="60" rotation="0" from="Tallaida" to="Orgrill"/>
+            </space_jump_holes>
+            <visitors count="0"/>
+        </space>
+        <space id="Evgella">
+            <space_jump_holes count="2">
+                <jump_hole x="0" y="0" dest_x="0" dest_y="0" rx="60" ry="100" rotation="0" from="Evgella" to="Tallaida"/>
+                <jump_hole x="200" y="150" dest_x="0" dest_y="0" rx="60" ry="60" rotation="0" from="Evgella" to="Orgrill"/>
+            </space_jump_holes>
+            <visitors count="2">
+                <visitor type="spacecraft" id="Broshenniy_Ostov" name="Брошенный остов" blueprint="nomad" isNPC="true">
+                    <position x="100" y="100" z="0"/>
+                    <rotation x="0" y="0" z="135"/>
+                    <location space_id="Evgella"/>
+                </visitor>
+                <visitor type="spacecraft" id="Sozdatel_Mirov" name="Создатель Миров" blueprint="nomad" isNPC="false">
+                    <position x="57.646503" y="147.65656" z="0"/>
+                    <rotation x="-0" y="-0" z="-55.460049"/>
+                    <location space_id="Evgella"/>
+                </visitor>
+            </visitors>
+        </space>
+        <space id="Orgrill">
+            <space_jump_holes count="2">
+                <jump_hole x="0" y="0" dest_x="0" dest_y="0" rx="60" ry="100" rotation="0" from="Orgrill" to="Tallaida"/>
+                <jump_hole x="200" y="150" dest_x="0" dest_y="0" rx="60" ry="60" rotation="0" from="Orgrill" to="Evgella"/>
+            </space_jump_holes>
+            <visitors count="0"/>
+        </space>
+    </objects>
 </save>

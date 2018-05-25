@@ -22,6 +22,9 @@ namespace Zoner
 		void Update(float dt);
 
 		void* GetPtr(int id);
+
+		virtual void SaveTo(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element);
+		virtual void LoadFrom(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element);
 	private:
 	protected:
 	};

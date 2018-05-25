@@ -57,3 +57,42 @@ void * Zoner::JumpHole::GetPtr(int id)
 
 	return result;
 }
+
+void Zoner::JumpHole::SaveTo(tinyxml2::XMLDocument & doc, tinyxml2::XMLElement & element)
+{
+	BeginTransform();
+	element.SetAttribute("x", GetPosition().x);
+	element.SetAttribute("y", GetPosition().y);
+	EndTransform(false);
+
+	element.SetAttribute("dest_x", destination_position.x);
+	element.SetAttribute("dest_y", destination_position.y);
+	element.SetAttribute("rx", radius.x);
+	element.SetAttribute("ry", radius.y);
+
+	BeginTransform();
+	element.SetAttribute("rotation", GetRotation().z);
+	EndTransform(false);
+
+	element.SetAttribute("from", location->_gameengine_id.toAnsiString().c_str());
+	element.SetAttribute("to", destination->_gameengine_id.toAnsiString().c_str());
+}
+
+void Zoner::JumpHole::LoadFrom(tinyxml2::XMLDocument & doc, tinyxml2::XMLElement & element)
+{
+	this_type = Zoner::ShipType::ST_Jumphole;
+
+	destination_position = glm::vec2(element.FloatAttribute("dest_x"), element.FloatAttribute("dest_y"));
+
+	BeginTransform();
+	SetPosition(glm::vec3(element.FloatAttribute("x"), element.FloatAttribute("y"), 0.f));
+	SetRotation(glm::vec3(0.f, 0.f, element.FloatAttribute("rotation")));
+	EndTransform(true);
+
+	radius = glm::vec2(
+		element.FloatAttribute("rx"),
+		element.FloatAttribute("ry")
+	);
+
+	isNPC = true;
+}

@@ -61,6 +61,28 @@ void Zoner::Game::Update(float dt)
 		}
 	}
 
+	if (StateTrue(Zoner::GameStates::SaveGame))
+	{
+		if (StateFalse(Zoner::GameStates::PreloaderVisible))
+		{
+			_preloader.Task_ShowProgress();
+			ShowPreloader();
+			SaveGameBegin();
+		}
+		else
+		{
+			if (StateTrue(Zoner::GameStates::SaveGameCompleted))
+			{
+				SaveGameEnd();
+				HidePreloader();
+			}
+			else
+			{
+				SaveGameUpdate();
+			}
+		}
+	}
+
 	if (StateTrue(Zoner::GameStates::PreloaderVisible))
 	{
 		_preloader.Update(dt);
@@ -102,6 +124,12 @@ void Zoner::Game::LoadDefaultGame()
 void Zoner::Game::SetGameName(ok::String game_name)
 {
 	_current_game_name = game_name;
+
+	ok::String folder = ok::Assets::instance().assets_root_folder + "saves\\" + _current_game_name;
+
+	std::experimental::filesystem::create_directories(folder.toAnsiString());
+	std::experimental::filesystem::create_directories((folder + "\\per_object_data").toAnsiString());
+	
 }
 
 void Zoner::Game::LoadGame()
@@ -119,8 +147,10 @@ void Zoner::Game::LoadGame()
 
 void Zoner::Game::SaveGame()
 {
-	ok::String folder = ok::Assets::instance().assets_root_folder + "saves\\" + _current_game_name + "\\";
-	ok::String file = folder + "save." + _current_game_name + ".xml";
+	_game_file.Clear();
+
+	State(Zoner::GameStates::SaveGame, true);
+	State(Zoner::GameStates::SaveGameCompleted, false);
 }
 
 void Zoner::Game::LoadUserSettings()
@@ -167,6 +197,14 @@ void Zoner::Game::HidePreloader()
 	_preloader.UnloadItself();
 }
 
+void Zoner::Game::SaveTo(tinyxml2::XMLDocument & doc, tinyxml2::XMLElement & element)
+{
+}
+
+void Zoner::Game::LoadFrom(tinyxml2::XMLDocument & doc, tinyxml2::XMLElement & element)
+{
+}
+
 void Zoner::Game::LoadGameBegin()
 {
 	_load_save_game_stage = 0;
@@ -192,8 +230,170 @@ void Zoner::Game::LoadGameUpdate()
 			Zoner::Space* space = new Zoner::Space();
 
 			space->Rename(_game_file_element_iterator->Attribute("name"));
+			space->_gameengine_id = _game_file_element_iterator->Attribute("id");
 
-			_spaces[_game_file_element_iterator->Attribute("id")] = space;
+			_spaces[space->_gameengine_id] = space;
+
+			_game_file_element_iterator = _game_file_element_iterator->NextSiblingElement("space");
+
+			_load_save_game_step++;
+		}
+		else
+		{
+			_load_save_game_stage = 2;
+		}
+	}
+
+	if (_load_save_game_stage == 2)
+	{
+		_game_file_element = _game_file.FirstChildElement("save")->FirstChildElement("objects");
+		_game_file_element_iterator = _game_file_element->FirstChildElement("space");
+
+		_load_save_game_step = 0;
+		_load_save_game_step_max = _game_file_element->IntAttribute("count");
+
+		_load_save_game_stage = 3;
+		_load_save_game_substage = 0;
+	}
+
+	if (_load_save_game_stage == 3 && _load_save_game_step <= _load_save_game_step_max)
+	{
+		if (_load_save_game_step < _load_save_game_step_max)
+		{
+			if (_load_save_game_substage == 0)
+			{
+				_game_file_element_2 = _game_file_element_iterator->FirstChildElement("space_jump_holes");
+				if (_game_file_element_2->IntAttribute("count") == 0)
+				{
+					_load_save_game_substage = 2;
+				}
+				else
+				{
+					_game_file_element_2 = _game_file_element_2->FirstChildElement("jump_hole");
+					_load_save_game_substage = 1;
+				}
+				
+			}
+
+			if (_load_save_game_substage == 1)
+			{
+				Zoner::JumpHole* _jump_hole = new Zoner::JumpHole();
+
+				_jump_hole->location = _spaces[_game_file_element_2->Attribute("from")];
+				_jump_hole->destination = _spaces[_game_file_element_2->Attribute("to")];
+
+				_jump_hole->LoadFrom(_game_file, *_game_file_element_2);
+
+				_spaces[_game_file_element_iterator->Attribute("id")]->jump_holes.push_back(_jump_hole);
+
+				_game_file_element_2 = _game_file_element_2->NextSiblingElement();
+
+				if (_game_file_element_2 == nullptr)
+				{
+					_load_save_game_substage = 2;
+				}
+
+				_load_save_game_step++;
+			}
+
+			if (_load_save_game_substage == 2)
+			{
+				_game_file_element_2 = _game_file_element_iterator->FirstChildElement("visitors");
+				if (_game_file_element_2->IntAttribute("count") == 0)
+				{
+					_load_save_game_substage = 4;
+				}
+				else
+				{
+					_game_file_element_2 = _game_file_element_2->FirstChildElement("visitor");
+					_load_save_game_substage = 3;
+				}
+			}
+
+			if (_load_save_game_substage == 3)
+			{
+				Zoner::Ship* ship = new Zoner::Ship();
+
+				ship->LoadFrom(_game_file, *_game_file_element_2);
+
+				if (ship->isNPC == false)
+				{
+					_current_player_ship = ship;
+				}
+
+				ship->Relocate(_spaces[_game_file_element_2->FirstChildElement("location")->Attribute("space_id")]);
+
+				tinyxml2::XMLElement* position = _game_file_element_2->FirstChildElement("position");
+				tinyxml2::XMLElement* rotation = _game_file_element_2->FirstChildElement("rotation");
+
+				ship->BeginTransform();
+				ship->SetPosition(glm::vec3(position->FloatAttribute("x"), position->FloatAttribute("y"), position->FloatAttribute("z")));
+				ship->SetRotation(glm::vec3(rotation->FloatAttribute("x"), rotation->FloatAttribute("y"), rotation->FloatAttribute("z")));
+				ship->EndTransform(true);
+
+				//Potom sdelat chtobi vmesto etogo sohranalos pologenie cameri v xml i ottuda zagrugalos
+				if (ship->isNPC == false)
+				{
+					glm::vec3& cam_pos = ship->GetPosition();
+					cam_pos.z = ship->location->camera.GetPosition().z;
+					ship->location->camera.SetPosition(cam_pos);
+				}
+
+				_game_file_element_2 = _game_file_element_2->NextSiblingElement();
+
+				if (_game_file_element_2 == nullptr)
+				{
+					_load_save_game_substage = 4;
+				}
+
+				_load_save_game_step++;
+			}
+
+
+			if (_load_save_game_substage == 4)
+			{
+				_load_save_game_substage = 0;
+				_game_file_element_iterator = _game_file_element_iterator->NextSiblingElement("space");
+			}
+		}
+		else
+		{
+			_load_save_game_stage = 4;
+		}
+	}
+
+	if (_load_save_game_stage == 4)
+	{
+		State(Zoner::GameStates::LoadGameCompleted, true);
+
+		State(Zoner::GameStates::PauseRequest, true);
+		State(Zoner::GameStates::PauseEnabled, true);
+	}
+
+	_preloader.Task_ShowProgress_Update(_load_save_game_step, _load_save_game_step_max);
+
+	/*if (_load_save_game_stage == 0)
+	{
+		_game_file_element = _game_file.FirstChildElement("save")->FirstChildElement("spaces");
+		_game_file_element_iterator = _game_file_element->FirstChildElement("space");
+
+		_load_save_game_step = 0;
+		_load_save_game_step_max = _game_file_element->IntAttribute("count");
+
+		_load_save_game_stage = 1;
+	}
+
+	if (_load_save_game_stage == 1 && _load_save_game_step <= _load_save_game_step_max)
+	{
+		if (_load_save_game_step < _load_save_game_step_max)
+		{
+			Zoner::Space* space = new Zoner::Space();
+
+			space->Rename(_game_file_element_iterator->Attribute("name"));
+			space->_gameengine_id = _game_file_element_iterator->Attribute("id");
+
+			_spaces[space->_gameengine_id] = space;
+
 			_game_file_element_iterator = _game_file_element_iterator->NextSiblingElement("space");
 
 			_load_save_game_step++;
@@ -276,6 +476,8 @@ void Zoner::Game::LoadGameUpdate()
 				_current_player_ship = ship;
 			}
 
+			ship->_gameengine_id = _game_file_element_iterator->Attribute("id");
+
 			ship->Relocate(_spaces[_game_file_element_iterator->FirstChildElement("location")->Attribute("space_id")]);
 
 			tinyxml2::XMLElement* position = _game_file_element_iterator->FirstChildElement("position");
@@ -314,13 +516,188 @@ void Zoner::Game::LoadGameUpdate()
 		State(Zoner::GameStates::PauseEnabled, true);
 	}
 
-	_preloader.Task_ShowProgress_Update(_load_save_game_step, _load_save_game_step_max);
+	_preloader.Task_ShowProgress_Update(_load_save_game_step, _load_save_game_step_max);*/
 }
 
 void Zoner::Game::LoadGameEnd()
 {
 	State(Zoner::GameStates::LoadGame, false);
 	State(Zoner::GameStates::LoadGameCompleted, false);
+
+	_game_file.Clear();
+}
+
+void Zoner::Game::SaveGameBegin()
+{
+	_load_save_game_stage = 0;
+}
+
+void Zoner::Game::SaveGameUpdate()
+{
+	if (_load_save_game_stage == 0)
+	{
+		_load_save_game_step = 0;
+		_load_save_game_step_max = _spaces.size();
+
+		_game_file_root_element = _game_file.NewElement("save");
+		_game_file.InsertFirstChild(_game_file_root_element);
+
+		_game_file_element = _game_file.NewElement("spaces");
+		_game_file_root_element->InsertEndChild(_game_file_element);
+
+		_game_file_element_2 = _game_file.NewElement("objects");
+		_game_file_root_element->InsertEndChild(_game_file_element_2);
+
+		_game_file_element_2->SetAttribute("count", 0);
+
+		_game_file_element->SetAttribute("count", _load_save_game_step_max);
+
+		_spaces_iterator = _spaces.begin();
+
+		_load_save_game_stage = 1;
+	}
+
+	if (_load_save_game_stage == 1 && _load_save_game_step <= _load_save_game_step_max)
+	{
+		if (_load_save_game_step < _load_save_game_step_max)
+		{
+			_game_file_element_iterator = _game_file.NewElement("space");
+			_game_file_element->InsertEndChild(_game_file_element_iterator);
+
+			_game_file_element_iterator->SetAttribute("id", _spaces_iterator->second->_gameengine_id.toAnsiString().c_str());
+			_game_file_element_iterator->SetAttribute("name", _spaces_iterator->second->name.toAnsiString().c_str());
+
+			_game_file_element_2->SetAttribute("count", _game_file_element_2->IntAttribute("count") + 
+				_spaces_iterator->second->jump_holes.size() + 
+				_spaces_iterator->second->visitors.size()
+			);
+
+			_spaces_iterator++;
+
+			_load_save_game_step++;
+		}
+		else
+		{
+			_load_save_game_stage = 2;
+			_load_save_game_substage = -1;
+
+			_spaces_iterator = _spaces.begin();
+		}	
+	}
+
+	if (_load_save_game_stage == 2)
+	{
+		if (_load_save_game_substage == -1)
+		{
+			_game_file_element_3 = _game_file.NewElement("space");
+			_game_file_element_3->SetAttribute("id", _spaces_iterator->second->_gameengine_id.toAnsiString().c_str());
+
+			_game_file_element_2->InsertEndChild(_game_file_element_3);
+
+			_load_save_game_substage = 0;
+		}
+
+		//jump holes
+		if (_load_save_game_substage == 0)
+		{
+			_load_save_game_step = 0;
+			_load_save_game_step_max = _spaces_iterator->second->jump_holes.size();
+
+			_game_file_element_iterator_2 = _game_file.NewElement("space_jump_holes");
+			_game_file_element_iterator_2->SetAttribute("count", _load_save_game_step_max);
+
+			_game_file_element_3->InsertEndChild(_game_file_element_iterator_2);
+
+			_load_save_game_substage = 1;
+		}
+
+		if (_load_save_game_substage == 1 && _load_save_game_step <= _load_save_game_step_max)
+		{
+			if (_load_save_game_step < _load_save_game_step_max)
+			{
+				auto _element = _game_file.NewElement("jump_hole");
+				auto _object = _spaces_iterator->second->jump_holes[_load_save_game_step];
+
+				_object->SaveTo(_game_file, *_element);
+
+				_game_file_element_iterator_2->InsertEndChild(_element);
+
+				_load_save_game_step++;
+			}
+			else
+			{
+				_load_save_game_substage = 2;
+			}
+		}
+
+		//visitors
+		if (_load_save_game_substage == 2)
+		{
+			_load_save_game_step = 0;
+			_load_save_game_step_max = _spaces_iterator->second->visitors.size();
+
+			_game_file_element_iterator_2 = _game_file.NewElement("visitors");
+			_game_file_element_iterator_2->SetAttribute("count", _load_save_game_step_max);
+
+			_game_file_element_3->InsertEndChild(_game_file_element_iterator_2);
+
+			_load_save_game_substage = 3;
+		}
+
+		if (_load_save_game_substage == 3 && _load_save_game_step <= _load_save_game_step_max)
+		{
+			if (_load_save_game_step < _load_save_game_step_max)
+			{
+				auto _element = _game_file.NewElement("visitor");
+				auto _object = _spaces_iterator->second->visitors[_load_save_game_step];
+
+				_object->SaveTo(_game_file, *_element);
+
+				_game_file_element_iterator_2->InsertEndChild(_element);
+
+				_load_save_game_step++;
+			}
+			else
+			{
+				_load_save_game_substage = 4;
+			}
+		}
+
+		if (_load_save_game_substage == 4)
+		{
+			_spaces_iterator++;
+
+			if (_spaces_iterator == _spaces.end())
+			{
+				_load_save_game_stage = 3;
+			}
+			else
+			{
+				_load_save_game_substage = -1;
+			}
+		}
+	}
+
+
+	if (_load_save_game_stage == 3)
+	{
+		State(Zoner::GameStates::SaveGameCompleted, true);
+	}
+
+	_preloader.Task_ShowProgress_Update(_load_save_game_step, _load_save_game_step_max);
+}
+
+void Zoner::Game::SaveGameEnd()
+{
+	State(Zoner::GameStates::SaveGame, false);
+	State(Zoner::GameStates::SaveGameCompleted, false);
+
+	ok::String folder = ok::Assets::instance().assets_root_folder + "saves\\" + _current_game_name + "\\";
+	ok::String file = folder + "save." + _current_game_name + ".xml";
+	std::string std_path = file;
+
+	_game_file.SaveFile(std_path.c_str());
+	_game_file.Clear();
 }
 
 bool Zoner::Game::StateTrue(Zoner::GameStates state)
@@ -471,6 +848,13 @@ void Zoner::Game::UpdateGameScreen_Space(float dt)
 			if (_current_space != nullptr)
 			{
 				_current_space->DoCameraFollow();
+			}
+		}
+		else
+		{
+			if (ok::Input::o().KeyDown(ok::KKey::LControl) && ok::Input::o().KeyPressed(ok::KKey::S))
+			{
+				SaveGame();
 			}
 		}
 	}

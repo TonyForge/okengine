@@ -27,4 +27,5 @@
     <sprite texture="ui.0.png" name="inventory_top_scroll_back" left="523" top="130" width="199" height="12" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
     <sprite texture="ui.0.png" name="inventory_top_small_light" left="997" top="2" width="22" height="15" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
     <sprite texture="ui.0.png" name="inventory_top_small_slot" left="678" top="146" width="36" height="36" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+    <sprite texture="ui.0.png" name="inventory_top_small_slot_empty" left="678" top="186" width="36" height="36" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
 </atlas>
