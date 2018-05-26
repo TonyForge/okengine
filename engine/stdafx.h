@@ -22,7 +22,9 @@
 #include "SFML\Graphics.hpp"
 #include "SFML\Audio.hpp"
 #include "SFML\OpenGL.hpp"
+
 #include "tinyxml\tinyxml2.h"
+
 #include "easylogging++.h"
 
 //#define GLM_FORCE_SWIZZLE

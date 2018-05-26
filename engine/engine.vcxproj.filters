@@ -192,11 +192,14 @@
     <ClCompile Include="projects\Zoner\SpaceScreenGUI.cpp">
       <Filter>projects\Zoner</Filter>
     </ClCompile>
-    <ClCompile Include="projects\Zoner\Item.cpp">
-      <Filter>projects\Zoner</Filter>
-    </ClCompile>
     <ClCompile Include="projects\Zoner\IItem.cpp">
       <Filter>projects\Zoner\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="XMLPak.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\Zoner\Item.cpp">
+      <Filter>projects\Zoner</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -365,11 +368,14 @@
     <ClInclude Include="projects\Zoner\SpaceScreenGUI.h">
       <Filter>projects\Zoner</Filter>
     </ClInclude>
-    <ClInclude Include="projects\Zoner\Item.h">
-      <Filter>projects\Zoner</Filter>
-    </ClInclude>
     <ClInclude Include="projects\Zoner\IItem.h">
       <Filter>projects\Zoner\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="XMLPak.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Zoner\Item.h">
+      <Filter>projects\Zoner</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

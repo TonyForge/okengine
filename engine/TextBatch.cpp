@@ -39,6 +39,7 @@ ok::graphics::TextBatch2D::TextBatch2D(int screen_width, int screen_height, int 
 	_filters_indexes.OuterGlow = _mat->GetSubroutineIndex(GL_FRAGMENT_SHADER, "FilterOuterGlow");
 	_filters_indexes.OuterShadow = _mat->GetSubroutineIndex(GL_FRAGMENT_SHADER, "FilterOuterShadow");
 
+	_cache = nullptr;
 	_tex = nullptr;
 	_font = nullptr;
 	batch_quads_in_use = 0;

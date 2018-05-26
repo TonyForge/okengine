@@ -9,9 +9,10 @@
 #include "Ship.h"
 #include "Space.h"
 #include "JumpHole.h"
-#include "Item.h"
 
 #include "SpaceScreenGUI.h"
+
+#include "Item.h"
 
 //include ext classes
 #include "Preloader.h"
@@ -59,6 +60,8 @@ namespace Zoner
 
 		Zoner::Preloader _preloader;
 		bool _game_states[static_cast<int>(Zoner::GameStates::Count)];
+
+		Zoner::ItemBuilder _item_builder;
 
 		//resources
 		std::unordered_map<std::string, Zoner::ShipBlueprint*> _ship_blueprints;

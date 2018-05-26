@@ -499,6 +499,7 @@
     <ClCompile Include="TransformAnimation.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="VertexAnimation.cpp" />
+    <ClCompile Include="XMLPak.cpp" />
     <ClCompile Include="Zoner.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -558,6 +559,7 @@
     <ClInclude Include="TransformAnimation.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="VertexAnimation.h" />
+    <ClInclude Include="XMLPak.h" />
     <ClInclude Include="Zoner.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

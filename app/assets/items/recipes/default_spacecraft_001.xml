@@ -1,0 +1,10 @@
+<recipe>
+	<behaviour class="ItemSpacecraft" capacity="1000">
+		<equipment_slots count="0">
+		</equipment_slots>
+		<container_slot>
+			<recipe name="default_container_10.xml" />
+		</container_slot>
+	</behaviour>
+	<blueprint type="spacecraft" name="nomad" />
+</recipe>

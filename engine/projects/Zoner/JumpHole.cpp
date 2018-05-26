@@ -76,6 +76,10 @@ void Zoner::JumpHole::SaveTo(tinyxml2::XMLDocument & doc, tinyxml2::XMLElement &
 
 	element.SetAttribute("from", location->_gameengine_id.toAnsiString().c_str());
 	element.SetAttribute("to", destination->_gameengine_id.toAnsiString().c_str());
+
+	auto _uid = doc.NewElement("uid");
+	element.InsertEndChild(_uid);
+	save_uid_to_xml(*_uid);
 }
 
 void Zoner::JumpHole::LoadFrom(tinyxml2::XMLDocument & doc, tinyxml2::XMLElement & element)
@@ -95,4 +99,6 @@ void Zoner::JumpHole::LoadFrom(tinyxml2::XMLDocument & doc, tinyxml2::XMLElement
 	);
 
 	isNPC = true;
+
+	load_uid_from_xml(*element.FirstChildElement("uid"));
 }

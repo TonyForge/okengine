@@ -128,7 +128,7 @@ void Zoner::Game::SetGameName(ok::String game_name)
 	ok::String folder = ok::Assets::instance().assets_root_folder + "saves\\" + _current_game_name;
 
 	std::experimental::filesystem::create_directories(folder.toAnsiString());
-	std::experimental::filesystem::create_directories((folder + "\\per_object_data").toAnsiString());
+	//std::experimental::filesystem::create_directories((folder + "\\per_object_data").toAnsiString());
 	
 }
 
@@ -364,6 +364,9 @@ void Zoner::Game::LoadGameUpdate()
 
 	if (_load_save_game_stage == 4)
 	{
+		//must be here! Objecti kogda zagruzhayutsa potreblyat uid, mi hotim etogo izbeshat, poetomu forceim nugniy nam global uid v samom konce
+		Zoner::UID::load_global_uid_from_xml(*(_game_file.FirstChildElement("save")->FirstChildElement("game_data")->FirstChildElement("uid")));
+
 		State(Zoner::GameStates::LoadGameCompleted, true);
 
 		State(Zoner::GameStates::PauseRequest, true);
@@ -371,152 +374,6 @@ void Zoner::Game::LoadGameUpdate()
 	}
 
 	_preloader.Task_ShowProgress_Update(_load_save_game_step, _load_save_game_step_max);
-
-	/*if (_load_save_game_stage == 0)
-	{
-		_game_file_element = _game_file.FirstChildElement("save")->FirstChildElement("spaces");
-		_game_file_element_iterator = _game_file_element->FirstChildElement("space");
-
-		_load_save_game_step = 0;
-		_load_save_game_step_max = _game_file_element->IntAttribute("count");
-
-		_load_save_game_stage = 1;
-	}
-
-	if (_load_save_game_stage == 1 && _load_save_game_step <= _load_save_game_step_max)
-	{
-		if (_load_save_game_step < _load_save_game_step_max)
-		{
-			Zoner::Space* space = new Zoner::Space();
-
-			space->Rename(_game_file_element_iterator->Attribute("name"));
-			space->_gameengine_id = _game_file_element_iterator->Attribute("id");
-
-			_spaces[space->_gameengine_id] = space;
-
-			_game_file_element_iterator = _game_file_element_iterator->NextSiblingElement("space");
-
-			_load_save_game_step++;
-		}
-		else
-		{
-			_load_save_game_stage = 2;
-		}
-	}
-
-	if (_load_save_game_stage == 2)
-	{
-		_game_file_element = _game_file.FirstChildElement("save")->FirstChildElement("space_jump_holes");
-		_game_file_element_iterator = _game_file_element->FirstChildElement("jump_hole");
-
-		_load_save_game_step = 0;
-		_load_save_game_step_max = _game_file_element->IntAttribute("count");
-
-		_load_save_game_stage = 3;
-	}
-
-	if (_load_save_game_stage == 3 && _load_save_game_step <= _load_save_game_step_max)
-	{
-		if (_load_save_game_step < _load_save_game_step_max)
-		{
-			Zoner::JumpHole* jump_hole = new Zoner::JumpHole();
-
-			jump_hole->this_type = Zoner::ShipType::ST_Jumphole;
-
-			jump_hole->location = _spaces[_game_file_element_iterator->Attribute("from")];
-			jump_hole->destination = _spaces[_game_file_element_iterator->Attribute("to")];
-			jump_hole->destination_position = glm::vec2(_game_file_element_iterator->FloatAttribute("dest_x"), _game_file_element_iterator->FloatAttribute("dest_y"));
-
-			jump_hole->BeginTransform();
-			jump_hole->SetPosition(glm::vec3(_game_file_element_iterator->FloatAttribute("x"), _game_file_element_iterator->FloatAttribute("y"), 0.f));
-			jump_hole->SetRotation(glm::vec3(0.f, 0.f, _game_file_element_iterator->FloatAttribute("rotation")));
-			jump_hole->EndTransform(true);
-
-			jump_hole->radius = glm::vec2(
-				_game_file_element_iterator->FloatAttribute("rx"),
-				_game_file_element_iterator->FloatAttribute("ry")
-			);
-
-			jump_hole->isNPC = true;
-
-			_spaces[_game_file_element_iterator->Attribute("from")]->jump_holes.push_back(jump_hole);
-
-			_load_save_game_step++;
-			_game_file_element_iterator = _game_file_element_iterator->NextSiblingElement("jump_hole");
-		}
-		else
-		{
-			_load_save_game_stage = 4;
-		}
-	}
-
-	if (_load_save_game_stage == 4)
-	{
-		_game_file_element = _game_file.FirstChildElement("save")->FirstChildElement("spacecrafts");
-		_game_file_element_iterator = _game_file_element->FirstChildElement("spacecraft");
-
-		_load_save_game_step = 0;
-		_load_save_game_step_max = _game_file_element->IntAttribute("count");
-
-		_load_save_game_stage = 5;
-	}
-
-	if (_load_save_game_stage == 5 && _load_save_game_step <= _load_save_game_step_max)
-	{
-		if (_load_save_game_step < _load_save_game_step_max)
-		{
-			Zoner::Ship* ship = new Zoner::Ship();
-
-			ship->this_type = Zoner::ShipType::ST_Spacecraft;
-			ship->Rename(_game_file_element_iterator->Attribute("name"));
-			ship->isNPC = _game_file_element_iterator->BoolAttribute("isNPC");
-
-			if (ship->isNPC == false)
-			{
-				_current_player_ship = ship;
-			}
-
-			ship->_gameengine_id = _game_file_element_iterator->Attribute("id");
-
-			ship->Relocate(_spaces[_game_file_element_iterator->FirstChildElement("location")->Attribute("space_id")]);
-
-			tinyxml2::XMLElement* position = _game_file_element_iterator->FirstChildElement("position");
-			tinyxml2::XMLElement* rotation = _game_file_element_iterator->FirstChildElement("rotation");
-
-			ship->BeginTransform();
-			ship->SetPosition(glm::vec3(position->FloatAttribute("x"), position->FloatAttribute("y"), position->FloatAttribute("z")));
-			ship->SetRotation(glm::vec3(rotation->FloatAttribute("x"), rotation->FloatAttribute("y"), rotation->FloatAttribute("z")));
-			ship->EndTransform(true);
-
-			//Potom sdelat chtobi vmesto etogo sohranalos pologenie cameri v xml i ottuda zagrugalos
-			if (ship->isNPC == false)
-			{
-				glm::vec3& cam_pos = ship->GetPosition();
-				cam_pos.z = ship->location->camera.GetPosition().z;
-				ship->location->camera.SetPosition(cam_pos);
-			}
-
-			ship->this_blueprint = static_cast<Zoner::ShipBlueprint*>(_ship_blueprints[_game_file_element_iterator->Attribute("blueprint")]->Duplicate());
-			ship->AddChild(ship->this_blueprint);
-
-			_load_save_game_step++;
-			_game_file_element_iterator = _game_file_element_iterator->NextSiblingElement("spacecraft");
-		}
-		else
-		{
-			_load_save_game_stage = 6;
-		}
-	}
-
-	if (_load_save_game_stage == 6)
-	{
-		State(Zoner::GameStates::LoadGameCompleted, true);
-
-		State(Zoner::GameStates::PauseRequest, true);
-		State(Zoner::GameStates::PauseEnabled, true);
-	}
-
-	_preloader.Task_ShowProgress_Update(_load_save_game_step, _load_save_game_step_max);*/
 }
 
 void Zoner::Game::LoadGameEnd()
@@ -542,13 +399,17 @@ void Zoner::Game::SaveGameUpdate()
 		_game_file_root_element = _game_file.NewElement("save");
 		_game_file.InsertFirstChild(_game_file_root_element);
 
+		_game_file_root_element->InsertEndChild(_game_file.NewElement("game_data"));
+		_game_file_root_element->FirstChildElement("game_data")->InsertEndChild(_game_file.NewElement("uid"));
+		Zoner::UID::save_global_uid_to_xml(*(_game_file_root_element->FirstChildElement("game_data")->FirstChildElement("uid")));
+
 		_game_file_element = _game_file.NewElement("spaces");
 		_game_file_root_element->InsertEndChild(_game_file_element);
 
 		_game_file_element_2 = _game_file.NewElement("objects");
 		_game_file_root_element->InsertEndChild(_game_file_element_2);
 
-		_game_file_element_2->SetAttribute("count", 0);
+		_game_file_element_2->SetAttribute("count", static_cast<unsigned int>(0));
 
 		_game_file_element->SetAttribute("count", _load_save_game_step_max);
 
@@ -567,9 +428,9 @@ void Zoner::Game::SaveGameUpdate()
 			_game_file_element_iterator->SetAttribute("id", _spaces_iterator->second->_gameengine_id.toAnsiString().c_str());
 			_game_file_element_iterator->SetAttribute("name", _spaces_iterator->second->name.toAnsiString().c_str());
 
-			_game_file_element_2->SetAttribute("count", _game_file_element_2->IntAttribute("count") + 
-				_spaces_iterator->second->jump_holes.size() + 
-				_spaces_iterator->second->visitors.size()
+			_game_file_element_2->SetAttribute("count", _game_file_element_2->UnsignedAttribute("count") + 
+				static_cast<unsigned int>(_spaces_iterator->second->jump_holes.size()) + 
+				static_cast<unsigned int>(_spaces_iterator->second->visitors.size())
 			);
 
 			_spaces_iterator++;
