@@ -14,6 +14,7 @@ namespace Zoner
 	};
 
 	class ShipBlueprint;
+	class ItemBlueprint;
 
 	enum class GameScreen
 	{
@@ -45,6 +46,7 @@ namespace Zoner
 		virtual int GetScreenHeight() = 0;
 
 		virtual std::unordered_map<std::string, Zoner::ShipBlueprint*>& GetShipBlueprints() = 0;
+		virtual std::unordered_map<std::string, Zoner::ItemBlueprint*>& GetItemBlueprints() = 0;
 		virtual std::unordered_map<std::string, ok::graphics::SpriteAtlas*>& GetSpriteAtlases() = 0;
 
 		virtual void SaveTo(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) = 0;

@@ -20,7 +20,7 @@ namespace Zoner
 		std::vector<Zoner::IItem*>& Items();
 
 		void SaveTo(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) {};
-		void LoadFrom(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) {};
+		void LoadFrom(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element);
 	private:
 		std::vector<Zoner::IItem*> _items; //5x2 min, 4x5x2 max
 	protected:
@@ -30,7 +30,7 @@ namespace Zoner
 	{
 	public:
 		void SaveTo(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) {};
-		void LoadFrom(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) {};
+		void LoadFrom(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element);
 
 		int capacity;
 		int capacity_left;

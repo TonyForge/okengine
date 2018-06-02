@@ -1,3 +1,5 @@
 <blueprints>
-	<blueprint name="test" file="test.xml" type="item"/>
+	<blueprint name="default_container" file="default_container.xml" type="item"/>
+	<blueprint name="default_engine" file="default_engine.xml" type="item"/>
+	<blueprint name="default_reactor" file="default_reactor.xml" type="item"/>
 </blueprints>

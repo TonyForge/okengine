@@ -52,6 +52,7 @@ namespace Zoner
 			std::vector<std::unique_ptr<std::string>> _types;
 
 			int _atlases_begin_step;
+			int _items_begin_step;
 			int _fonts_begin_step;
 		};
 

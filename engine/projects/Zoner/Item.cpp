@@ -9,6 +9,7 @@ void Zoner::ItemCargoHold::InitBlocks(int blocks_count)
 void Zoner::ItemCargoHold::PackItems()
 {
 	//std::fill(std::remove_if(_items.begin(), _items.end(), nullptr), _items.end(), nullptr);
+	//std::partition
 }
 
 void Zoner::ItemCargoHold::SwapItems(Zoner::IItem *& item_to_swap, int x, int y)
@@ -51,6 +52,11 @@ std::vector<Zoner::IItem*>& Zoner::ItemCargoHold::Items()
 	return _items;
 }
 
+void Zoner::ItemCargoHold::LoadFrom(tinyxml2::XMLDocument & doc, tinyxml2::XMLElement & element)
+{
+	InitBlocks(element.IntAttribute("blocks"));
+}
+
 Zoner::ItemBuilder::ItemBuilder()
 {
 	_instance = this;
@@ -66,12 +72,13 @@ Zoner::IItem * Zoner::ItemBuilder::BuildFromRecipe(ok::String & recipe)
 	doc.LoadFile(path.toAnsiString().c_str());
 
 	Zoner::Item* result = new Zoner::Item();
+	ok::String attrib;
 
 	auto elem = doc.FirstChildElement("recipe")->FirstChildElement();
 
 	while (elem != nullptr)
 	{
-		if (elem->Value() == "behaviour")
+		if (ok::String(elem->Value()) == "behaviour")
 		{
 			auto _behaviour = _behaviours_allocator[elem->Attribute("class")]();
 			_behaviour->LoadFrom(doc, *elem);
@@ -79,13 +86,48 @@ Zoner::IItem * Zoner::ItemBuilder::BuildFromRecipe(ok::String & recipe)
 			result->AddComponent(_behaviour);
 		}
 		else
-		if (elem->Value() == "blueprint")
+		if (ok::String(elem->Value()) == "blueprint")
 		{
+			attrib = elem->Attribute("type");
 
+			if (attrib == "spacecraft")
+			{
+				result->_blueprint_spacecraft = Zoner::IGame::o().GetShipBlueprints()[elem->Attribute("name")];
+			}
+			else
+			{
+				result->_blueprint_item = Zoner::IGame::o().GetItemBlueprints()[elem->Attribute("name")];
+				//result->_blueprint_item = 
+			}
 		}
 
 		elem = elem->NextSiblingElement();
 	}
 
 	return result;
+}
+
+void Zoner::ItemSpacecraft::LoadFrom(tinyxml2::XMLDocument & doc, tinyxml2::XMLElement & element)
+{
+	capacity = element.IntAttribute("capacity");
+	capacity_left = 0;
+
+	auto elem = element.FirstChildElement("equipment_slots");
+	if (elem != nullptr && elem->IntAttribute("count") != 0)
+	{
+		int count = elem->IntAttribute("count");
+	}
+
+	elem = element.FirstChildElement("container_slot");
+	if (elem != nullptr)
+	{
+		elem = elem->FirstChildElement();
+		if (elem != nullptr)
+		{
+			if (ok::String(elem->Value()) == "recipe")
+			{
+				container_slot = Zoner::IItemBuilder::o().BuildFromRecipe(ok::String(elem->Attribute("name")));
+			}
+		}
+	}
 }

@@ -334,6 +334,7 @@ void Zoner::Ship::LoadFrom(tinyxml2::XMLDocument & doc, tinyxml2::XMLElement & e
 	if (_gameengine_id == "Sozdatel_Mirov")
 	{
 		//item injection here
+		this_item = Zoner::IItemBuilder::o().BuildFromRecipe(ok::String("default_spacecraft_001.xml"));
 		//this_item = 
 	}
 

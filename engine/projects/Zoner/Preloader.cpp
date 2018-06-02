@@ -110,6 +110,22 @@ void Zoner::Preloader::Task_DefaultResources_Object::Begin()
 		steps_total++;
 	}
 
+	//Items
+	_items_begin_step = steps_total;
+
+	std_path = root_folder + "items\\blueprints.xml";
+	doc.LoadFile(std_path.c_str());
+
+	elem = doc.FirstChildElement("blueprints");
+
+	for (blueprint = elem->FirstChildElement("blueprint"); blueprint != nullptr; blueprint = blueprint->NextSiblingElement("blueprint"))
+	{
+		_names.push_back(std::make_unique<std::string>(blueprint->Attribute("name")));
+		_files.push_back(std::make_unique<std::string>(blueprint->Attribute("file")));
+		_types.push_back(std::make_unique<std::string>(blueprint->Attribute("type")));
+		steps_total++;
+	}
+
 	//Atlases
 	_atlases_begin_step = steps_total;
 
@@ -143,7 +159,8 @@ void Zoner::Preloader::Task_DefaultResources_Object::Begin()
 void Zoner::Preloader::Task_DefaultResources_Object::Step()
 {
 	//blueprints loading
-	if (steps_total - steps_left < _atlases_begin_step)
+	//Ships
+	if (steps_total - steps_left < _items_begin_step)
 	{
 		std::string& _name = *_names[steps_total - steps_left];
 		std::string& _file = *_files[steps_total - steps_left];
@@ -183,47 +200,87 @@ void Zoner::Preloader::Task_DefaultResources_Object::Step()
 	}
 	else
 	{
-		if (steps_total - steps_left < _fonts_begin_step)
+		//Items
+		if (steps_total - steps_left < _atlases_begin_step)
 		{
-			//atlases loading
 			std::string& _name = *_names[steps_total - steps_left];
 			std::string& _file = *_files[steps_total - steps_left];
+			std::string& _type = *_types[steps_total - steps_left];
 
-			Zoner::IGame::o().GetSpriteAtlases()[_name] = ok::Assets::instance().GetSpriteAtlas(_file);
+			//load blueprint
+			ok::GameObject* root = nullptr;
+
+			ok::String& root_folder = ok::Assets::instance().assets_root_folder;
+			std::string std_path = root_folder + "items\\blueprints\\" + _file;
+
+			tinyxml2::XMLDocument doc;
+			doc.LoadFile(std_path.c_str());
+
+			if (_type == "item")
+			{
+				root = LoadPart_Spaceship(doc.FirstChildElement("Ship")->FirstChildElement("Part"), nullptr);
+			}
+			//...
+
+			Zoner::ItemBlueprint* blueprint = new Zoner::ItemBlueprint();
+			blueprint->Rename(_name);
+
+			ok::GameObject* transformer = new ok::GameObject();
+
+			transformer->AddChild(root);
+			transformer->BeginTransform();
+			transformer->SetRotation(glm::vec3(-90.0f, 0.f, 0.f));
+			transformer->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
+			transformer->EndTransform(true);
+
+			blueprint->AddChild(transformer);
+
+			Zoner::IGame::o().GetItemBlueprints()[_name] = blueprint;
 		}
 		else
 		{
-			//fonts loading
-			std::string& _name = *_names[steps_total - steps_left];
-
-			if (_name == "lt_steel_b_xl_01")
+			if (steps_total - steps_left < _fonts_begin_step)
 			{
-				ok::graphics::Font* fnt = ok::Assets::instance().GetFont("lt_steel_b_xl_01");
-				fnt->SetInternalFont(ok::Assets::instance().GetInternalFont("zoner_bold.font.xml"));
+				//atlases loading
+				std::string& _name = *_names[steps_total - steps_left];
+				std::string& _file = *_files[steps_total - steps_left];
 
-
-				fnt->SetBrushSizeOverride(true, 16.f);
-
-				fnt->SetBrushGradient(
-					ok::Color(187, 233, 250, 255),
-					ok::Color(110, 189, 218, 255)
-				);
-
-				fnt->SetBrushOuterShadow(ok::Color(2, 30, 50, 255), 0.5f, 0.35f, 0.f, 0.075f);
+				Zoner::IGame::o().GetSpriteAtlases()[_name] = ok::Assets::instance().GetSpriteAtlas(_file);
 			}
-			else if(_name == "plat_b_xxl_01")
+			else
 			{
-				ok::graphics::Font* fnt = ok::Assets::instance().GetFont("plat_b_xxl_01");
-				fnt->SetInternalFont(ok::Assets::instance().GetInternalFont("zoner_bold.font.xml"));
+				//fonts loading
+				std::string& _name = *_names[steps_total - steps_left];
 
-				fnt->SetBrushSizeOverride(true, 20.f);
+				if (_name == "lt_steel_b_xl_01")
+				{
+					ok::graphics::Font* fnt = ok::Assets::instance().GetFont("lt_steel_b_xl_01");
+					fnt->SetInternalFont(ok::Assets::instance().GetInternalFont("zoner_bold.font.xml"));
 
-				fnt->SetBrushGradient(
-					ok::Color(255, 255, 171, 255),
-					ok::Color(215, 172, 116, 255)
-				);
 
-				fnt->SetBrushOuterShadow(ok::Color(2, 30, 50, 255), 0.5f*0.8f, 0.35f*0.8f, 0.f, 0.075f*0.8f);
+					fnt->SetBrushSizeOverride(true, 16.f);
+
+					fnt->SetBrushGradient(
+						ok::Color(187, 233, 250, 255),
+						ok::Color(110, 189, 218, 255)
+					);
+
+					fnt->SetBrushOuterShadow(ok::Color(2, 30, 50, 255), 0.5f, 0.35f, 0.f, 0.075f);
+				}
+				else if (_name == "plat_b_xxl_01")
+				{
+					ok::graphics::Font* fnt = ok::Assets::instance().GetFont("plat_b_xxl_01");
+					fnt->SetInternalFont(ok::Assets::instance().GetInternalFont("zoner_bold.font.xml"));
+
+					fnt->SetBrushSizeOverride(true, 20.f);
+
+					fnt->SetBrushGradient(
+						ok::Color(255, 255, 171, 255),
+						ok::Color(215, 172, 116, 255)
+					);
+
+					fnt->SetBrushOuterShadow(ok::Color(2, 30, 50, 255), 0.5f*0.8f, 0.35f*0.8f, 0.f, 0.075f*0.8f);
+				}
 			}
 		}
 	}

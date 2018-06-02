@@ -747,6 +747,11 @@ std::unordered_map<std::string, Zoner::ShipBlueprint*>& Zoner::Game::GetShipBlue
 	return _ship_blueprints;
 }
 
+std::unordered_map<std::string, Zoner::ItemBlueprint*>& Zoner::Game::GetItemBlueprints()
+{
+	return _item_blueprints;
+}
+
 std::unordered_map<std::string, ok::graphics::SpriteAtlas*>& Zoner::Game::GetSpriteAtlases()
 {
 	return _sprite_atlases;

@@ -65,6 +65,7 @@ namespace Zoner
 
 		//resources
 		std::unordered_map<std::string, Zoner::ShipBlueprint*> _ship_blueprints;
+		std::unordered_map<std::string, Zoner::ItemBlueprint*> _item_blueprints;
 		std::unordered_map<std::string, ok::graphics::SpriteAtlas*> _sprite_atlases;
 		
 		//planets, systems, spacecrafts etc here...
@@ -103,6 +104,7 @@ namespace Zoner
 		int GetScreenWidth();
 		int GetScreenHeight();
 		std::unordered_map<std::string, Zoner::ShipBlueprint*>& GetShipBlueprints();
+		std::unordered_map<std::string, Zoner::ItemBlueprint*>& GetItemBlueprints();
 		std::unordered_map<std::string, ok::graphics::SpriteAtlas*>& GetSpriteAtlases();
 
 		bool StateTrue(Zoner::GameStates state);

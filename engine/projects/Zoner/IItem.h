@@ -11,6 +11,7 @@ namespace Zoner
 	class ItemBlueprint : public ok::GameObject
 	{
 	public:
+		ok::GameObject* Duplicate(ok::GameObject* _clone = nullptr);
 	private:
 	protected:
 	};
@@ -24,6 +25,8 @@ namespace Zoner
 	protected:
 	};
 
+	class ShipBlueprint;
+
 	class IItem : public ok::GameObject, public Zoner::UID, public Zoner::ISaveable
 	{
 	public:
@@ -32,6 +35,9 @@ namespace Zoner
 
 		virtual void SaveTo(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) = 0;
 		virtual void LoadFrom(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) = 0;
+
+		Zoner::ShipBlueprint* _blueprint_spacecraft = nullptr;
+		Zoner::ItemBlueprint* _blueprint_item = nullptr;
 	private:
 	protected:
 	};
@@ -39,10 +45,10 @@ namespace Zoner
 	class IItemBuilder
 	{
 	public:
-		Zoner::IItemBuilder& o();
+		static Zoner::IItemBuilder& o();
 
 		virtual Zoner::IItem* BuildFromRecipe(ok::String& recipe) = 0;
 	protected:
-		Zoner::IItemBuilder* _instance = nullptr;
+		static Zoner::IItemBuilder* _instance;
 	};
 }
