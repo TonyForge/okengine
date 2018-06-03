@@ -173,6 +173,47 @@ Zoner::Collision::Point Zoner::IShip::Pick(glm::vec3 world_position)
 	return Zoner::Collision::Point();
 }
 
+Zoner::IItem * Zoner::IShip::FindItem(Zoner::UID & item_uid)
+{
+	if (this_item == nullptr) return nullptr;
+	if (*this_item == item_uid) return this_item;
+
+	return this_item->FindItem(item_uid);
+}
+
+void Zoner::IShip::CollectItems(std::map<Zoner::UID, Zoner::IItem*>& _collection)
+{
+	_collection.clear();
+	
+	if (this_item == nullptr) return;
+
+	_collection[*this_item] = this_item;
+	this_item->CollectItems(_collection);
+}
+
+void Zoner::IShip::OnItemIn(Zoner::IItem * item_ptr)
+{
+	this_items[*item_ptr] = item_ptr;
+
+	std::map<Zoner::UID, Zoner::IItem*> collection;
+	item_ptr->CollectItems(collection);
+
+	this_items.insert(collection.begin(), collection.end());
+}
+
+void Zoner::IShip::OnItemOut(Zoner::IItem * item_ptr)
+{
+	this_items.erase(*item_ptr);
+
+	std::map<Zoner::UID, Zoner::IItem*> collection;
+	item_ptr->CollectItems(collection);
+
+	for (auto&& item : collection)
+	{
+		this_items.erase(item.first);
+	}
+}
+
 Zoner::IShip::IShip() : 
 	engine_speed(16.0f),
 	afterburner_enabled(false),

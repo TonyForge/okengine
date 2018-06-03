@@ -123,3 +123,8 @@ ok::GameObject * ok::GameObject::Duplicate(ok::GameObject* _clone)
 
 	return _clone;
 }
+
+std::vector<ok::Behaviour*>& ok::GameObject::GetComponents()
+{
+	return _components;
+}

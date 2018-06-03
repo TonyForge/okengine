@@ -21,6 +21,8 @@ namespace ok
 		virtual ok::GameObject* Duplicate(ok::GameObject* _clone = nullptr);
 		//std::vector<std::function<void()>> OnDuplicateEnd;
 
+		std::vector<ok::Behaviour*>& GetComponents();
+
 		template<class T>
 		std::enable_if_t<std::is_base_of<ok::Behaviour, T>::value, T*> GetComponent();
 	protected:

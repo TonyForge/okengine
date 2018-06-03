@@ -36,11 +36,11 @@ Zoner::IItem * Zoner::ItemCargoHold::FindItem(int index)
 
 Zoner::IItem * Zoner::ItemCargoHold::FindItem(ok::String & item_name)
 {
-	for (auto item : _items)
+	for (auto&& _item : _items)
 	{
-		if (item != nullptr && item->gameObject().name == item_name)
+		if (_item != nullptr && _item->gameObject().name == item_name)
 		{
-			return item;
+			return _item;
 		}
 	}
 
@@ -55,6 +55,38 @@ std::vector<Zoner::IItem*>& Zoner::ItemCargoHold::Items()
 void Zoner::ItemCargoHold::LoadFrom(tinyxml2::XMLDocument & doc, tinyxml2::XMLElement & element)
 {
 	InitBlocks(element.IntAttribute("blocks"));
+}
+
+Zoner::IItem * Zoner::ItemCargoHold::FindItem(Zoner::UID & item_uid)
+{
+	Zoner::IItem* result = nullptr;
+
+	for (auto&& _item : _items)
+	{
+		if (_item != nullptr)
+		{
+			if (*_item == item_uid) return _item;
+			else
+			{
+				result = _item->FindItem(item_uid);
+				if (result != nullptr) break;
+			}
+		}
+	}
+
+	return result;
+}
+
+void Zoner::ItemCargoHold::CollectItems(std::map<Zoner::UID, Zoner::IItem*>& _collection)
+{
+	for (auto&& _item : _items)
+	{
+		if (_item != nullptr)
+		{
+			_collection[*_item] = _item;
+			_item->CollectItems(_collection);
+		}
+	}
 }
 
 Zoner::ItemBuilder::ItemBuilder()
@@ -129,5 +161,101 @@ void Zoner::ItemSpacecraft::LoadFrom(tinyxml2::XMLDocument & doc, tinyxml2::XMLE
 				container_slot = Zoner::IItemBuilder::o().BuildFromRecipe(ok::String(elem->Attribute("name")));
 			}
 		}
+	}
+}
+
+Zoner::IItem * Zoner::ItemSpacecraft::FindItem(Zoner::UID & item_uid)
+{
+	Zoner::IItem* result = nullptr;
+
+	//equipment slots
+	for (auto&& _item : equipment_slots)
+	{
+		if (*_item == item_uid) return _item;
+		else
+		{
+			result = _item->FindItem(item_uid);
+			if (result != nullptr) return result;
+		}
+	}
+
+	//container slot
+	if (container_slot != nullptr)
+	{
+		if (*container_slot == item_uid) return container_slot;
+		else
+		{
+			result = container_slot->FindItem(item_uid);
+			if (result != nullptr) return result;
+		}
+	}
+
+	return result;
+}
+
+void Zoner::ItemSpacecraft::CollectItems(std::map<Zoner::UID, Zoner::IItem*>& _collection)
+{
+	for (auto&& _item : equipment_slots)
+	{
+		_collection[*_item] = _item;
+		_item->CollectItems(_collection);
+	}
+
+	if (container_slot != nullptr)
+	{
+		_collection[*container_slot] = container_slot;
+		container_slot->CollectItems(_collection);
+	}
+}
+
+Zoner::IItem * Zoner::Item::FindItem(Zoner::UID & item_uid)
+{
+	Zoner::IItem* result = nullptr;
+	Zoner::IItem* child_ptr;
+
+	auto child_list = GetChildrens();
+
+	for (auto&& child : child_list)
+	{
+		child_ptr = static_cast<Zoner::IItem*>(&(child->gameObject()));
+		if (*child_ptr == item_uid) return child_ptr;
+		else
+		{
+			result = child_ptr->FindItem(item_uid);
+			if (result != nullptr) return result;
+		}
+	}
+
+	result = nullptr;
+
+	auto components = GetComponents();
+	for (auto&& component : components)
+	{
+		result = static_cast<Zoner::IItemBehaviour*>(component)->FindItem(item_uid);
+		if (result != nullptr) break;
+	}
+
+	return result;
+}
+
+void Zoner::Item::CollectItems(std::map<Zoner::UID, Zoner::IItem*>& _collection)
+{
+	Zoner::IItem* child_ptr;
+
+	auto child_list = GetChildrens();
+
+	for (auto&& child : child_list)
+	{
+		child_ptr = static_cast<Zoner::IItem*>(&(child->gameObject()));
+
+		_collection[*child_ptr] = child_ptr;
+
+		child_ptr->CollectItems(_collection);
+	}
+
+	auto components = GetComponents();
+	for (auto&& component : components)
+	{
+		static_cast<Zoner::IItemBehaviour*>(component)->CollectItems(_collection);
 	}
 }

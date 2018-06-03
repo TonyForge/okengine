@@ -110,6 +110,7 @@ namespace Zoner
 		bool StateTrue(Zoner::GameStates state);
 		bool StateFalse(Zoner::GameStates state);
 		void State(Zoner::GameStates state, bool value);
+		void StateSwitch(Zoner::GameStates state);
 
 		Zoner::IShip* GetCurrentPlayerShip();
 		void ChangeCurrentLocation(Zoner::ISpace* location);

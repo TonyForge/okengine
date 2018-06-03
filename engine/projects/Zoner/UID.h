@@ -1,11 +1,13 @@
 #pragma once
 
+
 namespace Zoner
 {
 	class UID
 	{
 	public:
 		UID();
+		Zoner::UID& operator =(const unsigned int& value);
 
 		void acquire_uid();
 
@@ -23,4 +25,20 @@ namespace Zoner
 	};
 
 	bool operator ==(const Zoner::UID& left, const Zoner::UID& right);
+	bool operator ==(const Zoner::UID& left, const unsigned int& right);
+}
+
+namespace std
+{
+	template <> struct less<Zoner::UID>
+	{
+		inline bool operator() (const Zoner::UID& lhs, const Zoner::UID& rhs) const
+		{
+			return 
+				(lhs.uid[3] < rhs.uid[3]) &&
+				(lhs.uid[2] < rhs.uid[2]) &&
+				(lhs.uid[1] < rhs.uid[1]) &&
+				(lhs.uid[0] < rhs.uid[0]);
+		}
+	};
 }

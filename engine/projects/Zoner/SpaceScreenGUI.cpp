@@ -2,24 +2,57 @@
 
 void Zoner::SpaceScreenGUI::Update(float dt)
 {
+	if (o()._initialized == false)
+	{
+		o()._inspector_items.reserve(32);
+		o()._inspector_items.resize(5);
+		std::fill(o()._inspector_items.begin(), o()._inspector_items.end(), 0);
+
+		o()._inspector_items_in_slots.resize(5);
+		std::fill(o()._inspector_items_in_slots.begin(), o()._inspector_items_in_slots.end(), nullptr);
+
+		o()._initialized = true;
+	}
+
 	if (o()._icons_cache_64px == nullptr)
 	{
 		o()._icons_cache_64px = new ok::graphics::RenderTarget(512, 512, true, true, false, true);
 		o()._icons_cache_64px_tex = new ok::graphics::Texture(o()._icons_cache_64px);
 	}
 
+	if (Zoner::IGame::o().StateTrue(Zoner::GameStates::InspectorSwitch))
+	{
+		if (Zoner::IGame::o().StateFalse(Zoner::GameStates::InspectorVisible))
+		{
+			Create_Inspector();
+			Zoner::IGame::o().State(Zoner::GameStates::InspectorVisible, true);
+		}
+	}
+
+	if (Zoner::IGame::o().StateFalse(Zoner::GameStates::InspectorSwitch))
+	{
+		if (Zoner::IGame::o().StateTrue(Zoner::GameStates::InspectorVisible))
+		{
+			Destroy_Inspector();
+			Zoner::IGame::o().State(Zoner::GameStates::InspectorVisible, false);
+		}
+	}
+
 	ok::Input::o().SetCurrentLayer(1);
 	ok::ui::BeginUI(Zoner::IGame::o().GetScreenWidth(), Zoner::IGame::o().GetScreenHeight());
 	{
-		Update_Inventory(dt);
-		Update_Item_Spacecraft(dt);
-		Update_Item_Container(dt);
+		if (Zoner::IGame::o().StateTrue(Zoner::GameStates::InspectorVisible))
+		{
+			Update_Inspector(dt);
+			Update_Item_Spacecraft(dt);
+			Update_Item_Container(dt);
+		}
 	}
 	ok::ui::EndUI();
 	ok::Input::o().SetCurrentLayer(0);
 }
 
-void Zoner::SpaceScreenGUI::Update_Inventory(float dt)
+void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 {
 	
 	
@@ -176,14 +209,50 @@ void Zoner::SpaceScreenGUI::Update_Inventory(float dt)
 				{
 					ok::ui::PushNonActivable(false);
 					{
+						int prev_items_index = inventory_panel_top_scroll.items_visible_first_index;
+
 						ok::ui::ScrollHorizontal(
 							inventory_panel_top_scroll.widget.ptr(),
 							0, 0, 197, 10,
-							6, 12,
+							5, o()._inspector_items.size(),
 							inventory_panel_top_scroll.items_visible_first_index,
 							inventory_panel_top_scroll.scroll_button_relative_position,
 							inventory_panel_top_scroll.scroll_button_relative_size
 						);
+
+						if (o()._inspector_recache_icons == true || 
+							prev_items_index != inventory_panel_top_scroll.items_visible_first_index)
+						{
+							auto player_ship = Zoner::IGame::o().GetCurrentPlayerShip();
+							auto& player_items = player_ship->this_items;
+
+							//update small slots
+							for (int i = 0; i < 5; i++)
+							{
+								if (o()._inspector_items[inventory_panel_top_scroll.items_visible_first_index] == 0)
+								{
+									o()._inspector_items_in_slots[i] = nullptr;
+								}
+								else
+								{
+									auto _item_in_slot = player_items[o()._inspector_items[inventory_panel_top_scroll.items_visible_first_index]];
+
+									if (_item_in_slot->_blueprint_item != nullptr)
+									{
+										o()._CacheIcon(_item_in_slot->_blueprint_item, i, 0);
+									}
+									else if (_item_in_slot->_blueprint_spacecraft != nullptr)
+									{
+										o()._CacheIcon(_item_in_slot->_blueprint_spacecraft, i, 0);
+									}
+								}
+							}
+
+							o()._inspector_recache_icons = false;
+						}
+
+						//del this (temp code)
+						ok::ui::Image(inventory_panel_top.ptr(), &o()._GetIconCache(0, 0));
 					}
 					ok::ui::PopNonActivable();
 
@@ -256,14 +325,14 @@ void Zoner::SpaceScreenGUI::Update_Inventory(float dt)
 	ok::ui::PopTranslate();
 
 	//test
-	Zoner::ShipBlueprint* blueprint = Zoner::IGame::o().GetShipBlueprints()["nomad"];
+	/*Zoner::ShipBlueprint* blueprint = Zoner::IGame::o().GetShipBlueprints()["nomad"];
 	o()._CacheIcon(blueprint, 0, 0);
 
 	ok::ui::widget w;
 	ok::ui::PushTranslate(0, 0);
 	ok::ui::Image(w.ptr(), &o()._GetIconCache(0, 0));
 	//ok::ui::Image(w.ptr(), o()._icons_cache_64px_tex);
-	ok::ui::PopTranslate();
+	ok::ui::PopTranslate();*/
 
 	//ok::ui::EndUI();
 
@@ -549,6 +618,54 @@ void Zoner::SpaceScreenGUI::Update_Item_Container(float dt)
 	}
 	ok::ui::PopTranslate();
 	ok::ui::PopNonActivable();
+}
+
+void Zoner::SpaceScreenGUI::Create_Inspector()
+{
+	auto player_ship = Zoner::IGame::o().GetCurrentPlayerShip();
+	auto& player_items = player_ship->this_items;
+
+	//recheck all items that was in inspector before
+	for (auto& item_uid : o()._inspector_items)
+	{
+		if (item_uid == 0)
+		{
+			//do nothing
+		}
+		else
+		{
+			if (player_items.find(item_uid) == player_items.end()) //no such item in players inventory anymore
+			{
+				//remove it from small slot
+				for (auto& item_in_slot : o()._inspector_items_in_slots)
+				{
+					if ((item_in_slot != nullptr) && (*item_in_slot == item_uid))
+					{
+						item_in_slot = nullptr;
+						break;
+					}
+				}
+
+				//remove it from big slot
+				if ((o()._inspector_big_slot_item != nullptr) && (*o()._inspector_big_slot_item == item_uid))
+				{
+					o()._inspector_big_slot_item = nullptr;
+				}
+
+				//remove it from inspector
+				item_uid = 0;
+			}
+		}
+	}
+
+	//first item is always ship hull
+	o()._inspector_items[0] = *(player_ship->this_item);
+
+	o()._inspector_recache_icons = true;
+}
+
+void Zoner::SpaceScreenGUI::Destroy_Inspector()
+{
 }
 
 Zoner::SpaceScreenGUI & Zoner::SpaceScreenGUI::instance()

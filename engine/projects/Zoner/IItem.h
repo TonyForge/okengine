@@ -16,11 +16,16 @@ namespace Zoner
 	protected:
 	};
 
+	class IItem;
+
 	class IItemBehaviour : public ok::Behaviour, public Zoner::ISaveable
 	{
 	public:
 		virtual void SaveTo(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) = 0;
 		virtual void LoadFrom(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) = 0;
+
+		virtual Zoner::IItem* FindItem(Zoner::UID& item_uid) = 0;
+		virtual void CollectItems(std::map<Zoner::UID, Zoner::IItem*>& _collection) = 0;
 	private:
 	protected:
 	};
@@ -30,11 +35,17 @@ namespace Zoner
 	class IItem : public ok::GameObject, public Zoner::UID, public Zoner::ISaveable
 	{
 	public:
+		IItem();
+		//IItem();
+
 		bool is_countable = false;
 		int count = 1;
 
 		virtual void SaveTo(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) = 0;
 		virtual void LoadFrom(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) = 0;
+
+		virtual Zoner::IItem* FindItem(Zoner::UID& item_uid) = 0;
+		virtual void CollectItems(std::map<Zoner::UID, Zoner::IItem*>& _collection) = 0;
 
 		Zoner::ShipBlueprint* _blueprint_spacecraft = nullptr;
 		Zoner::ItemBlueprint* _blueprint_item = nullptr;

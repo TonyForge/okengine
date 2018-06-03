@@ -26,3 +26,8 @@ ok::GameObject * Zoner::ItemBlueprint::Duplicate(ok::GameObject * _clone)
 
 	return __clone;
 }
+
+Zoner::IItem::IItem()
+{
+	acquire_uid();
+}

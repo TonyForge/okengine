@@ -4,6 +4,17 @@ unsigned int Zoner::UID::global_uid_next[Zoner::UID::uid_length] = { 0,0,0,0 };
 
 Zoner::UID::UID()
 {
+	memset(uid, 0, sizeof(uid));
+}
+
+Zoner::UID& Zoner::UID::operator=(const unsigned int & value)
+{
+	for (int i = 0; i < uid_length; i++)
+	{
+		uid[i] = value;
+	}
+
+	return *this;
 }
 
 void Zoner::UID::acquire_uid()
@@ -67,5 +78,19 @@ void Zoner::UID::load_global_uid_from_xml(tinyxml2::XMLElement & element)
 
 bool Zoner::operator==(const Zoner::UID & left, const Zoner::UID & right)
 {
-	return memcmp(left.uid, right.uid, sizeof(unsigned int)*Zoner::UID::uid_length) == 0;
+	return 
+	(left.uid[3] == right.uid[3]) &&
+	(left.uid[2] == right.uid[2]) &&
+	(left.uid[1] == right.uid[1]) &&
+	(left.uid[0] == right.uid[0]);
+	//return memcmp(left.uid, right.uid, sizeof(unsigned int)*Zoner::UID::uid_length) == 0;
+}
+
+bool Zoner::operator==(const Zoner::UID & left, const unsigned int & right)
+{
+	return
+		(left.uid[3] == 0) &&
+		(left.uid[2] == 0) &&
+		(left.uid[1] == 0) &&
+		(left.uid[0] == right);
 }

@@ -12,6 +12,7 @@
 #include "..\..\MeshRenderer.h"
 #include "IGame.h"
 #include "IShip.h"
+#include "IItem.h"
 
 namespace Zoner
 {
@@ -20,9 +21,12 @@ namespace Zoner
 	public:
 
 		static void Update(float dt);
-		static void Update_Inventory(float dt);
+		static void Update_Inspector(float dt);
 		static void Update_Item_Spacecraft(float dt);
 		static void Update_Item_Container(float dt);
+
+		static void Create_Inspector();
+		static void Destroy_Inspector();
 
 		static Zoner::SpaceScreenGUI& instance();
 		static Zoner::SpaceScreenGUI& o();
@@ -37,7 +41,18 @@ namespace Zoner
 		void _CalculateBlueprintBounds(ok::Transform* part, glm::vec4 & bounds);
 		ok::graphics::SpriteInfo _GetIconCache(int slot_x, int slot_y);
 		
-		ok::graphics::RenderTarget* _icons_cache_64px = nullptr; //512x512, 32x32 in double resolution for supersampling
+		//512x512, 32x32 in double resolution for supersampling, 8x8 slots
+		//0..4 - small slots of inspector
+		//5 - drag n drop icon
+		//6 .. 63 - other icons (41 for container, 15 for ship etc)
+		ok::graphics::RenderTarget* _icons_cache_64px = nullptr; 
 		ok::graphics::Texture* _icons_cache_64px_tex = nullptr;
+
+		bool _initialized = false;
+
+		std::vector<Zoner::UID> _inspector_items;
+		std::vector<Zoner::IItem*> _inspector_items_in_slots;
+		Zoner::IItem* _inspector_big_slot_item = nullptr;
+		bool _inspector_recache_icons = false;
 	};
 }

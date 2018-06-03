@@ -335,6 +335,7 @@ void Zoner::Ship::LoadFrom(tinyxml2::XMLDocument & doc, tinyxml2::XMLElement & e
 	{
 		//item injection here
 		this_item = Zoner::IItemBuilder::o().BuildFromRecipe(ok::String("default_spacecraft_001.xml"));
+		OnItemIn(this_item);
 		//this_item = 
 	}
 

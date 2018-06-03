@@ -396,6 +396,8 @@ ok::ui::widget_state & ok::ui::ScrollHorizontal(
 		out__scroll_button_relative_position = glm::clamp(ws().mouse_relative_pos.x - o()._mem_xy.x, 0.f, width - out__scroll_button_relative_size);
 	}
 
+	if (width == out__scroll_button_relative_size) out__items_visible_first_index = 0;
+	else
 	out__items_visible_first_index = static_cast<int>(glm::floor((out__scroll_button_relative_position / (width - out__scroll_button_relative_size)) * static_cast<float>(items_total- items_visible_count)));
 
 	return o()._widget_state;

@@ -21,6 +21,9 @@ namespace Zoner
 
 		void SaveTo(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) {};
 		void LoadFrom(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element);
+
+		Zoner::IItem* FindItem(Zoner::UID& item_uid);
+		void CollectItems(std::map<Zoner::UID, Zoner::IItem*>& _collection);
 	private:
 		std::vector<Zoner::IItem*> _items; //5x2 min, 4x5x2 max
 	protected:
@@ -31,6 +34,9 @@ namespace Zoner
 	public:
 		void SaveTo(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) {};
 		void LoadFrom(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element);
+
+		Zoner::IItem* FindItem(Zoner::UID& item_uid);
+		void CollectItems(std::map<Zoner::UID, Zoner::IItem*>& _collection);
 
 		int capacity;
 		int capacity_left;
@@ -45,6 +51,9 @@ namespace Zoner
 	public:
 		void SaveTo(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) {};
 		void LoadFrom(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) {};
+
+		Zoner::IItem* FindItem(Zoner::UID& item_uid);
+		void CollectItems(std::map<Zoner::UID, Zoner::IItem*>& _collection);
 	protected:
 	private:
 	};

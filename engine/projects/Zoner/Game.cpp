@@ -576,6 +576,11 @@ void Zoner::Game::State(Zoner::GameStates state, bool value)
 	_game_states[static_cast<int>(state)] = value;
 }
 
+void Zoner::Game::StateSwitch(Zoner::GameStates state)
+{
+	_game_states[static_cast<int>(state)] = !_game_states[static_cast<int>(state)];
+}
+
 Zoner::IShip * Zoner::Game::GetCurrentPlayerShip()
 {
 	return _current_player_ship;
@@ -713,6 +718,11 @@ void Zoner::Game::UpdateGameScreen_Space(float dt)
 		}
 		else
 		{
+			if (ok::Input::o().KeyPressed(ok::KKey::I))
+			{
+				StateSwitch(Zoner::GameStates::InspectorSwitch);
+			}
+
 			if (ok::Input::o().KeyDown(ok::KKey::LControl) && ok::Input::o().KeyPressed(ok::KKey::S))
 			{
 				SaveGame();
