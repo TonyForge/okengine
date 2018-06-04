@@ -93,6 +93,9 @@ namespace ok
 		static void PushEffect_Grayscale(float power);
 		static void PopEffect_Grayscale();
 
+		static void PushEffect_Fade(float power);
+		static void PopEffect_Fade();
+
 		static ok::ui::widget_state& ws();
 
 		float DispatchAliasFloat(ok::graphics::ShaderAliasReference alias_type);
@@ -129,6 +132,7 @@ namespace ok
 
 		std::vector<float> _effects_power;
 		std::vector<float> _effects_grayscale;
+		std::vector<float> _effects_fade;
 
 		std::vector<bool> _non_activable_stack;
 

@@ -13,6 +13,7 @@
 	<alias uniform="default_z" type="float" ref="Callback" />
 	<alias uniform="effects_power" type="float" ref="Callback" />
 	<alias uniform="effects_grayscale" type="float" ref="Callback" />
+	<alias uniform="effects_fade" type="float" ref="Callback" />
   </aliases>
   
   <vertex>
@@ -48,12 +49,14 @@
     uniform sampler2D tex0;
     uniform float effects_power;
 	uniform float effects_grayscale;
+	uniform float effects_fade;
 	
     void main()
     {
       FragColor = texture(tex0, uv0_out);
 	  float grayscale_color = (FragColor.r+FragColor.g+FragColor.b) * 0.333;
       FragColor.rgb = mix(mix(FragColor.rgb, vec3(grayscale_color,grayscale_color,grayscale_color), effects_grayscale), color0_out.rgb, color0_out.a)*effects_power;
+	  FragColor.a = FragColor.a * effects_fade;
     }
     ]]>
   </fragment>

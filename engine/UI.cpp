@@ -37,6 +37,7 @@ void ok::ui::BeginUI(int screen_width, int screen_height)
 	o()._batch->BatchBegin();
 	o()._effects_power.push_back(1.f);
 	o()._effects_grayscale.push_back(0.f);
+	o()._effects_fade.push_back(0.f);
 
 	if (ok::Input::o().KeyPressed(ok::MKey::Left))
 	{
@@ -54,6 +55,7 @@ void ok::ui::EndUI()
 	o()._batch->BatchEnd();
 	o()._effects_power.pop_back();
 	o()._effects_grayscale.pop_back();
+	o()._effects_fade.pop_back();
 
 	PopResetTransform();
 
@@ -435,6 +437,22 @@ void ok::ui::PopEffect_Grayscale()
 	o()._effects_grayscale.pop_back();
 }
 
+void ok::ui::PushEffect_Fade(float power)
+{
+	o()._batch->BatchEnd();
+	o()._batch->BatchBegin();
+
+	o()._effects_fade.push_back(power);
+}
+
+void ok::ui::PopEffect_Fade()
+{
+	o()._batch->BatchEnd();
+	o()._batch->BatchBegin();
+
+	o()._effects_fade.pop_back();
+}
+
 ok::ui::widget_state & ok::ui::ws()
 {
 	return o()._widget_state;
@@ -450,6 +468,8 @@ float ok::ui::DispatchAliasFloat(ok::graphics::ShaderAliasReference alias_type)
 			return _effects_power.back();
 		else if (*callback_name_ptr == "effects_grayscale")
 			return _effects_grayscale.back();
+		else if (*callback_name_ptr == "effects_fade")
+			return glm::clamp(1.0f - _effects_fade.back(), 0.f, 1.f);
 	}
 	break;
 	}

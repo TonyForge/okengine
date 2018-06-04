@@ -54,5 +54,10 @@ namespace Zoner
 		std::vector<Zoner::IItem*> _inspector_items_in_slots;
 		Zoner::IItem* _inspector_big_slot_item = nullptr;
 		bool _inspector_recache_icons = false;
+
+		Zoner::IItem* _drag_and_drop_item = nullptr;
+		Zoner::UID* _drag_and_drop_item_shortcut = nullptr; //example of shortcuts is inspector small slot (keeps shortcut, not item itself)
+		//void* _drag_and_drop_item_location = nullptr;
+		//bool _drag_and_drop_item_live_in_inspector = false;
 	};
 }

@@ -43,8 +43,8 @@ Global
 		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Zoner_Debug|x86.Build.0 = Zoner_Debug|Win32
 		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Zoner_Release|x64.ActiveCfg = Zoner_Release|x64
 		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Zoner_Release|x64.Build.0 = Zoner_Release|x64
-		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Zoner_Release|x86.ActiveCfg = Zoner_Debug|Win32
-		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Zoner_Release|x86.Build.0 = Zoner_Debug|Win32
+		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Zoner_Release|x86.ActiveCfg = Zoner_Release|Win32
+		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Zoner_Release|x86.Build.0 = Zoner_Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

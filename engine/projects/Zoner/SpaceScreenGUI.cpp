@@ -60,7 +60,7 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 	static ok::ui::widget inventory_panel_top;
 	static ok::ui::widget inventory_panel_top_button_close;
 	static ok::ui::widget inventory_panel_top_button_eject;
-
+	static ok::ui::widget inventory_panel_top_small_slot;
 
 	struct inventory_panel_top_scroll_struct
 	{
@@ -87,6 +87,9 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 	static ok::graphics::SpriteInfo spr_inventory_top_knob_glow_l;
 	static ok::graphics::SpriteInfo spr_inventory_top_knob_glow_m;
 	static ok::graphics::SpriteInfo spr_inventory_top_knob_glow_r;
+
+	static ok::graphics::SpriteInfo spr_empty_slot_32;
+	static ok::graphics::SpriteInfo spr_full_slot_32;
 
 	if (atlas_ui == nullptr)
 	{
@@ -129,6 +132,12 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 		inventory_panel_top_scroll.items_visible_first_index = 0;
 		inventory_panel_top_scroll.scroll_button_relative_position = 0.f;
 		inventory_panel_top_scroll.scroll_button_relative_size = 0.f;
+
+		spr_empty_slot_32 = atlas_ui->Get(ok::String("inventory_top_small_slot_empty"));
+		spr_empty_slot_32.hotspot = glm::vec2(0.0, 0.0);
+
+		spr_full_slot_32 = atlas_ui->Get(ok::String("inventory_top_small_slot"));
+		spr_full_slot_32.hotspot = glm::vec2(0.0, 0.0);
 
 		ok::Input::o().AddBlockedArea(0, ok::Rect2Di(114, 38, 107, 92));
 		ok::Input::o().AddBlockedArea(0, ok::Rect2Di(202, 26, 40, 40));
@@ -225,17 +234,17 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 						{
 							auto player_ship = Zoner::IGame::o().GetCurrentPlayerShip();
 							auto& player_items = player_ship->this_items;
-
+							
 							//update small slots
 							for (int i = 0; i < 5; i++)
 							{
-								if (o()._inspector_items[inventory_panel_top_scroll.items_visible_first_index] == 0)
+								if (o()._inspector_items[inventory_panel_top_scroll.items_visible_first_index + i] == 0)
 								{
 									o()._inspector_items_in_slots[i] = nullptr;
 								}
 								else
 								{
-									auto _item_in_slot = player_items[o()._inspector_items[inventory_panel_top_scroll.items_visible_first_index]];
+									auto _item_in_slot = player_items[o()._inspector_items[inventory_panel_top_scroll.items_visible_first_index + i]];
 
 									if (_item_in_slot->_blueprint_item != nullptr)
 									{
@@ -245,14 +254,13 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 									{
 										o()._CacheIcon(_item_in_slot->_blueprint_spacecraft, i, 0);
 									}
+
+									o()._inspector_items_in_slots[i] = _item_in_slot;
 								}
 							}
 
 							o()._inspector_recache_icons = false;
 						}
-
-						//del this (temp code)
-						ok::ui::Image(inventory_panel_top.ptr(), &o()._GetIconCache(0, 0));
 					}
 					ok::ui::PopNonActivable();
 
@@ -321,22 +329,176 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 		}
 		ok::ui::EnableSmooth();
 		
+		//small slots
+		ok::ui::PushTranslate(65.f, 135.f);
+		{
+			if (o()._drag_and_drop_item == nullptr)
+			{
+				//if there is NO item in hand
+				int highlighted_slot_index = -1;
+
+				ok::ui::PushNonActivable(false);
+				for (int i = 0; i < 5; i++)
+				{
+					ok::ui::Dummy(inventory_panel_top_small_slot.ptr(), i * 42.f, 0.f, 36.f, 36.f);
+
+					if (ok::ui::ws().mouse_inside)
+					{
+						highlighted_slot_index = i;
+						break;
+					}
+				}
+				ok::ui::PopNonActivable();
+
+				if (ok::ui::ws().mouse_inside)
+				{
+					if (ok::ui::ws().on_activate)
+					{
+						if (o()._inspector_items_in_slots[highlighted_slot_index] != nullptr)
+						{
+							//pick up item
+							o()._drag_and_drop_item = o()._inspector_items_in_slots[highlighted_slot_index];
+
+							//we gain shortcut if pick up from inspector
+							o()._drag_and_drop_item_shortcut = &(o()._inspector_items[inventory_panel_top_scroll.items_visible_first_index + highlighted_slot_index]);
+						}	
+					}
+					else if (ok::ui::ws().mouse_down == false)
+					{
+						if (o()._inspector_items_in_slots[highlighted_slot_index] != nullptr)
+						{
+							//draw tip to place this item in big slot
+							//request item info bubble drawing
+						}
+					}
+				}
+			}
+			else
+			{
+				//if there is item in hand
+				int highlighted_slot_index = -1;
+
+				ok::ui::PushNonActivable(false);
+				for (int i = 0; i < 5; i++)
+				{
+					ok::ui::Dummy(inventory_panel_top_small_slot.ptr(), i * 42.f, 0.f, 36.f, 36.f);
+
+					if (ok::ui::ws().mouse_inside)
+					{
+						highlighted_slot_index = i;
+						break;
+					}
+				}
+				ok::ui::PopNonActivable();
+
+				if (ok::ui::ws().mouse_inside)
+				{
+					if (ok::ui::ws().on_activate)
+					{
+						if (o()._inspector_items_in_slots[highlighted_slot_index] == nullptr)
+						{
+							//place item in empty slot
+							o()._inspector_items[inventory_panel_top_scroll.items_visible_first_index + highlighted_slot_index] = *o()._drag_and_drop_item;
+
+							if (o()._drag_and_drop_item_shortcut != nullptr)
+							{
+								*(o()._drag_and_drop_item_shortcut) = 0;
+							}
+
+							o()._drag_and_drop_item = nullptr;
+							o()._drag_and_drop_item_shortcut = nullptr;
+						}
+						else
+						{
+							// if it's the same place where item was
+							if (&(o()._inspector_items[inventory_panel_top_scroll.items_visible_first_index + highlighted_slot_index]) == o()._drag_and_drop_item_shortcut)
+							{
+								//just release item
+								o()._drag_and_drop_item = nullptr;
+								o()._drag_and_drop_item_shortcut = nullptr;
+							}
+							else
+							{
+								//to do: there will be some special logic for placing item over containers for example (so we put item inside instead of exchange picked items)
+								//for now just exchange items...
+
+								//EXCHANGE LOGIC
+								{
+									//place item in non empty slot and pick up new item
+									o()._inspector_items[inventory_panel_top_scroll.items_visible_first_index + highlighted_slot_index] = *o()._drag_and_drop_item;
+
+									//we loose shortcut here (if was), but pick up new item,
+									//so we can create new shortcut if place it in inspector, or not otherwise...
+									if (o()._drag_and_drop_item_shortcut != nullptr)
+									{
+										*(o()._drag_and_drop_item_shortcut) = 0;
+										o()._drag_and_drop_item_shortcut = nullptr;
+									}
+
+
+									o()._drag_and_drop_item = o()._inspector_items_in_slots[highlighted_slot_index];
+								}
+							}
+						}
+
+						o()._inspector_recache_icons = true;
+					}
+				}
+			}
+
+			
+
+			for (int i = 0; i < 5; i++)
+			{
+				if (o()._inspector_items_in_slots[i] == nullptr)
+				{
+					ok::ui::Image(inventory_panel_top.ptr(), &spr_empty_slot_32, i * 42.f);
+				}
+				else
+				{
+					ok::ui::Image(inventory_panel_top.ptr(), &spr_full_slot_32, i * 42.f);
+
+					if (o()._inspector_items_in_slots[i] == o()._drag_and_drop_item)
+					{
+						ok::ui::PushEffect_Fade(0.5f);
+						{
+							ok::ui::Image(inventory_panel_top.ptr(), &o()._GetIconCache(i, 0), i * 42.f + 2.f, 2.f);
+						}
+						ok::ui::PopEffect_Fade();
+					}
+					else
+					{
+						ok::ui::Image(inventory_panel_top.ptr(), &o()._GetIconCache(i, 0), i * 42.f + 2.f, 2.f);
+					}
+					
+				}
+			}
+		}
+		ok::ui::PopTranslate();
+
 	}
 	ok::ui::PopTranslate();
 
-	//test
-	/*Zoner::ShipBlueprint* blueprint = Zoner::IGame::o().GetShipBlueprints()["nomad"];
-	o()._CacheIcon(blueprint, 0, 0);
-
-	ok::ui::widget w;
-	ok::ui::PushTranslate(0, 0);
-	ok::ui::Image(w.ptr(), &o()._GetIconCache(0, 0));
-	//ok::ui::Image(w.ptr(), o()._icons_cache_64px_tex);
-	ok::ui::PopTranslate();*/
-
-	//ok::ui::EndUI();
-
 	ok::ui::PopNonActivable();
+
+	//inspectors changes here
+	
+	//extend inspector small slots
+	if (o()._inspector_items_in_slots[4] != nullptr &&
+		inventory_panel_top_scroll.items_visible_first_index + 4 == o()._inspector_items.size() - 1)
+	{
+		o()._inspector_items.push_back(Zoner::UID());
+	}
+
+	//Warning: ne obnovlyaetsa Scroll t.k. on eto delaet tolko esli mishka nagata, nado kak to forsirovat
+	//shrink inspector small slots
+	while (
+		o()._inspector_items.size() > 5 &&
+		o()._inspector_items[o()._inspector_items.size() - 1] == 0 &&
+		o()._inspector_items[o()._inspector_items.size() - 2] == 0)
+	{
+		o()._inspector_items.pop_back();
+	}
 }
 
 void Zoner::SpaceScreenGUI::Update_Item_Spacecraft(float dt)
@@ -660,6 +822,12 @@ void Zoner::SpaceScreenGUI::Create_Inspector()
 
 	//first item is always ship hull
 	o()._inspector_items[0] = *(player_ship->this_item);
+	/*o()._inspector_items.push_back(*(player_ship->this_item));
+	o()._inspector_items.push_back(*(player_ship->this_item));
+	o()._inspector_items.push_back(*(player_ship->this_item));
+	o()._inspector_items.push_back(*(player_ship->this_item));
+	o()._inspector_items.push_back(*(player_ship->this_item));
+	o()._inspector_items.push_back(*(player_ship->this_item));*/
 
 	o()._inspector_recache_icons = true;
 }
