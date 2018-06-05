@@ -402,6 +402,12 @@ ok::ui::widget_state & ok::ui::ScrollHorizontal(
 	else
 	out__items_visible_first_index = static_cast<int>(glm::floor((out__scroll_button_relative_position / (width - out__scroll_button_relative_size)) * static_cast<float>(items_total- items_visible_count)));
 
+	//always keep scroll button inside of bounds
+	if (out__scroll_button_relative_position + out__scroll_button_relative_size > x + width)
+	{
+		out__scroll_button_relative_position += (x + width) - (out__scroll_button_relative_position + out__scroll_button_relative_size);
+	}
+
 	return o()._widget_state;
 }
 

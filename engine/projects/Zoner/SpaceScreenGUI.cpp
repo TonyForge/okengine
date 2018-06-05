@@ -20,6 +20,12 @@ void Zoner::SpaceScreenGUI::Update(float dt)
 		o()._icons_cache_64px_tex = new ok::graphics::Texture(o()._icons_cache_64px);
 	}
 
+	if (o()._item_snapshot == nullptr)
+	{
+		o()._item_snapshot = new ok::graphics::RenderTarget(256, 256, true, true, false, true);
+		o()._item_snapshot_tex = new ok::graphics::Texture(o()._item_snapshot);
+	}
+
 	if (Zoner::IGame::o().StateTrue(Zoner::GameStates::InspectorSwitch))
 	{
 		if (Zoner::IGame::o().StateFalse(Zoner::GameStates::InspectorVisible))
@@ -476,6 +482,12 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 		}
 		ok::ui::PopTranslate();
 
+		ok::ui::PushTranslate(136.f, 59.f);
+		{
+
+		}
+		ok::ui::PopTranslate();
+
 	}
 	ok::ui::PopTranslate();
 
@@ -490,7 +502,6 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 		o()._inspector_items.push_back(Zoner::UID());
 	}
 
-	//Warning: ne obnovlyaetsa Scroll t.k. on eto delaet tolko esli mishka nagata, nado kak to forsirovat
 	//shrink inspector small slots
 	while (
 		o()._inspector_items.size() > 5 &&
@@ -902,7 +913,7 @@ void Zoner::SpaceScreenGUI::_CacheIcon(ok::GameObject * blueprint, int slot_x, i
 	camera.EndScissorTest();
 	ok::graphics::Camera::PopCamera();
 
-	_container.AddChild(blueprint);
+	//_container.AddChild(blueprint);
 
 	_container.BeginTransform();
 	_container.SetScale(glm::vec3(1.f, 1.f, 1.f));
@@ -982,6 +993,133 @@ ok::graphics::SpriteInfo Zoner::SpaceScreenGUI::_GetIconCache(int slot_x, int sl
 	sprite.hotspot.x = 0.f;
 	sprite.hotspot.y = 0.f;
 	
+	sprite.scale.x = 0.5f;
+	sprite.scale.y = 0.5f;
+
+	return sprite;
+}
+
+ok::graphics::SpriteInfo Zoner::SpaceScreenGUI::_SnapshotItem(Zoner::IItem * item, ok::Transform & orientation, int snapshot_size_px, int snapshot_border_px)
+{
+	bool skip_rendering = false;
+	//int rendering_size
+
+	if (item == _item_snapshot_prev_ptr)
+	{
+		glm::vec3 rotation_delta = glm::abs(orientation.GetRotation() - _item_snapshot_prev_rotation);
+		if (rotation_delta.x < 1.f && rotation_delta.y < 1.f && rotation_delta.z < 1.f)
+			skip_rendering = true;
+	}
+
+	_item_snapshot_prev_ptr = item;
+	_item_snapshot_prev_rotation = orientation.GetRotation();
+
+	if (skip_rendering)
+	{
+		//do nothing
+	}
+	else
+	{
+		ok::GameObject* model = nullptr;
+
+		if (item->_blueprint_item == nullptr)
+		{
+			//do nothing
+		}
+		else
+		{
+			model = item->_blueprint_item;
+		}
+
+		if (item->_blueprint_spacecraft == nullptr)
+		{
+			//do nothing
+		}
+		else
+		{
+			model = item->_blueprint_spacecraft;
+		}
+
+		if (model == nullptr)
+		{
+			return ok::graphics::SpriteInfo();
+		}
+		else
+		{
+			const glm::vec3 blueprint_rotation(90.f - 30.f, -41.5f, -20.18f);
+
+			_item_snapshot->BindTarget();
+
+			ok::graphics::Camera camera(ok::graphics::CameraCoordinateSystem::Cartesian);
+			camera.SetProjectionOrtho(256.f, 256.f, 1.f, 1000.f);
+
+			camera.BeginTransform();
+			camera.SetPosition(glm::vec3(0.f, 0.f, -500.0f));
+			camera.EndTransform(false);
+
+			ok::Transform _container;
+
+			_container.AddChild(model);
+
+			_container.BeginTransform();
+			_container.SetRotation(blueprint_rotation + orientation.GetRotation());
+			_container.EndTransform(true);
+
+			glm::vec4 bounds;
+			_CalculateBlueprintBounds(model, bounds);
+
+			bounds.x -= 2.f;
+			bounds.y -= 2.f;
+			bounds.z += 2.f;
+			bounds.w += 2.f;
+
+			glm::vec3 bounder_center((bounds.x + bounds.z)*0.5f, (bounds.y + bounds.w)*0.5f, 0.f);
+
+			float scale = snapshot_size_px / glm::max(bounds.z - bounds.x, bounds.w - bounds.y);
+
+
+			_container.BeginTransform();
+			_container.SetScale(glm::vec3(1.f, 1.f, 1.f) * scale);
+			_container.SetPosition(-bounder_center*scale + glm::vec3(static_cast<float>(snapshot_size_px)*0.5f, static_cast<float>(snapshot_size_px)*0.5f, 0.f));
+			_container.EndTransform(true);
+
+			ok::graphics::Camera::PushCamera(&camera);
+			camera.BeginScissorTest(0, 0, snapshot_size_px, snapshot_size_px);
+
+			glClearColor(0.f, 0.f, 0.f, 0.f);
+			glDepthMask(GL_TRUE);
+			glClearDepth(0.f);
+
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			ok::graphics::LayeredRenderer::instance().BeginImmediateRender();
+			model->Update(0.f);
+			ok::graphics::LayeredRenderer::instance().EndImmediateRender();
+
+			camera.EndScissorTest();
+			ok::graphics::Camera::PopCamera();
+
+			//_container.AddChild(model);
+
+			_container.BeginTransform();
+			_container.SetScale(glm::vec3(1.f, 1.f, 1.f));
+			_container.SetPosition(glm::vec3(0.f, 0.f, 0.f));
+			_container.SetRotation(glm::vec3(0.f, 0.f, 0.f));
+			_container.EndTransform(true);
+
+			_container.RemoveChild(model);
+
+			_item_snapshot->UnbindTarget();
+		}
+	}
+	
+
+	ok::graphics::SpriteInfo sprite;
+
+	sprite.rect = ok::graphics::TextureRect(_item_snapshot_tex, 0, 0, snapshot_size_px, snapshot_size_px);
+	sprite.hotspot.x = 0.f;
+	sprite.hotspot.y = 0.f;
+
 	sprite.scale.x = 0.5f;
 	sprite.scale.y = 0.5f;
 
