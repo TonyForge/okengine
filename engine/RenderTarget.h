@@ -15,6 +15,11 @@ namespace ok
 			void UnbindTarget();
 			unsigned int GetTexture_Color();
 			glm::ivec2 GetSize();
+			static void CopyColorBetween(
+				ok::graphics::RenderTarget& from,
+				ok::graphics::RenderTarget& to,
+				int from_x, int from_y, int to_x, int to_y,
+				int width, int height);
 		protected:
 		private:
 			bool rt_depth_enabled, rt_stencil_enabled, rt_rbo_enabled;
@@ -28,6 +33,8 @@ namespace ok
 			glm::ivec4 _previous_camera_viewport_settings;
 			glm::ivec4 _previous_gl_viewport_settings;
 			static std::vector<ok::graphics::RenderTarget*> _bind_stack;
+
+			static unsigned int exchange_framebuffer_id;
 		};
 	}
 }

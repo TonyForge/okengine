@@ -1,6 +1,7 @@
 #include "RenderTarget.h"
 
 std::vector<ok::graphics::RenderTarget*> ok::graphics::RenderTarget::_bind_stack;
+unsigned int ok::graphics::RenderTarget::exchange_framebuffer_id = 0;
 
 ok::graphics::RenderTarget::RenderTarget(int width, int height, bool smooth, bool depth_enabled, bool stencil_enabled, bool rbo_enabled)
 {
@@ -198,4 +199,27 @@ unsigned int ok::graphics::RenderTarget::GetTexture_Color()
 glm::ivec2 ok::graphics::RenderTarget::GetSize()
 {
 	return size;
+}
+
+void ok::graphics::RenderTarget::CopyColorBetween(ok::graphics::RenderTarget & from, ok::graphics::RenderTarget & to, int from_x, int from_y, int to_x, int to_y, int width, int height)
+{
+	if (exchange_framebuffer_id == 0)
+	{
+		glGenFramebuffers(1, &exchange_framebuffer_id);
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, exchange_framebuffer_id);
+	glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, from.framebuffer_color_channel, 0);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, to.framebuffer_color_channel, 0);
+	glDrawBuffer(GL_COLOR_ATTACHMENT1);
+	glBlitFramebuffer(from_x, from_y, width, height, to_x, to_y, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+	if (_bind_stack.size() > 0)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, _bind_stack.back()->framebuffer_id);
+	}
+	else
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
 }

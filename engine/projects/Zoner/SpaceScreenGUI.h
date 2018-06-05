@@ -41,20 +41,12 @@ namespace Zoner
 		void _CalculateBlueprintBounds(ok::Transform* part, glm::vec4 & bounds);
 		ok::graphics::SpriteInfo _GetIconCache(int slot_x, int slot_y);
 
-		ok::graphics::SpriteInfo _SnapshotItem(Zoner::IItem* item, ok::Transform& orientation, int snapshot_size_px, int snapshot_border_px);
-		//void _DoItemViewer(Zoner::IItem* item, float dt);
-		
 		//512x512, 32x32 in double resolution for supersampling, 8x8 slots
 		//0..4 - small slots of inspector
 		//5 - drag n drop icon
 		//6 .. 63 - other icons (41 for container, 15 for ship etc)
 		ok::graphics::RenderTarget* _icons_cache_64px = nullptr; 
 		ok::graphics::Texture* _icons_cache_64px_tex = nullptr;
-
-		ok::graphics::RenderTarget* _item_snapshot = nullptr; //256x256px (64x64px, 80x80px and up to 128x128 final resolution with supersampling)
-		ok::graphics::Texture* _item_snapshot_tex = nullptr;
-		glm::vec3 _item_snapshot_prev_rotation;
-		Zoner::IItem* _item_snapshot_prev_ptr = nullptr;
 
 		bool _initialized = false;
 
