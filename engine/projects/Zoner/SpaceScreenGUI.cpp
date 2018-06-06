@@ -61,6 +61,7 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 	static ok::ui::widget inventory_panel_top_button_close;
 	static ok::ui::widget inventory_panel_top_button_eject;
 	static ok::ui::widget inventory_panel_top_small_slot;
+	static ok::ui::widget inventory_panel_top_big_slot;
 
 	struct inventory_panel_top_scroll_struct
 	{
@@ -479,6 +480,73 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 		//big slot
 		ok::ui::PushTranslate(136.f, 59.f);
 		{
+			ok::ui::PushNonActivable(false);
+			ok::ui::Dummy(inventory_panel_top_big_slot.ptr(), 0.f, 0.f, 63.f, 63.f);
+			ok::ui::PopNonActivable();
+
+			if (o()._drag_and_drop_item == nullptr)
+			{
+				if (ok::ui::ws().mouse_inside)
+				{
+					if (ok::ui::ws().on_activate)
+					{
+						if (o()._inspector_big_slot_item != nullptr)
+						{
+							o()._inspector_big_slot_item = nullptr;
+
+							//Close interface for this item
+						}
+					}
+				}
+			}
+			else
+			{
+				if (ok::ui::ws().mouse_inside)
+				{
+					if (ok::ui::ws().on_activate)
+					{
+						if (o()._inspector_big_slot_item == nullptr)
+						{
+							//place item in empty slot
+							o()._inspector_big_slot_item = o()._drag_and_drop_item;
+
+							o()._drag_and_drop_item = nullptr;
+							o()._drag_and_drop_item_shortcut = nullptr;
+
+							//Open interface for this item
+						}
+					}
+				}
+			}
+			
+			if (o()._inspector_big_slot_item == nullptr)
+			{
+				//do nothing
+			}
+			else
+			{
+				ok::GameObject* _blueprint = nullptr;
+
+				if (o()._inspector_big_slot_item->_blueprint_item != nullptr)
+				{
+					_blueprint = o()._inspector_big_slot_item->_blueprint_item;
+				}
+				else if (o()._inspector_big_slot_item->_blueprint_spacecraft != nullptr)
+				{
+					_blueprint = o()._inspector_big_slot_item->_blueprint_spacecraft;
+				}
+
+				if (_blueprint != nullptr)
+				{
+					ok::ui::FlushBatch();
+					//scissor is broken (fullscreen multisampling done via 2x resolution and scissor doesnt know about this)
+					//somehow scissor come from right down corner in screen mode O_o
+					//ok::ui::PushCrop(0.f, 0.f, 663.f, 663.f);
+					ok::ui::Model(_blueprint, glm::vec3(0.f, o().rot1, 0.f), glm::vec3(90.f - 30.f, -41.5f, -20.18f), glm::vec3(200.f, 200.f, 200.f), 63.f / 2.f, 63.f / 2.f);
+					//ok::ui::PopCrop();
+				}				
+			}
+
 			//ok::graphics::RenderTarget::CopyColorBetween(*o()._icons_cache_64px, *o()._item_snapshot, 0, 0, 0, 0, 1, 1);
 		}
 		ok::ui::PopTranslate();
@@ -489,7 +557,7 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 	ok::ui::PopNonActivable();
 
 	//inspectors changes here
-	
+	o().rot1 += dt*30.f;
 	//extend inspector small slots
 	if (o()._inspector_items_in_slots[4] != nullptr &&
 		inventory_panel_top_scroll.items_visible_first_index + 4 == o()._inspector_items.size() - 1)

@@ -9,6 +9,7 @@
 #include "Material.h"
 #include "GameObject.h"
 #include "TextBatch.h"
+#include "LayeredRenderer.h"
 
 namespace ok
 {
@@ -35,6 +36,7 @@ namespace ok
 
 		static void BeginUI(int screen_width, int screen_height);
 		static void EndUI();
+		static void FlushBatch();
 
 		static void PushCrop(float left, float top, float width, float height);
 		static void PopCrop();
@@ -74,7 +76,9 @@ namespace ok
 		//no rotations, scales here... smooth disable recommended
 		static ok::ui::widget_state& Blit(ok::ui::widget_ptr widget, ok::graphics::Texture* texture, float x = 0.f, float y = 0.f);
 		static ok::ui::widget_state& Blit(ok::ui::widget_ptr widget, ok::graphics::SpriteInfo* sprite, float x = 0.f, float y = 0.f);
-		
+
+		static void Model(ok::GameObject* model, glm::vec3 euler_angles, glm::vec3 scale, float x = 0.f, float y = 0.f);
+		static void Model(ok::GameObject* model, glm::vec3 euler_angles_pre, glm::vec3 euler_angles_post, glm::vec3 scale, float x = 0.f, float y = 0.f);
 
 		static ok::ui::widget_state& Dummy(ok::ui::widget_ptr widget, float x, float y, float width, float height);
 		static ok::ui::widget_state& ScrollHorizontal(

@@ -47,7 +47,11 @@ namespace ok
 			bool mV_dirty;
 			bool mP_dirty;
 			bool perspective_enabled;
-			
+			bool _triangle_order_ccw = false;
+			bool _triangle_order_cw = false;
+			static bool _current_triangle_order_ccw;
+			static bool _current_triangle_order_cw;
+
 			ok::graphics::CameraCoordinateSystem _coordinate_system;
 
 			void _SetCurrent();

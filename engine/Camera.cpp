@@ -15,6 +15,9 @@ int ok::graphics::Camera::_gl_viewport_y;
 int ok::graphics::Camera::_gl_viewport_w;
 int ok::graphics::Camera::_gl_viewport_h;
 
+bool ok::graphics::Camera::_current_triangle_order_ccw = false;
+bool ok::graphics::Camera::_current_triangle_order_cw = false;
+
 ok::graphics::Camera::Camera(ok::graphics::CameraCoordinateSystem coordinate_system) : mView(1.0f), mProj(1.0f), mVP(1.0f), _coordinate_system(coordinate_system)
 {
 	mP_dirty = false;
@@ -35,23 +38,31 @@ void ok::graphics::Camera::SetProjectionOrtho(float width, float height, float c
 	{
 		mProj = glm::orthoRH<float>(left, right, bottom, top, clip_plane_near, clip_plane_far);
 		mProj = glm::scale(mProj, glm::vec3(1.0f, -1.0f, 1.0f));
-		glFrontFace(GL_CW);
+		_triangle_order_cw = true;
+		_triangle_order_ccw = false;
+		//glFrontFace(GL_CW);
 	}
 	else if (_coordinate_system == ok::graphics::CameraCoordinateSystem::CartesianCenter)
 	{
 		mProj = glm::orthoRH<float>(left - (right - left) * .5f, left + (right - left) * .5f, bottom - (top - bottom) * .5f, bottom + (top - bottom) * .5f, clip_plane_near, clip_plane_far);
 		mProj = glm::scale(mProj, glm::vec3(1.0f, -1.0f, 1.0f));
-		glFrontFace(GL_CW);
+		_triangle_order_cw = true;
+		_triangle_order_ccw = false;
+		//glFrontFace(GL_CW);
 	}
 	else if (_coordinate_system == ok::graphics::CameraCoordinateSystem::Screen)
 	{
 		mProj = glm::orthoRH<float>(left, right, bottom - (top - bottom), top - (top - bottom), clip_plane_near, clip_plane_far);
-		glFrontFace(GL_CCW);
+		_triangle_order_cw = false;
+		_triangle_order_ccw = true;
+		//glFrontFace(GL_CCW);
 	}
 	else if (_coordinate_system == ok::graphics::CameraCoordinateSystem::ScreenCenter)
 	{
 		mProj = glm::orthoRH<float>(left - (right - left) * .5f, left + (right - left) * .5f, bottom - (top - bottom) * .5f, bottom + (top - bottom) * .5f, clip_plane_near, clip_plane_far);
-		glFrontFace(GL_CCW);
+		_triangle_order_cw = false;
+		_triangle_order_ccw = true;
+		//glFrontFace(GL_CCW);
 	}
 	
 	projection_width = width;
@@ -81,11 +92,15 @@ void ok::graphics::Camera::SetProjectionPersp(float width, float height, float f
 		)
 	{
 		mProj = glm::scale(mProj, glm::vec3(1.0f, -1.0f, 1.0f));
-		glFrontFace(GL_CW);
+		_triangle_order_cw = true;
+		_triangle_order_ccw = false;
+		//glFrontFace(GL_CW);
 	}
 	else
 	{
-		glFrontFace(GL_CCW);
+		_triangle_order_cw = false;
+		_triangle_order_ccw = true;
+		//glFrontFace(GL_CCW);
 	}
 
 	projection_width = width;
@@ -162,6 +177,20 @@ void ok::graphics::Camera::Update(float dt)
 void ok::graphics::Camera::_SetCurrent()
 {
 	_currentCamera = this;
+
+	if (_currentCamera->_triangle_order_ccw && (_current_triangle_order_cw || !_current_triangle_order_ccw))
+	{
+		_current_triangle_order_cw = false;
+		_current_triangle_order_ccw = true;
+		glFrontFace(GL_CCW);
+	}
+
+	if (_currentCamera->_triangle_order_cw && (_current_triangle_order_ccw || !_current_triangle_order_cw))
+	{
+		_current_triangle_order_cw = true;
+		_current_triangle_order_ccw = false;
+		glFrontFace(GL_CW);
+	}
 }
 
 ok::graphics::Camera * ok::graphics::Camera::GetCurrent()
@@ -172,6 +201,10 @@ ok::graphics::Camera * ok::graphics::Camera::GetCurrent()
 void ok::graphics::Camera::_ResetCurrent()
 {
 	_currentCamera = nullptr;
+
+	_current_triangle_order_cw = false;
+	_current_triangle_order_ccw = true;
+	glFrontFace(GL_CCW);
 }
 
 void ok::graphics::Camera::SetGLViewport(int x, int y, int w, int h)

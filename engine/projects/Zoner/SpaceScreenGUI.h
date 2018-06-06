@@ -58,6 +58,7 @@ namespace Zoner
 		Zoner::IItem* _drag_and_drop_item = nullptr;
 		Zoner::UID* _drag_and_drop_item_shortcut = nullptr; //example of shortcuts is inspector small slot (keeps shortcut, not item itself)
 		
+		float rot1 = 0.f;
 		//void* _drag_and_drop_item_location = nullptr;
 		//bool _drag_and_drop_item_live_in_inspector = false;
 	};

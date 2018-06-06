@@ -20,11 +20,10 @@ void ok::ui::BeginUI(int screen_width, int screen_height)
 		o()._batch->SetMaterial(o()._default_material);
 	}
 
-	o()._camera.SetProjectionOrtho(static_cast<float>(screen_width), static_cast<float>(screen_height), -1, 1);
+	o()._camera.SetProjectionOrtho(static_cast<float>(screen_width), static_cast<float>(screen_height), 1, 1000);
 
 	o()._camera.BeginTransform();
-	o()._camera.SetPosition(glm::vec3(0.f, 0.f, -1.f));
-	o()._camera.SetForward(glm::vec3(0.f, 0.f, 1.f));
+	o()._camera.SetPosition(glm::vec3(0.f, 0.f, -500.f));
 	o()._camera.EndTransform(false);
 
 
@@ -62,12 +61,21 @@ void ok::ui::EndUI()
 	ok::graphics::Camera::PopCamera();
 }
 
+void ok::ui::FlushBatch()
+{
+	o()._batch->BatchEnd();
+	o()._batch->BatchBegin();
+}
+
 void ok::ui::PushCrop(float left, float top, float width, float height)
 {
-	glm::mat3 inv_m = glm::inverse(o()._transform_stack.back());
+	//glm::mat3 inv_m = glm::inverse(o()._transform_stack.back());
+	//glm::vec2 transformed_position = o()._transform_stack.back() * glm::vec3(x, y, 1.f);
 
-	glm::vec2 left_top = inv_m * glm::vec3(left, top, 1.f);
-	glm::vec2 right_bottom = inv_m * glm::vec3(left + width, top + height, 1.f);
+	glm::mat3& m = o()._transform_stack.back();
+
+	glm::vec2 left_top = m * glm::vec3(left, top, 1.f);
+	glm::vec2 right_bottom = m * glm::vec3(left + width, top + height, 1.f);
 
 	o()._camera.BeginScissorTest(
 		static_cast<int>(left_top.x),
@@ -366,6 +374,57 @@ ok::ui::widget_state & ok::ui::Blit(ok::ui::widget_ptr widget, ok::graphics::Spr
 	o()._batch->Blit(sprite, static_cast<int>(glm::floor(transformed_position.x)), static_cast<int>(glm::floor(transformed_position.y)));
 
 	return o()._widget_state;
+}
+
+void ok::ui::Model(ok::GameObject * model, glm::vec3 euler_angles, glm::vec3 scale, float x, float y)
+{
+	ok::Transform transform;
+	glm::vec2 transformed_position = o()._transform_stack.back() * glm::vec3(x, y, 1.f);
+	
+
+	ok::Transform* model_parent = model->GetParent();
+
+	transform.AddChild(model);
+
+	transform.BeginTransform();
+	transform.SetPosition(glm::vec3(transformed_position, 0.f));
+	transform.SetRotation(euler_angles);
+	transform.SetScale(scale);
+	transform.EndTransform(true);
+	
+	ok::graphics::LayeredRenderer::instance().BeginImmediateRender();
+	model->Update(0.f);
+	ok::graphics::LayeredRenderer::instance().EndImmediateRender();
+
+	transform.BeginTransform();
+	transform.SetPosition(glm::vec3(0.f, 0.f, 0.f));
+	transform.SetRotation(glm::vec3(0.f, 0.f, 0.f));
+	transform.SetScale(glm::vec3(1.f, 1.f, 1.f));
+	transform.EndTransform(true);
+
+	model->SetParent(model_parent);
+}
+
+void ok::ui::Model(ok::GameObject * model, glm::vec3 euler_angles_pre, glm::vec3 euler_angles_post, glm::vec3 scale, float x, float y)
+{
+	Transform pre_rotation;
+	Transform post_rotation;
+
+	pre_rotation.BeginTransform();
+	pre_rotation.SetRotation(euler_angles_pre);
+	pre_rotation.EndTransform(false);
+
+	post_rotation.AddChild(&pre_rotation);
+
+	post_rotation.BeginTransform();
+	post_rotation.SetRotation(euler_angles_post);
+	post_rotation.EndTransform(true);
+	
+	pre_rotation.BeginTransform(ok::TransformSpace::WorldSpace);
+
+		Model(model, pre_rotation.GetRotation(), scale, x, y);
+
+	pre_rotation.EndTransform(false);
 }
 
 ok::ui::widget_state & ok::ui::Dummy(ok::ui::widget_ptr widget, float x, float y, float width, float height)

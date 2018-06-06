@@ -71,6 +71,8 @@ namespace ok
 		void SetParent(ok::Transform* parent, bool forcedKeepWorldTransformValue);
 		void RemoveChild(ok::Transform* child, bool forcedKeepWorldTransformValue);
 
+		ok::Transform* GetParent();
+
 		void UpdateAbsoluteTransform(bool updateChildrens = true);
 		glm::mat4 GetAbsoluteTransformMatrix();
 

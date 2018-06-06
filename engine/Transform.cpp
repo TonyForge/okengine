@@ -110,6 +110,11 @@ void ok::Transform::RemoveChild(ok::Transform * child, bool forcedKeepWorldTrans
 	_RemoveChild(child, forcedKeepWorldTransformValue);
 }
 
+ok::Transform * ok::Transform::GetParent()
+{
+	return _parent;
+}
+
 void ok::Transform::_AddChild(ok::Transform * child, bool _keepWorldTransform)
 {
 	if (child == nullptr || child->_parent == this) return;
