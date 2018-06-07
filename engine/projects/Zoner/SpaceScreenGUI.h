@@ -13,10 +13,11 @@
 #include "IGame.h"
 #include "IShip.h"
 #include "IItem.h"
+#include "ISpaceScreenGUI.h"
 
 namespace Zoner
 {
-	class SpaceScreenGUI
+	class SpaceScreenGUI : public Zoner::ISpaceScreenGUI
 	{
 	public:
 
@@ -30,11 +31,16 @@ namespace Zoner
 
 		static Zoner::SpaceScreenGUI& instance();
 		static Zoner::SpaceScreenGUI& o();
+
+		int ReserveIconsCache(int size_x, int size_y);
+		void ReleaseIconsCache(int cache_id);
+		void CacheIcon(int cache_id, ok::GameObject* blueprint, int slot_x, int slot_y);
+		ok::graphics::SpriteInfo GetIconCache(int cache_id, int slot_x, int slot_y);
 	protected:
 	private:
-		SpaceScreenGUI() {}
+		SpaceScreenGUI() { _instance = this; }
 		~SpaceScreenGUI() {}
-		Zoner::SpaceScreenGUI(Zoner::SpaceScreenGUI const&) {}
+		Zoner::SpaceScreenGUI(Zoner::SpaceScreenGUI const&) { _instance = this; }
 		Zoner::SpaceScreenGUI& operator= (Zoner::SpaceScreenGUI const&) {}
 
 		void _CacheIcon(ok::GameObject* blueprint, int slot_x, int slot_y);
@@ -48,17 +54,25 @@ namespace Zoner
 		ok::graphics::RenderTarget* _icons_cache_64px = nullptr; 
 		ok::graphics::Texture* _icons_cache_64px_tex = nullptr;
 
+		struct _IconsCacheReserve
+		{
+			int size_x, size_y, total_size, first_index;
+		};
+
+		std::vector<_IconsCacheReserve> _icons_cache_reserve_records;
+
 		bool _initialized = false;
 
 		std::vector<Zoner::UID> _inspector_items;
 		std::vector<Zoner::IItem*> _inspector_items_in_slots;
 		Zoner::IItem* _inspector_big_slot_item = nullptr;
+		float _inspector_big_slot_item_rotation = 0.f;
 		bool _inspector_recache_icons = false;
+
 
 		Zoner::IItem* _drag_and_drop_item = nullptr;
 		Zoner::UID* _drag_and_drop_item_shortcut = nullptr; //example of shortcuts is inspector small slot (keeps shortcut, not item itself)
-		
-		float rot1 = 0.f;
+
 		//void* _drag_and_drop_item_location = nullptr;
 		//bool _drag_and_drop_item_live_in_inspector = false;
 	};

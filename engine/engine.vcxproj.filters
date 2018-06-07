@@ -201,6 +201,9 @@
     <ClCompile Include="projects\Zoner\Item.cpp">
       <Filter>projects\Zoner</Filter>
     </ClCompile>
+    <ClCompile Include="projects\Zoner\ISpaceScreenGUI.cpp">
+      <Filter>projects\Zoner\Interfaces</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -376,6 +379,9 @@
     </ClInclude>
     <ClInclude Include="projects\Zoner\Item.h">
       <Filter>projects\Zoner</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Zoner\ISpaceScreenGUI.h">
+      <Filter>projects\Zoner\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

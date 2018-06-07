@@ -2,6 +2,7 @@
 
 #include "IItem.h"
 #include "..\..\Assets.h"
+#include "ISpaceScreenGUI.h"
 
 namespace Zoner
 {

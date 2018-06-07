@@ -4,6 +4,8 @@ void Zoner::ItemCargoHold::InitBlocks(int blocks_count)
 {
 	_items.resize(10 * blocks_count);
 	std::fill(_items.begin(), _items.end(), nullptr);
+
+	//Zoner::ISpaceScreenGUI::o().
 }
 
 void Zoner::ItemCargoHold::PackItems()

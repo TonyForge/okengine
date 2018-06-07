@@ -407,24 +407,42 @@ void ok::ui::Model(ok::GameObject * model, glm::vec3 euler_angles, glm::vec3 sca
 
 void ok::ui::Model(ok::GameObject * model, glm::vec3 euler_angles_pre, glm::vec3 euler_angles_post, glm::vec3 scale, float x, float y)
 {
+	glm::vec2 transformed_position = o()._transform_stack.back() * glm::vec3(x, y, 1.f);
+	ok::Transform* model_parent = model->GetParent();
+
 	Transform pre_rotation;
 	Transform post_rotation;
 
+	pre_rotation.AddChild(model);
+
 	pre_rotation.BeginTransform();
 	pre_rotation.SetRotation(euler_angles_pre);
-	pre_rotation.EndTransform(false);
+	pre_rotation.EndTransform(true);
 
 	post_rotation.AddChild(&pre_rotation);
 
 	post_rotation.BeginTransform();
+	post_rotation.SetPosition(glm::vec3(transformed_position, 0.f));
+	post_rotation.SetScale(scale);
 	post_rotation.SetRotation(euler_angles_post);
 	post_rotation.EndTransform(true);
-	
-	pre_rotation.BeginTransform(ok::TransformSpace::WorldSpace);
 
-		Model(model, pre_rotation.GetRotation(), scale, x, y);
+	ok::graphics::LayeredRenderer::instance().BeginImmediateRender();
+	model->Update(0.f);
+	ok::graphics::LayeredRenderer::instance().EndImmediateRender();
 
-	pre_rotation.EndTransform(false);
+	post_rotation.BeginTransform();
+	post_rotation.SetPosition(glm::vec3(0.f, 0.f, 0.f));
+	post_rotation.SetRotation(glm::vec3(0.f, 0.f, 0.f));
+	post_rotation.SetScale(glm::vec3(1.f, 1.f, 1.f));
+	post_rotation.EndTransform(true);
+
+	pre_rotation.SetParent(nullptr);
+	pre_rotation.BeginTransform();
+	pre_rotation.SetRotation(glm::vec3(0.f, 0.f, 0.f));
+	pre_rotation.EndTransform(true);
+
+	model->SetParent(model_parent);
 }
 
 ok::ui::widget_state & ok::ui::Dummy(ok::ui::widget_ptr widget, float x, float y, float width, float height)

@@ -539,15 +539,12 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 				if (_blueprint != nullptr)
 				{
 					ok::ui::FlushBatch();
-					//scissor is broken (fullscreen multisampling done via 2x resolution and scissor doesnt know about this)
-					//somehow scissor come from right down corner in screen mode O_o
+
 					ok::ui::PushCrop(0.f, 0.f, 63.f, 63.f);
-					ok::ui::Model(_blueprint, glm::vec3(0.f, o().rot1, 0.f), glm::vec3(90.f - 30.f, -41.5f, -20.18f), glm::vec3(2.f, 2.f, 2.f), 63.f / 2.f, 63.f / 2.f);
+					ok::ui::Model(_blueprint, glm::vec3(0.f, 0.f, o()._inspector_big_slot_item_rotation), glm::vec3(47.3f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f), 63.f / 2.f, 63.f / 2.f);
 					ok::ui::PopCrop();
 				}				
 			}
-
-			//ok::graphics::RenderTarget::CopyColorBetween(*o()._icons_cache_64px, *o()._item_snapshot, 0, 0, 0, 0, 1, 1);
 		}
 		ok::ui::PopTranslate();
 
@@ -557,7 +554,11 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 	ok::ui::PopNonActivable();
 
 	//inspectors changes here
-	o().rot1 += dt*30.f;
+
+	//update item rotation
+	o()._inspector_big_slot_item_rotation += dt*30.f;
+	if (o()._inspector_big_slot_item_rotation > 360.f) o()._inspector_big_slot_item_rotation = 0.f;
+
 	//extend inspector small slots
 	if (o()._inspector_items_in_slots[4] != nullptr &&
 		inventory_panel_top_scroll.items_visible_first_index + 4 == o()._inspector_items.size() - 1)
