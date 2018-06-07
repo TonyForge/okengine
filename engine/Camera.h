@@ -62,6 +62,7 @@ namespace ok
 			
 			float projection_width, projection_height;
 		public:
+			static float _fixed_resolution_resample_scale;
 			static bool _fixed_resolution_enabled;
 			static bool _keep_aspect_ratio_enabled;
 			static int _viewport_x, _viewport_y, _viewport_w, _viewport_h;
@@ -70,7 +71,10 @@ namespace ok
 			static void SetGLViewport(float x, float y, float w, float h);
 			static void SetGLViewport(glm::ivec4& xywh);
 			static void GetGLViewport(glm::ivec4& out);
-			static int _gl_viewport_x, _gl_viewport_y, _gl_viewport_w, _gl_viewport_h; //to keep glViewport values (it is not the same as _viewport above)
+
+			//this is to keep glViewport values (it is the same as _viewport above, but i dont want to mix gl states with states of okengine camera)
+			static int _gl_viewport_x, _gl_viewport_y, _gl_viewport_w, _gl_viewport_h;
+			
 		};
 	}
 }

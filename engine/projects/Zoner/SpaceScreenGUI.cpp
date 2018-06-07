@@ -541,9 +541,9 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 					ok::ui::FlushBatch();
 					//scissor is broken (fullscreen multisampling done via 2x resolution and scissor doesnt know about this)
 					//somehow scissor come from right down corner in screen mode O_o
-					//ok::ui::PushCrop(0.f, 0.f, 663.f, 663.f);
-					ok::ui::Model(_blueprint, glm::vec3(0.f, o().rot1, 0.f), glm::vec3(90.f - 30.f, -41.5f, -20.18f), glm::vec3(200.f, 200.f, 200.f), 63.f / 2.f, 63.f / 2.f);
-					//ok::ui::PopCrop();
+					ok::ui::PushCrop(0.f, 0.f, 63.f, 63.f);
+					ok::ui::Model(_blueprint, glm::vec3(0.f, o().rot1, 0.f), glm::vec3(90.f - 30.f, -41.5f, -20.18f), glm::vec3(2.f, 2.f, 2.f), 63.f / 2.f, 63.f / 2.f);
+					ok::ui::PopCrop();
 				}				
 			}
 

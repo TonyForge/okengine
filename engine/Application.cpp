@@ -99,8 +99,13 @@ void ok::Application::Run()
 
 		ok::graphics::Camera::_viewport_x = 0;
 		ok::graphics::Camera::_viewport_y = 0;
-		ok::graphics::Camera::_viewport_w = static_cast<int>(window_width);
-		ok::graphics::Camera::_viewport_h = static_cast<int>(window_height);
+		ok::graphics::Camera::_viewport_w = window_width;
+		ok::graphics::Camera::_viewport_h = window_height;
+
+		viewport_x = 0;
+		viewport_y = 0;
+		viewport_w = static_cast<float>(window_width);
+		viewport_h = static_cast<float>(window_height);
 	}
 
 	//Application Loop
@@ -145,8 +150,13 @@ void ok::Application::Run()
 
 						ok::graphics::Camera::_viewport_x = 0;
 						ok::graphics::Camera::_viewport_y = 0;
-						ok::graphics::Camera::_viewport_w = static_cast<int>(window_width);
-						ok::graphics::Camera::_viewport_h = static_cast<int>(window_height);
+						ok::graphics::Camera::_viewport_w = window_width;
+						ok::graphics::Camera::_viewport_h = window_height;
+
+						viewport_x = 0;
+						viewport_y = 0;
+						viewport_w = static_cast<float>(window_width);
+						viewport_h = static_cast<float>(window_height);
 					}
 				}
 				break;
@@ -193,23 +203,11 @@ void ok::Application::Run()
 				if (fixed_resolution_resample_enabled)
 				{
 					fixed_resolution_resample_framebuffer->BindTarget();
-					ok::graphics::Camera::SetGLViewport(
-						0, 
-						0, 
-						static_cast<int>(glm::round(static_cast<float>(screen_width) * fixed_resolution_resample_scale)),
-						static_cast<int>(glm::round(static_cast<float>(screen_height) * fixed_resolution_resample_scale)));
 				}
 				else
 				{
 					fixed_resolution_framebuffer->BindTarget();
-					ok::graphics::Camera::SetGLViewport(0, 0, screen_width, screen_height);
 				}
-
-
-				ok::graphics::Camera::_viewport_x = 0;
-				ok::graphics::Camera::_viewport_y = 0;
-				ok::graphics::Camera::_viewport_w = static_cast<int>(screen_width);
-				ok::graphics::Camera::_viewport_h = static_cast<int>(screen_height);
 			}
 
 			glClearColor(background_color.r, background_color.g, background_color.b, background_color.a);
@@ -250,8 +248,6 @@ void ok::Application::Run()
 					ok::graphics::Camera::PushCamera(&resample_camera);
 						fixed_resolution_framebuffer->BindTarget();
 
-						ok::graphics::Camera::SetGLViewport(0, 0, screen_width, screen_height);
-
 						fixed_resolution_batch->BatchBegin(1.5f);
 							ok::graphics::Texture fixed_resolution_framebuffer_texture = ok::graphics::Texture(fixed_resolution_resample_framebuffer);
 							fixed_resolution_batch->Draw(&fixed_resolution_framebuffer_texture, glm::vec2(0.f, 0.f), glm::vec2(screen_width, screen_height), false);
@@ -280,11 +276,12 @@ void ok::Application::Run()
 
 					ok::graphics::Camera::_viewport_x = 0;
 					ok::graphics::Camera::_viewport_y = 0;
-					ok::graphics::Camera::_viewport_w = static_cast<int>(window_width);
-					ok::graphics::Camera::_viewport_h = static_cast<int>(window_height);
+					ok::graphics::Camera::_viewport_w = window_width;
+					ok::graphics::Camera::_viewport_h = window_height;
 				}
 
-
+				//Draw fixed resolution render target containing game screen to window framebuffer
+				//it size is 2x2 texels because opengl default coordinate space is -1 .. 1, so it 2 texels wide
 				fixed_resolution_batch->BatchBegin(0.f);
 					ok::graphics::Texture fixed_resolution_framebuffer_texture = ok::graphics::Texture(fixed_resolution_framebuffer);
 					fixed_resolution_batch->Draw(&fixed_resolution_framebuffer_texture, glm::vec2(0.f, 0.f), glm::vec2(2.f, 2.f), false);
@@ -353,6 +350,7 @@ void ok::Application::LoadSettings()
 	fixed_resolution = elem->BoolAttribute("fixed_resolution", true);
 	fixed_resolution_resample_enabled = elem->BoolAttribute("fixed_resolution_resample_enabled", false);
 	fixed_resolution_resample_scale = elem->FloatAttribute("fixed_resolution_resample_scale", 1.0f);
+	ok::graphics::Camera::_fixed_resolution_resample_scale = fixed_resolution_resample_scale;
 	ok::graphics::Camera::_fixed_resolution_enabled = fixed_resolution;
 	ok::graphics::Camera::_keep_aspect_ratio_enabled = keep_aspect_ratio;
 

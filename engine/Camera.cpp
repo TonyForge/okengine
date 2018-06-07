@@ -3,6 +3,7 @@
 ok::graphics::Camera* ok::graphics::Camera::_currentCamera = nullptr;
 std::stack<ok::graphics::Camera*>  ok::graphics::Camera::_currentCamera_stack;
 bool ok::graphics::Camera::_fixed_resolution_enabled;
+float ok::graphics::Camera::_fixed_resolution_resample_scale = 1.f;
 bool ok::graphics::Camera::_keep_aspect_ratio_enabled;
 int ok::graphics::Camera::_viewport_x;
 int ok::graphics::Camera::_viewport_y;
