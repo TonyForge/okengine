@@ -26,6 +26,10 @@ namespace Zoner
 
 		virtual Zoner::IItem* FindItem(Zoner::UID& item_uid) = 0;
 		virtual void CollectItems(std::map<Zoner::UID, Zoner::IItem*>& _collection) = 0;
+
+		virtual void CreateUI() = 0;
+		virtual void UpdateUI(float dt) = 0;
+		virtual void DestroyUI() = 0;
 	private:
 	protected:
 	};
@@ -49,6 +53,10 @@ namespace Zoner
 
 		Zoner::ShipBlueprint* _blueprint_spacecraft = nullptr;
 		Zoner::ItemBlueprint* _blueprint_item = nullptr;
+
+		virtual void CreateUI() = 0;
+		virtual void UpdateUI(float dt) = 0;
+		virtual void DestroyUI() = 0;
 	private:
 	protected:
 	};

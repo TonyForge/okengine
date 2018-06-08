@@ -23,8 +23,6 @@ namespace Zoner
 
 		static void Update(float dt);
 		static void Update_Inspector(float dt);
-		static void Update_Item_Spacecraft(float dt);
-		static void Update_Item_Container(float dt);
 
 		static void Create_Inspector();
 		static void Destroy_Inspector();
@@ -65,6 +63,7 @@ namespace Zoner
 		{
 			int size_x, size_y, total_size;
 			int offset;
+			bool in_use = false;
 		};
 
 		std::vector<Zoner::SpaceScreenGUI::_IconsCacheReserve> _icons_cache_reserve_records;
@@ -77,6 +76,7 @@ namespace Zoner
 		Zoner::IItem* _inspector_big_slot_item = nullptr;
 		float _inspector_big_slot_item_rotation = 0.f;
 		bool _inspector_recache_icons = false;
+		int _inspector_icons_cache_id;
 
 
 		Zoner::IItem* _drag_and_drop_item = nullptr;

@@ -3,6 +3,9 @@
 #include "IItem.h"
 #include "..\..\Assets.h"
 #include "ISpaceScreenGUI.h"
+#include "..\..\UI.h"
+#include "..\..\GameObject.h"
+#include "IShip.h"
 
 namespace Zoner
 {
@@ -25,6 +28,10 @@ namespace Zoner
 
 		Zoner::IItem* FindItem(Zoner::UID& item_uid);
 		void CollectItems(std::map<Zoner::UID, Zoner::IItem*>& _collection);
+
+		void CreateUI();
+		void UpdateUI(float dt);
+		void DestroyUI();
 	private:
 		std::vector<Zoner::IItem*> _items; //5x2 min, 4x5x2 max
 	protected:
@@ -43,7 +50,15 @@ namespace Zoner
 		int capacity_left;
 		Zoner::IItem* container_slot = nullptr;
 		std::vector<Zoner::IItem*> equipment_slots;
+
+		void CreateUI();
+		void UpdateUI(float dt);
+		void DestroyUI();
+
+		//void SetLayout(int layout_index);
 	private:
+		int _icon_cache_size = 1;
+		int _icon_cache_id;
 	protected:
 	};
 
@@ -55,6 +70,10 @@ namespace Zoner
 
 		Zoner::IItem* FindItem(Zoner::UID& item_uid);
 		void CollectItems(std::map<Zoner::UID, Zoner::IItem*>& _collection);
+
+		void CreateUI();
+		void UpdateUI(float dt);
+		void DestroyUI();
 	protected:
 	private:
 	};
