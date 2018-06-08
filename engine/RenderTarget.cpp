@@ -223,3 +223,33 @@ void ok::graphics::RenderTarget::CopyColorBetween(ok::graphics::RenderTarget & f
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }
+
+void ok::graphics::RenderTarget::CopyColorBetweenSequenceBegin(ok::graphics::RenderTarget & from, ok::graphics::RenderTarget & to)
+{
+	if (exchange_framebuffer_id == 0)
+	{
+		glGenFramebuffers(1, &exchange_framebuffer_id);
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, exchange_framebuffer_id);
+	glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, from.framebuffer_color_channel, 0);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, to.framebuffer_color_channel, 0);
+	glDrawBuffer(GL_COLOR_ATTACHMENT1);
+}
+
+void ok::graphics::RenderTarget::CopyColorBetweenSequenceStep(int from_x, int from_y, int to_x, int to_y, int width, int height)
+{
+	glBlitFramebuffer(from_x, from_y, width, height, to_x, to_y, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+}
+
+void ok::graphics::RenderTarget::CopyColorBetweenSequenceEnd()
+{
+	if (_bind_stack.size() > 0)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, _bind_stack.back()->framebuffer_id);
+	}
+	else
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+}

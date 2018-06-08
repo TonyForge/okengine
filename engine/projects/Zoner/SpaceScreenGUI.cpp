@@ -16,7 +16,7 @@ void Zoner::SpaceScreenGUI::Update(float dt)
 
 	if (o()._icons_cache_64px == nullptr)
 	{
-		o()._icons_cache_64px = new ok::graphics::RenderTarget(512, 512, true, true, false, true);
+		o()._icons_cache_64px = new ok::graphics::RenderTarget(1024, 1024, true, true, false, true);
 		o()._icons_cache_64px_tex = new ok::graphics::Texture(o()._icons_cache_64px);
 	}
 
@@ -922,6 +922,78 @@ Zoner::SpaceScreenGUI & Zoner::SpaceScreenGUI::o()
 	return instance();
 }
 
+int Zoner::SpaceScreenGUI::ReserveIconsCache(int size_x, int size_y)
+{
+	Zoner::SpaceScreenGUI::_IconsCacheReserve reserve;
+	reserve.total_size = size_x * size_y;
+	reserve.size_x = size_x;
+	reserve.size_y = size_y;
+
+	if (o()._icons_cache_first_free_offset + reserve.total_size > o()._icons_cache_items_limit - 1) return -1; //cant reserve must crash
+
+	reserve.offset = o()._icons_cache_first_free_offset;
+	o()._icons_cache_first_free_offset += reserve.total_size;
+
+	o()._icons_cache_reserve_records.push_back(reserve);
+
+	return o()._icons_cache_reserve_records.size()-1;
+}
+
+void Zoner::SpaceScreenGUI::ReleaseIconsCache(int cache_id)
+{
+	Zoner::SpaceScreenGUI::_IconsCacheReserve reserve = o()._icons_cache_reserve_records[cache_id];
+
+	int move_shift = reserve.total_size;
+
+	bool _sequence_on = false;
+
+	for (size_t i = cache_id+1; i < o()._icons_cache_reserve_records.size(); i++)
+	{
+		if (_sequence_on == false)
+		{
+			_MoveIconCacheSeqBegin();
+			_sequence_on = true;
+		}
+		for (int item = 0; item < o()._icons_cache_reserve_records[i].total_size; i++)
+		{
+			_MoveIconCache(
+				o()._icons_cache_reserve_records[i].offset + item,
+				o()._icons_cache_reserve_records[i].offset + item - move_shift
+			);
+		}
+	}
+
+	if (_sequence_on == true)
+	{
+		_MoveIconCacheSeqEnd();
+	}
+
+	o()._icons_cache_reserve_records.erase(o()._icons_cache_reserve_records.begin() + cache_id);
+	o()._icons_cache_first_free_offset -= move_shift;
+}
+
+void Zoner::SpaceScreenGUI::CacheIcon(int cache_id, ok::GameObject * blueprint, int slot_x, int slot_y)
+{
+	Zoner::SpaceScreenGUI::_IconsCacheReserve reserve = o()._icons_cache_reserve_records[cache_id];
+	int icon_offset = reserve.offset + slot_x + slot_y * reserve.size_x;
+
+	int icon_y = icon_offset / 16;
+	int icon_x = icon_offset - icon_y * 16;
+
+	_CacheIcon(blueprint, icon_x, icon_y);
+}
+
+ok::graphics::SpriteInfo Zoner::SpaceScreenGUI::GetIconCache(int cache_id, int slot_x, int slot_y)
+{
+	Zoner::SpaceScreenGUI::_IconsCacheReserve reserve = o()._icons_cache_reserve_records[cache_id];
+	int icon_offset = reserve.offset + slot_x + slot_y * reserve.size_x;
+
+	int icon_y = icon_offset / 16;
+	int icon_x = icon_offset - icon_y * 16;
+
+	return _GetIconCache(icon_x, icon_y);
+}
+
 void Zoner::SpaceScreenGUI::_CacheIcon(ok::GameObject * blueprint, int slot_x, int slot_y)
 {
 	const glm::vec3 blueprint_rotation(90.f - 30.f, -41.5f, -20.18f);
@@ -929,7 +1001,7 @@ void Zoner::SpaceScreenGUI::_CacheIcon(ok::GameObject * blueprint, int slot_x, i
 	_icons_cache_64px->BindTarget();
 
 	ok::graphics::Camera camera(ok::graphics::CameraCoordinateSystem::Cartesian);
-	camera.SetProjectionOrtho(512.f, 512.f, 1.f, 1000.f);
+	camera.SetProjectionOrtho(1024.f, 1024.f, 1.f, 1000.f);
 
 	camera.BeginTransform();
 	camera.SetPosition(glm::vec3(0.f, 0.f, -500.0f));
@@ -1061,4 +1133,42 @@ ok::graphics::SpriteInfo Zoner::SpaceScreenGUI::_GetIconCache(int slot_x, int sl
 	sprite.scale.y = 0.5f;
 
 	return sprite;
+}
+
+void Zoner::SpaceScreenGUI::_MoveIconCache(int offset_from, int offset_to)
+{
+	int from_icon_y = offset_from / 16;
+	int from_icon_x = offset_from - from_icon_y * 16;
+
+	int to_icon_y = offset_to / 16;
+	int to_icon_x = offset_to - from_icon_y * 16;
+
+	if (o()._move_icon_cache_seq_enabled == true)
+	{
+		ok::graphics::RenderTarget::CopyColorBetweenSequenceStep(
+			from_icon_x * 64, from_icon_y * 64,
+			to_icon_x * 64, to_icon_y * 64,
+			64, 64);
+	}
+	else
+	{
+		ok::graphics::RenderTarget::CopyColorBetween(
+			*_icons_cache_64px,
+			*_icons_cache_64px,
+			from_icon_x * 64, from_icon_y * 64,
+			to_icon_x * 64, to_icon_y * 64,
+			64, 64);
+	}
+}
+
+void Zoner::SpaceScreenGUI::_MoveIconCacheSeqBegin()
+{
+	ok::graphics::RenderTarget::CopyColorBetweenSequenceBegin(*_icons_cache_64px, *_icons_cache_64px);
+	o()._move_icon_cache_seq_enabled = true;
+}
+
+void Zoner::SpaceScreenGUI::_MoveIconCacheSeqEnd()
+{
+	ok::graphics::RenderTarget::CopyColorBetweenSequenceEnd();
+	o()._move_icon_cache_seq_enabled = false;
 }

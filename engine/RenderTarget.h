@@ -22,6 +22,10 @@ namespace ok
 				ok::graphics::RenderTarget& to,
 				int from_x, int from_y, int to_x, int to_y,
 				int width, int height);
+
+			static void CopyColorBetweenSequenceBegin(ok::graphics::RenderTarget& from, ok::graphics::RenderTarget& to);
+			static void CopyColorBetweenSequenceStep(int from_x, int from_y, int to_x, int to_y, int width, int height);
+			static void CopyColorBetweenSequenceEnd();
 		protected:
 		private:
 			bool rt_depth_enabled, rt_stencil_enabled, rt_rbo_enabled;

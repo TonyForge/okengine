@@ -46,20 +46,29 @@ namespace Zoner
 		void _CacheIcon(ok::GameObject* blueprint, int slot_x, int slot_y);
 		void _CalculateBlueprintBounds(ok::Transform* part, glm::vec4 & bounds);
 		ok::graphics::SpriteInfo _GetIconCache(int slot_x, int slot_y);
+		void _MoveIconCache(int offset_from, int offset_to);
 
-		//512x512, 32x32 in double resolution for supersampling, 8x8 slots
+		bool _move_icon_cache_seq_enabled = false;
+		void _MoveIconCacheSeqBegin();
+		void _MoveIconCacheSeqEnd();
+
+		//1024x1024, 32x32 in double resolution for supersampling, 16x16 slots
 		//0..4 - small slots of inspector
 		//5 - drag n drop icon
-		//6 .. 63 - other icons (41 for container, 15 for ship etc)
+		//6 .. 255 - other icons (41 for container, 15 for ship etc)
 		ok::graphics::RenderTarget* _icons_cache_64px = nullptr; 
 		ok::graphics::Texture* _icons_cache_64px_tex = nullptr;
 
+		const int _icons_cache_items_limit = 256;
+
 		struct _IconsCacheReserve
 		{
-			int size_x, size_y, total_size, first_index;
+			int size_x, size_y, total_size;
+			int offset;
 		};
 
-		std::vector<_IconsCacheReserve> _icons_cache_reserve_records;
+		std::vector<Zoner::SpaceScreenGUI::_IconsCacheReserve> _icons_cache_reserve_records;
+		int _icons_cache_first_free_offset = 0;
 
 		bool _initialized = false;
 
