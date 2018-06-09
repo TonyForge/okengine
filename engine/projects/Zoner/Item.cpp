@@ -265,7 +265,19 @@ void Zoner::ItemSpacecraft::LoadFrom(tinyxml2::XMLDocument & doc, tinyxml2::XMLE
 	capacity = element.IntAttribute("capacity");
 	capacity_left = 0;
 
-	auto elem = element.FirstChildElement("equipment_slots");
+	auto elem = element.FirstChildElement("equipment_slots_up");
+	if (elem != nullptr && elem->IntAttribute("count") != 0)
+	{
+		int count = elem->IntAttribute("count");
+	}
+
+	elem = element.FirstChildElement("equipment_slots_middle");
+	if (elem != nullptr && elem->IntAttribute("count") != 0)
+	{
+		int count = elem->IntAttribute("count");
+	}
+
+	elem = element.FirstChildElement("equipment_slots_down");
 	if (elem != nullptr && elem->IntAttribute("count") != 0)
 	{
 		int count = elem->IntAttribute("count");
@@ -332,6 +344,91 @@ void Zoner::ItemSpacecraft::CollectItems(std::map<Zoner::UID, Zoner::IItem*>& _c
 void Zoner::ItemSpacecraft::CreateUI()
 {
 	_icon_cache_id = Zoner::ISpaceScreenGUI::o().ReserveIconsCache(_icon_cache_size, 1);
+
+	if (equipment_slots_up.size() < 5)
+	{
+		equipment_slots_up.resize(5);
+		std::fill(equipment_slots_up.begin(), equipment_slots_up.end(), nullptr);
+	}
+
+	if (equipment_slots_middle.size() < 4)
+	{
+		equipment_slots_middle.resize(4);
+		std::fill(equipment_slots_middle.begin(), equipment_slots_middle.end(), nullptr);
+	}
+
+	if (equipment_slots_down.size() < 5)
+	{
+		equipment_slots_down.resize(5);
+		std::fill(equipment_slots_down.begin(), equipment_slots_down.end(), nullptr);
+	}
+	
+
+	//recache icons
+	Zoner::IItem* _item;
+	//up slots
+	for (int i = 0; i < 5; i++)
+	{
+		if ((i + _equipment_slots_up_offset) >= static_cast<int>(equipment_slots_up.size()) || equipment_slots_up[i + _equipment_slots_up_offset] == nullptr)
+		{
+			//do nothing
+		}
+		else
+		{
+			//recache it
+			_item = equipment_slots_up[i + _equipment_slots_up_offset];
+			if (_item->_blueprint_item != nullptr)
+			{
+				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, _item->_blueprint_item, i, 0);
+			}
+			else
+			{
+				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, _item->_blueprint_spacecraft, i, 0);
+			}
+		}
+	}
+	//middle slots
+	for (int i = 0; i < 4; i++)
+	{
+		if (equipment_slots_middle[i] == nullptr)
+		{
+			//do nothing
+		}
+		else
+		{
+			//recache it
+			_item = equipment_slots_middle[i];
+			if (_item->_blueprint_item != nullptr)
+			{
+				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, _item->_blueprint_item, 5+i, 0);
+			}
+			else
+			{
+				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, _item->_blueprint_spacecraft, 5+i, 0);
+			}
+		}
+	}
+	//down slots
+	for (int i = 0; i < 5; i++)
+	{
+		if ((i + _equipment_slots_down_offset) >= static_cast<int>(equipment_slots_down.size()) || equipment_slots_down[i + _equipment_slots_down_offset] == nullptr)
+		{
+			//do nothing
+		}
+		else
+		{
+			//recache it
+			_item = equipment_slots_down[i + _equipment_slots_down_offset];
+			if (_item->_blueprint_item != nullptr)
+			{
+				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, _item->_blueprint_item, 9+i, 0);
+			}
+			else
+			{
+				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, _item->_blueprint_spacecraft, 9+i, 0);
+			}
+		}
+	}
 }
 
 void Zoner::ItemSpacecraft::UpdateUI(float dt)
@@ -343,6 +440,7 @@ void Zoner::ItemSpacecraft::UpdateUI(float dt)
 	static ok::ui::widget layout_btn_widgets[4];
 
 	static ok::ui::widget* layout_btn_widget_activated = &layout_btn_widgets[0];
+	static ok::ui::widget slot_widget;
 
 	static ok::graphics::SpriteAtlas* atlas_ui = nullptr;
 
@@ -361,6 +459,9 @@ void Zoner::ItemSpacecraft::UpdateUI(float dt)
 	static ok::graphics::TextCache text_spacecraft_type_cache;
 	static ok::graphics::TextCache text_spacecraft_name_cache;
 	static ok::graphics::TextCache text_spacecraft_captain_cache;
+
+	static ok::graphics::SpriteInfo spr_empty_slot_32;
+	static ok::graphics::SpriteInfo spr_full_slot_32;
 
 	if (atlas_ui == nullptr)
 	{
@@ -388,6 +489,12 @@ void Zoner::ItemSpacecraft::UpdateUI(float dt)
 		spr_btn_layout_light = atlas_ui->Get(ok::String("inventory_top_big_light"));
 		spr_btn_layout_light.tint_color = ok::Color(255, 162, 0, 255);
 		spr_btn_layout_light.tint_power = 1.f;
+
+		spr_empty_slot_32 = atlas_ui->Get(ok::String("inventory_top_small_slot_empty"));
+		spr_empty_slot_32.hotspot = glm::vec2(0.0, 0.0);
+
+		spr_full_slot_32 = atlas_ui->Get(ok::String("inventory_top_small_slot"));
+		spr_full_slot_32.hotspot = glm::vec2(0.0, 0.0);
 
 		ok::Input::o().AddBlockedArea(0, ok::Rect2Di(52, 216, 245, 497));
 		ok::Input::o().AddBlockedArea(0, ok::Rect2Di(19, 239, 314, 157));
@@ -425,7 +532,6 @@ void Zoner::ItemSpacecraft::UpdateUI(float dt)
 		}
 		text_spacecraft_name_cache = *text_batch.CacheEnd();
 	}
-
 	//ok::ui::BeginUI(Zoner::IGame::o().GetScreenWidth(), Zoner::IGame::o().GetScreenHeight());
 
 	ok::ui::PushNonActivable(true);
@@ -506,6 +612,154 @@ void Zoner::ItemSpacecraft::UpdateUI(float dt)
 				ok::ui::PopNonActivable();
 				
 				ok::ui::Model(parent_item->_blueprint_spacecraft, glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f), 124.f*0.5f, 124.f*0.5f);
+			}
+			ok::ui::PopTranslate();
+
+			//up slots
+			ok::ui::PushTranslate(61.f, 138.f);
+			{
+
+
+				for (int i = 0; i < 5; i++)
+				{
+					if ((i + _equipment_slots_up_offset) >= static_cast<int>(equipment_slots_up.size()) || equipment_slots_up[i + _equipment_slots_up_offset] == nullptr)
+					{
+						ok::ui::Image(slot_widget.ptr(), &spr_empty_slot_32, i * 43.f);
+					}
+					else
+					{
+						ok::ui::Image(slot_widget.ptr(), &spr_full_slot_32, i * 43.f);
+						ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_id, i, 0), i * 43.f + 2.f, 2.f);
+					}
+				}
+
+				int highlighted_slot_index = -1;
+
+				ok::ui::PushNonActivable(false);
+				for (int i = 0; i < 5; i++)
+				{
+					ok::ui::Dummy(slot_widget.ptr(), i*43.f, 0.f, 36.f, 36.f);
+					if (ok::ui::ws().mouse_inside)
+					{
+						highlighted_slot_index = i;
+						break;
+					}
+				}
+				ok::ui::PopNonActivable();
+
+				if (highlighted_slot_index != -1)
+				{
+
+				}
+			}
+			ok::ui::PopTranslate();
+
+
+			//middle slots
+			{
+				int highlighted_slot_index = -1;
+
+				ok::ui::PushNonActivable(false);
+				ok::ui::Dummy(slot_widget.ptr(), 60.f, 194.f, 36.f, 36.f);
+				if (ok::ui::ws().mouse_inside) { highlighted_slot_index = 0; }
+				else 
+				{
+					ok::ui::Dummy(slot_widget.ptr(), 234.f, 194.f, 36.f, 36.f);
+					if (ok::ui::ws().mouse_inside) { highlighted_slot_index = 1; }
+					else
+					{
+						ok::ui::Dummy(slot_widget.ptr(), 60.f, 248.f, 36.f, 36.f);
+						if (ok::ui::ws().mouse_inside) { highlighted_slot_index = 2; }
+						else
+						{
+							ok::ui::Dummy(slot_widget.ptr(), 234.f, 248.f, 36.f, 36.f);
+							if (ok::ui::ws().mouse_inside) { highlighted_slot_index = 3; }
+						}
+					}
+				}
+				ok::ui::PopNonActivable();
+
+				if (highlighted_slot_index != -1)
+				{
+
+				}
+			}
+
+			if (equipment_slots_middle[0] == nullptr)
+			{
+				ok::ui::Image(slot_widget.ptr(), &spr_empty_slot_32, 60.f, 194.f);
+			}
+			else
+			{
+				ok::ui::Image(slot_widget.ptr(), &spr_full_slot_32, 60.f, 194.f);
+				ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_id, 5+0, 0), 60.f + 2.f, 194.f+2.f);
+			}
+
+			if (equipment_slots_middle[1] == nullptr)
+			{
+				ok::ui::Image(slot_widget.ptr(), &spr_empty_slot_32, 234.f, 194.f);
+			}
+			else
+			{
+				ok::ui::Image(slot_widget.ptr(), &spr_full_slot_32, 234.f, 194.f);
+				ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_id, 5 + 1, 0), 234.f + 2.f, 194.f + 2.f);
+			}
+
+			if (equipment_slots_middle[2] == nullptr)
+			{
+				ok::ui::Image(slot_widget.ptr(), &spr_empty_slot_32, 60.f, 248.f);
+			}
+			else
+			{
+				ok::ui::Image(slot_widget.ptr(), &spr_full_slot_32, 60.f, 248.f);
+				ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_id, 5 + 2, 0), 60.f + 2.f, 248.f + 2.f);
+			}
+
+			if (equipment_slots_middle[3] == nullptr)
+			{
+				ok::ui::Image(slot_widget.ptr(), &spr_empty_slot_32, 234.f, 248.f);
+			}
+			else
+			{
+				ok::ui::Image(slot_widget.ptr(), &spr_full_slot_32, 234.f, 248.f);
+				ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_id, 5 + 3, 0), 234.f + 2.f, 248.f + 2.f);
+			}
+
+
+			//down slots
+			ok::ui::PushTranslate(61.f, 306.f);
+			{
+				for (int i = 0; i < 5; i++)
+				{
+					if ((i + _equipment_slots_down_offset) >= static_cast<int>(equipment_slots_down.size()) || equipment_slots_down[i + _equipment_slots_down_offset] == nullptr)
+					{
+						ok::ui::Image(slot_widget.ptr(), &spr_empty_slot_32, i * 43.f);
+					}
+					else
+					{
+						ok::ui::Image(slot_widget.ptr(), &spr_full_slot_32, i * 43.f);
+						ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_id, 9+i, 0), i * 43.f + 2.f, 2.f);
+					}
+				}
+
+				int highlighted_slot_index = -1;
+
+				ok::ui::PushNonActivable(false);
+				for (int i = 0; i < 5; i++)
+				{
+					ok::ui::Dummy(slot_widget.ptr(), i*43.f, 0.f, 36.f, 36.f);
+					if (ok::ui::ws().mouse_inside)
+					{
+						highlighted_slot_index = i;
+						break;
+					}
+				}
+				ok::ui::PopNonActivable();
+
+				if (highlighted_slot_index != -1)
+				{
+
+				}
 			}
 			ok::ui::PopTranslate();
 		}

@@ -1,7 +1,11 @@
 <recipe>
 	<behaviour class="ItemSpacecraft" capacity="1000">
-		<equipment_slots count="0">
-		</equipment_slots>
+		<equipment_slots_up count="0">
+		</equipment_slots_up>
+		<equipment_slots_middle count="0">
+		</equipment_slots_middle>
+		<equipment_slots_down count="0">
+		</equipment_slots_down>
 		<container_slot>
 			<recipe name="default_container_10.xml" />
 		</container_slot>

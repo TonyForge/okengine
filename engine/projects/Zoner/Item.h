@@ -49,7 +49,12 @@ namespace Zoner
 		int capacity;
 		int capacity_left;
 		Zoner::IItem* container_slot = nullptr;
-		std::vector<Zoner::IItem*> equipment_slots;
+		std::vector<Zoner::IItem*> equipment_slots; //dense list of items
+
+		//sparse lists for ui only
+		std::vector<Zoner::IItem*> equipment_slots_up;
+		std::vector<Zoner::IItem*> equipment_slots_middle;
+		std::vector<Zoner::IItem*> equipment_slots_down;
 
 		void CreateUI();
 		void UpdateUI(float dt);
@@ -57,8 +62,10 @@ namespace Zoner
 
 		//void SetLayout(int layout_index);
 	private:
-		int _icon_cache_size = 1;
+		int _icon_cache_size = 15;
 		int _icon_cache_id;
+		int _equipment_slots_up_offset = 0;
+		int _equipment_slots_down_offset = 0;
 	protected:
 	};
 
