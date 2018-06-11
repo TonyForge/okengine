@@ -8,6 +8,17 @@
 
 namespace Zoner
 {
+	class IItem;
+
+	class IItemOwner
+	{
+	public:
+		virtual void ItemIn(Zoner::IItem* item, bool exchange = false, const Zoner::IItem* exchange_item = nullptr) = 0;
+		virtual void ItemOut(const Zoner::IItem* item, bool exchange = false, Zoner::IItem* exchange_item = nullptr) = 0;
+		virtual bool ItemInAllowed(Zoner::IItem* item, bool exchange = false, Zoner::IItem* exchange_item = nullptr) = 0;
+		virtual bool ItemOutAllowed(Zoner::IItem* item, bool exchange = false, Zoner::IItem* exchange_item = nullptr) = 0;
+	};
+
 	class ItemBlueprint : public ok::GameObject
 	{
 	public:
@@ -18,7 +29,7 @@ namespace Zoner
 
 	class IItem;
 
-	class IItemBehaviour : public ok::Behaviour, public Zoner::ISaveable
+	class IItemBehaviour : public ok::Behaviour, public Zoner::ISaveable, public Zoner::IItemOwner
 	{
 	public:
 		virtual void SaveTo(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement& element) = 0;
@@ -30,6 +41,11 @@ namespace Zoner
 		virtual void CreateUI() = 0;
 		virtual void UpdateUI(float dt) = 0;
 		virtual void DestroyUI() = 0;
+
+		virtual void ItemIn(Zoner::IItem* item, bool exchange = false, const Zoner::IItem* exchange_item = nullptr) = 0;
+		virtual void ItemOut(const Zoner::IItem* item, bool exchange = false, Zoner::IItem* exchange_item = nullptr) = 0;
+		virtual bool ItemInAllowed(Zoner::IItem* item, bool exchange = false, Zoner::IItem* exchange_item = nullptr) = 0;
+		virtual bool ItemOutAllowed(Zoner::IItem* item, bool exchange = false, Zoner::IItem* exchange_item = nullptr) = 0;
 	private:
 	protected:
 	};
@@ -57,6 +73,8 @@ namespace Zoner
 		virtual void CreateUI() = 0;
 		virtual void UpdateUI(float dt) = 0;
 		virtual void DestroyUI() = 0;
+
+		Zoner::IItemOwner* this_item_owner = nullptr;
 	private:
 	protected:
 	};

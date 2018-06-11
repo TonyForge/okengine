@@ -198,6 +198,11 @@ void Zoner::IShip::OnItemIn(Zoner::IItem * item_ptr)
 	std::map<Zoner::UID, Zoner::IItem*> collection;
 	item_ptr->CollectItems(collection);
 
+	/*for (auto& item : collection)
+	{
+		this_items[item.first] = item.second;
+	}*/
+	//this_items.insert(this_items.end(), collection.begin(), collection.end());
 	this_items.insert(collection.begin(), collection.end());
 }
 

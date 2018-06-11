@@ -34,6 +34,14 @@ namespace Zoner
 		void ReleaseIconsCache(int cache_id);
 		void CacheIcon(int cache_id, ok::GameObject* blueprint, int slot_x, int slot_y);
 		ok::graphics::SpriteInfo GetIconCache(int cache_id, int slot_x, int slot_y);
+		void MoveIconsInsideCache(int cache_id, int shift_x, int shift_y);
+
+		void SetDragAndDropItem(Zoner::IItem* item);
+		Zoner::IItem* GetDragAndDropItem();
+
+		bool IsDragAndDropItemFromInspector();
+		void RemoveDragAndDropItemFromInspector();
+
 	protected:
 	private:
 		SpaceScreenGUI() { _instance = this; }
@@ -81,7 +89,6 @@ namespace Zoner
 
 		Zoner::IItem* _drag_and_drop_item = nullptr;
 		Zoner::UID* _drag_and_drop_item_shortcut = nullptr; //example of shortcuts is inspector small slot (keeps shortcut, not item itself)
-
 		//void* _drag_and_drop_item_location = nullptr;
 		//bool _drag_and_drop_item_live_in_inspector = false;
 	};

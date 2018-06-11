@@ -5,6 +5,8 @@ void Zoner::ItemCargoHold::InitBlocks(int blocks_count)
 	_items.resize(10 * blocks_count);
 	std::fill(_items.begin(), _items.end(), nullptr);
 
+	_icon_cache_size = _items.size();
+
 	//Zoner::ISpaceScreenGUI::o().
 }
 
@@ -57,6 +59,43 @@ std::vector<Zoner::IItem*>& Zoner::ItemCargoHold::Items()
 void Zoner::ItemCargoHold::LoadFrom(tinyxml2::XMLDocument & doc, tinyxml2::XMLElement & element)
 {
 	InitBlocks(element.IntAttribute("blocks"));
+
+	tinyxml2::XMLElement* elem;
+	tinyxml2::XMLElement* inner_elem;
+	tinyxml2::XMLElement* slot_elem;
+
+	elem = element.FirstChildElement("slots");
+
+	if (elem == nullptr)
+	{
+		//do nothing, no slots info for this container provided
+	}
+	else
+	{
+		for (inner_elem = elem->FirstChildElement("slot"); inner_elem != nullptr; inner_elem = inner_elem->NextSiblingElement("slot"))
+		{
+			slot_elem = inner_elem->FirstChildElement();
+			if (slot_elem != nullptr)
+			{
+				if (ok::String(slot_elem->Value()) == "recipe")
+				{
+					//build from recipe
+					Zoner::IItem* _item = Zoner::IItemBuilder::o().BuildFromRecipe(ok::String(slot_elem->Attribute("name")));
+
+					if (ItemInAllowed(_item))
+					{
+						ItemIn(_item);
+
+						_items[inner_elem->IntAttribute("x") + inner_elem->IntAttribute("y") * 5] = _item;
+					}
+					else
+					{
+						delete _item;
+					}
+				}
+			}
+		}
+	}
 }
 
 Zoner::IItem * Zoner::ItemCargoHold::FindItem(Zoner::UID & item_uid)
@@ -93,11 +132,32 @@ void Zoner::ItemCargoHold::CollectItems(std::map<Zoner::UID, Zoner::IItem*>& _co
 
 void Zoner::ItemCargoHold::CreateUI()
 {
+	_icon_cache_id = Zoner::ISpaceScreenGUI::o().ReserveIconsCache(_icon_cache_size, 1);
+
+	int _item_index = 0;
+
+	for (auto&& _item : _items)
+	{
+		if (_item != nullptr)
+		{
+			if (_item->_blueprint_item != nullptr)
+			{
+				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, _item->_blueprint_item, _item_index, 0);
+			}
+			else if (_item->_blueprint_spacecraft != nullptr)
+			{
+				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, _item->_blueprint_spacecraft, _item_index, 0);
+			}
+		}
+
+		_item_index++;
+	}
 }
 
 void Zoner::ItemCargoHold::UpdateUI(float dt)
 {
 	static ok::ui::widget container_widget;
+	static ok::ui::widget slot_widget;
 
 	static ok::graphics::SpriteAtlas* atlas_ui = nullptr;
 
@@ -112,6 +172,9 @@ void Zoner::ItemCargoHold::UpdateUI(float dt)
 	static ok::graphics::SpriteInfo spr_left_side_shadow;
 	static ok::graphics::SpriteInfo spr_top_side_shadow;
 	static ok::graphics::SpriteInfo spr_bottom_side_shadow;
+
+	static ok::graphics::SpriteInfo spr_empty_slot_32;
+	static ok::graphics::SpriteInfo spr_full_slot_32;
 
 	if (atlas_ui == nullptr)
 	{
@@ -169,37 +232,210 @@ void Zoner::ItemCargoHold::UpdateUI(float dt)
 
 		spr_left_side_shadow.hotspot.x = 0.5f;
 		spr_left_side_shadow.hotspot.y = 0.0f;
+
+		spr_empty_slot_32 = atlas_ui->Get(ok::String("inventory_top_small_slot_empty"));
+		spr_empty_slot_32.hotspot = glm::vec2(0.0, 0.0);
+
+		spr_full_slot_32 = atlas_ui->Get(ok::String("inventory_top_small_slot"));
+		spr_full_slot_32.hotspot = glm::vec2(0.0, 0.0);
 	}
 
-	int container_blocks = 4;
+	int container_blocks = _items.size() / 10;
 
 	ok::ui::PushNonActivable(true);
 	ok::ui::PushTranslate(0.f, 0.f);
 	{
-		ok::ui::PushTranslate(356.f, 291.f);
-		ok::ui::PushTranslate(293.f / 2.f, 58.f);
+		//ok::ui::PushTranslate(356.f, 291.f);
+		ok::ui::PushTranslate(27.f, 215.f);
 		{
-			ok::ui::Image(container_widget.ptr(), &spr_back, 0.f, -32.f, -1.f, 108.f + 82.f*(container_blocks - 1));
-
-			ok::ui::Image(container_widget.ptr(), &spr_top_side_shadow, 0.f, 0.f);
-			ok::ui::Image(container_widget.ptr(), &spr_bottom_side_shadow, 0.f, 53.f + 82.f*(container_blocks - 1));
-
-			ok::ui::DisableSmooth();
+			ok::ui::PushTranslate(293.f / 2.f, 58.f);
 			{
-				ok::ui::Image(container_widget.ptr(), &spr_left_side_shadow, -110.5f - 45.f, -0.5f, -1.f, 54.f + 82.f * (container_blocks - 1));
-				ok::ui::Image(container_widget.ptr(), &spr_right_side_shadow, -110.5f + 218.5f + 45.f, -0.5f, -1.f, 54.f + 82.f * (container_blocks - 1));
+				ok::ui::Image(container_widget.ptr(), &spr_back, 0.f, -32.f, -1.f, 108.f + 82.f*(container_blocks - 1));
 
-				ok::ui::Blit(container_widget.ptr(), &spr_top_side, 0.f, 0.f);
+				ok::ui::Image(container_widget.ptr(), &spr_top_side_shadow, 0.f, 0.f);
+				ok::ui::Image(container_widget.ptr(), &spr_bottom_side_shadow, 0.f, 53.f + 82.f*(container_blocks - 1));
 
-				ok::ui::Blit(container_widget.ptr(), &spr_bottom_side, 0.f, 53.f + 82.f*(container_blocks - 1));
+				ok::ui::DisableSmooth();
+				{
+					ok::ui::Image(container_widget.ptr(), &spr_left_side_shadow, -110.5f - 45.f, -0.5f, -1.f, 54.f + 82.f * (container_blocks - 1));
+					ok::ui::Image(container_widget.ptr(), &spr_right_side_shadow, -110.5f + 218.5f + 45.f, -0.5f, -1.f, 54.f + 82.f * (container_blocks - 1));
 
-				ok::ui::Image(container_widget.ptr(), &spr_left_side, -110.5f, -0.5f, -1.f, 54.f + 82.f * (container_blocks - 1));
-				ok::ui::Image(container_widget.ptr(), &spr_right_side, -110.5f + 218.5f, -0.5f, -1.f, 54.f + 82.f * (container_blocks - 1));
+					ok::ui::Blit(container_widget.ptr(), &spr_top_side, 0.f, 0.f);
+
+					ok::ui::Blit(container_widget.ptr(), &spr_bottom_side, 0.f, 53.f + 82.f*(container_blocks - 1));
+
+					ok::ui::Image(container_widget.ptr(), &spr_left_side, -110.5f, -0.5f, -1.f, 54.f + 82.f * (container_blocks - 1));
+					ok::ui::Image(container_widget.ptr(), &spr_right_side, -110.5f + 218.5f, -0.5f, -1.f, 54.f + 82.f * (container_blocks - 1));
+				}
+				ok::ui::EnableSmooth();
+
 			}
-			ok::ui::EnableSmooth();
+			ok::ui::PopTranslate();
 
+			ok::ui::PushTranslate(45.f, 46.f);
+			{
+				int highlighted_slot_x = -1;
+				int highlighted_slot_y = -1;
+
+				ok::ui::PushNonActivable(false);
+				for (int y = 0; y < _icon_cache_size / 5; y++)
+				{
+					for (int x = 0; x < 5; x++)
+					{
+						ok::ui::Dummy(slot_widget.ptr(), x * 41.f, y * 41.f, 36.f, 36.f);
+						if (ok::ui::ws().mouse_inside)
+						{
+							highlighted_slot_x = x;
+							break;
+						}
+					}
+					if (ok::ui::ws().mouse_inside)
+					{
+						highlighted_slot_y = y;
+						break;
+					}
+				}
+				ok::ui::PopNonActivable();
+
+				if (highlighted_slot_x != -1 && highlighted_slot_y != -1)
+				{
+					if (ok::ui::ws().on_activate)
+					{
+						Zoner::IItem* _drag_and_drop_item = Zoner::ISpaceScreenGUI::o().GetDragAndDropItem();
+
+						if (_drag_and_drop_item != nullptr)
+						{
+							if (_items[highlighted_slot_x + highlighted_slot_y * 5] == nullptr)
+							{
+								//place item in empty slot
+								//if both sides allowed this operation
+								if (ItemInAllowed(_drag_and_drop_item) &&
+									(_drag_and_drop_item->this_item_owner == nullptr || _drag_and_drop_item->this_item_owner->ItemOutAllowed(_drag_and_drop_item)))
+								{
+									if (_drag_and_drop_item->this_item_owner != nullptr)
+									{
+										_drag_and_drop_item->this_item_owner->ItemOut(_drag_and_drop_item);
+									}
+
+									ItemIn(_drag_and_drop_item);
+
+									_items[highlighted_slot_x + highlighted_slot_y * 5] = _drag_and_drop_item;
+
+									//cache icon
+									if (_drag_and_drop_item->_blueprint_item != nullptr)
+										Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, _drag_and_drop_item->_blueprint_item, highlighted_slot_x + highlighted_slot_y * 5, 0);
+									else if (_drag_and_drop_item->_blueprint_spacecraft != nullptr)
+										Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, _drag_and_drop_item->_blueprint_spacecraft, highlighted_slot_x + highlighted_slot_y * 5, 0);
+
+									if (Zoner::ISpaceScreenGUI::o().IsDragAndDropItemFromInspector())
+									{
+										Zoner::ISpaceScreenGUI::o().RemoveDragAndDropItemFromInspector();
+									}
+
+									Zoner::ISpaceScreenGUI::o().SetDragAndDropItem(nullptr);
+								}
+								else
+								{
+									//cant move item, show effect
+								}
+							}
+							else
+							{
+								//if its the same item just release it and cancel drag and drop
+								if (_items[highlighted_slot_x + highlighted_slot_y * 5] == _drag_and_drop_item)
+								{
+									//Place container back to its slot
+									//if item from inspector
+									if (Zoner::ISpaceScreenGUI::o().IsDragAndDropItemFromInspector())
+									{
+										Zoner::ISpaceScreenGUI::o().RemoveDragAndDropItemFromInspector();
+									}
+
+									Zoner::ISpaceScreenGUI::o().SetDragAndDropItem(nullptr);
+								}
+								else
+								{
+									//place item in full slot
+									//if both sides allowed this operation (exchange requires both sides to exist!)
+									if (ItemInAllowed(_drag_and_drop_item, true, _items[highlighted_slot_x + highlighted_slot_y * 5]) &&
+										(_drag_and_drop_item->this_item_owner != nullptr &&
+											_drag_and_drop_item->this_item_owner->ItemOutAllowed(_drag_and_drop_item, true, _items[highlighted_slot_x + highlighted_slot_y * 5])))
+									{
+										_drag_and_drop_item->this_item_owner->ItemOut(_drag_and_drop_item, true, _items[highlighted_slot_x + highlighted_slot_y * 5]);
+										ItemIn(_drag_and_drop_item, true, _items[highlighted_slot_x + highlighted_slot_y * 5]);
+
+										Zoner::IItem* exchanged_item = _items[highlighted_slot_x + highlighted_slot_y * 5];
+										_items[highlighted_slot_x + highlighted_slot_y * 5] = _drag_and_drop_item;
+
+										//cache icon
+										if (_drag_and_drop_item->_blueprint_item != nullptr)
+											Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, _drag_and_drop_item->_blueprint_item, highlighted_slot_x + highlighted_slot_y * 5, 0);
+										else if (_drag_and_drop_item->_blueprint_spacecraft != nullptr)
+											Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, _drag_and_drop_item->_blueprint_spacecraft, highlighted_slot_x + highlighted_slot_y * 5, 0);
+
+
+										if (Zoner::ISpaceScreenGUI::o().IsDragAndDropItemFromInspector())
+										{
+											Zoner::ISpaceScreenGUI::o().RemoveDragAndDropItemFromInspector();
+										}
+
+										//pickup exchanged item for drag and drop
+										Zoner::ISpaceScreenGUI::o().SetDragAndDropItem(exchanged_item);
+									}
+									else
+									{
+										//cant move item, show effect
+									}
+								}
+								
+							}
+						}
+						else
+						{
+							//pickup item from container
+							if (_items[highlighted_slot_x + highlighted_slot_y * 5] == nullptr)
+							{
+								//this slot is empty, do nothing
+							}
+							else
+							{
+								//slot is full, pickup item
+								Zoner::ISpaceScreenGUI::o().SetDragAndDropItem(_items[highlighted_slot_x + highlighted_slot_y * 5]);
+							}
+						}
+					}
+				}
+
+				for (int y = 0; y < _icon_cache_size / 5; y++)
+				{
+					for (int x = 0; x < 5; x++)
+					{
+						if (_items[x + y * 5] == nullptr)
+						{
+							ok::ui::Image(slot_widget.ptr(), &spr_empty_slot_32, x * 41.f, y * 41.f);
+						}
+						else
+						{
+							ok::ui::Image(slot_widget.ptr(), &spr_full_slot_32, x * 41.f, y * 41.f);
+
+							if (Zoner::ISpaceScreenGUI::o().GetDragAndDropItem() == _items[x + y * 5])
+							{
+								ok::ui::PushEffect_Fade(0.5f);
+							}
+
+							ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_id, x + y * 5, 0), x * 41.f + 2.f, y * 41.f + 2.f);
+
+							if (Zoner::ISpaceScreenGUI::o().GetDragAndDropItem() == _items[x + y * 5])
+							{
+								ok::ui::PopEffect_Fade();
+							}
+						}
+					}
+				}
+
+			}
+			ok::ui::PopTranslate();
 		}
-		ok::ui::PopTranslate();
 		ok::ui::PopTranslate();
 	}
 	ok::ui::PopTranslate();
@@ -208,7 +444,81 @@ void Zoner::ItemCargoHold::UpdateUI(float dt)
 
 void Zoner::ItemCargoHold::DestroyUI()
 {
+	Zoner::ISpaceScreenGUI::o().ReleaseIconsCache(_icon_cache_id);
 }
+
+void Zoner::ItemCargoHold::ItemIn(Zoner::IItem * item, bool exchange, const Zoner::IItem * exchange_item)
+{
+	item->this_item_owner = this;
+}
+
+void Zoner::ItemCargoHold::ItemOut(const Zoner::IItem * item, bool exchange, Zoner::IItem * exchange_item)
+{
+	int position = std::find(_items.begin(), _items.end(), item) - _items.begin();
+	if (exchange)
+	{
+		_items[position] = exchange_item;
+		exchange_item->this_item_owner = this;
+
+		if (exchange_item->_blueprint_item != nullptr)
+			Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, exchange_item->_blueprint_item, position, 0);
+		else if (exchange_item->_blueprint_spacecraft != nullptr)
+			Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, exchange_item->_blueprint_spacecraft, position, 0);
+	}
+	else
+	{
+		_items[position] = nullptr;
+	}
+}
+
+bool Zoner::ItemCargoHold::ItemInAllowed(Zoner::IItem * item, bool exchange, Zoner::IItem * exchange_item)
+{
+	auto _item = static_cast<Zoner::IItem*>(&gameObject());
+	Zoner::UID& _item_uid = *_item;
+
+	if (_item_uid == *item || item->FindItem(*_item) != nullptr)
+	{
+		//self nesting cycle detected, cant allow this
+		return false;
+	}
+
+	if (exchange)
+	{
+	}
+	else
+	{
+		bool is_space_enough = (std::find(_items.begin(), _items.end(), nullptr) != _items.end());
+
+		if (is_space_enough == false)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool Zoner::ItemCargoHold::ItemOutAllowed(Zoner::IItem * item, bool exchange, Zoner::IItem * exchange_item)
+{
+	return true;
+}
+
+/*void Zoner::ItemCargoHold::ItemIn(Zoner::IItem * item)
+{
+	item->this_item_owner = this;
+}
+
+void Zoner::ItemCargoHold::ItemOut(Zoner::IItem * item)
+{
+	auto _item_ptr = std::find(_items.begin(), _items.end(), item);
+
+	if (_item_ptr != _items.end())
+	{
+		*_item_ptr = nullptr;
+	}
+
+	item->this_item_owner = nullptr;
+}*/
 
 Zoner::ItemBuilder::ItemBuilder()
 {
@@ -234,9 +544,9 @@ Zoner::IItem * Zoner::ItemBuilder::BuildFromRecipe(ok::String & recipe)
 		if (ok::String(elem->Value()) == "behaviour")
 		{
 			auto _behaviour = _behaviours_allocator[elem->Attribute("class")]();
-			_behaviour->LoadFrom(doc, *elem);
-
 			result->AddComponent(_behaviour);
+
+			_behaviour->LoadFrom(doc, *elem);
 		}
 		else
 		if (ok::String(elem->Value()) == "blueprint")
@@ -291,7 +601,17 @@ void Zoner::ItemSpacecraft::LoadFrom(tinyxml2::XMLDocument & doc, tinyxml2::XMLE
 		{
 			if (ok::String(elem->Value()) == "recipe")
 			{
-				container_slot = Zoner::IItemBuilder::o().BuildFromRecipe(ok::String(elem->Attribute("name")));
+				Zoner::IItem* _item = Zoner::IItemBuilder::o().BuildFromRecipe(ok::String(elem->Attribute("name")));
+
+				if (ItemInAllowed(_item))
+				{
+					ItemIn(_item);
+					container_slot = _item;
+				}
+				else
+				{
+					delete _item;
+				}
 			}
 		}
 	}
@@ -302,7 +622,7 @@ Zoner::IItem * Zoner::ItemSpacecraft::FindItem(Zoner::UID & item_uid)
 	Zoner::IItem* result = nullptr;
 
 	//equipment slots
-	for (auto&& _item : equipment_slots)
+	for (auto&& _item : equipment_items)
 	{
 		if (*_item == item_uid) return _item;
 		else
@@ -328,7 +648,7 @@ Zoner::IItem * Zoner::ItemSpacecraft::FindItem(Zoner::UID & item_uid)
 
 void Zoner::ItemSpacecraft::CollectItems(std::map<Zoner::UID, Zoner::IItem*>& _collection)
 {
-	for (auto&& _item : equipment_slots)
+	for (auto&& _item : equipment_items)
 	{
 		_collection[*_item] = _item;
 		_item->CollectItems(_collection);
@@ -343,7 +663,11 @@ void Zoner::ItemSpacecraft::CollectItems(std::map<Zoner::UID, Zoner::IItem*>& _c
 
 void Zoner::ItemSpacecraft::CreateUI()
 {
-	_icon_cache_id = Zoner::ISpaceScreenGUI::o().ReserveIconsCache(_icon_cache_size, 1);
+	//_icon_cache_id = Zoner::ISpaceScreenGUI::o().ReserveIconsCache(_icon_cache_size, 1);
+	_icon_cache_slots_up_id = Zoner::ISpaceScreenGUI::o().ReserveIconsCache(5, 1);
+	_icon_cache_slots_down_id = Zoner::ISpaceScreenGUI::o().ReserveIconsCache(5, 1);
+	_icon_cache_slots_middle_id = Zoner::ISpaceScreenGUI::o().ReserveIconsCache(4, 1);
+	_icon_cache_container_slot_id = Zoner::ISpaceScreenGUI::o().ReserveIconsCache(1, 1);
 
 	if (equipment_slots_up.size() < 5)
 	{
@@ -379,11 +703,11 @@ void Zoner::ItemSpacecraft::CreateUI()
 			_item = equipment_slots_up[i + _equipment_slots_up_offset];
 			if (_item->_blueprint_item != nullptr)
 			{
-				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, _item->_blueprint_item, i, 0);
+				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_slots_up_id, _item->_blueprint_item, i, 0);
 			}
-			else
+			else if (_item->_blueprint_spacecraft != nullptr)
 			{
-				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, _item->_blueprint_spacecraft, i, 0);
+				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_slots_up_id, _item->_blueprint_spacecraft, i, 0);
 			}
 		}
 	}
@@ -400,11 +724,11 @@ void Zoner::ItemSpacecraft::CreateUI()
 			_item = equipment_slots_middle[i];
 			if (_item->_blueprint_item != nullptr)
 			{
-				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, _item->_blueprint_item, 5+i, 0);
+				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_slots_middle_id, _item->_blueprint_item, i, 0);
 			}
-			else
+			else if (_item->_blueprint_spacecraft != nullptr)
 			{
-				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, _item->_blueprint_spacecraft, 5+i, 0);
+				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_slots_middle_id, _item->_blueprint_spacecraft, i, 0);
 			}
 		}
 	}
@@ -421,12 +745,25 @@ void Zoner::ItemSpacecraft::CreateUI()
 			_item = equipment_slots_down[i + _equipment_slots_down_offset];
 			if (_item->_blueprint_item != nullptr)
 			{
-				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, _item->_blueprint_item, 9+i, 0);
+				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_slots_down_id, _item->_blueprint_item, i, 0);
 			}
-			else
+			else if (_item->_blueprint_spacecraft != nullptr)
 			{
-				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_id, _item->_blueprint_spacecraft, 9+i, 0);
+				Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_slots_down_id, _item->_blueprint_spacecraft, i, 0);
 			}
+		}
+	}
+
+	if (container_slot != nullptr)
+	{
+		_item = container_slot;
+		if (_item->_blueprint_item != nullptr)
+		{
+			Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_container_slot_id, _item->_blueprint_item, 0, 0);
+		}
+		else if (_item->_blueprint_spacecraft != nullptr)
+		{
+			Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_container_slot_id, _item->_blueprint_spacecraft, 0, 0);
 		}
 	}
 }
@@ -441,6 +778,11 @@ void Zoner::ItemSpacecraft::UpdateUI(float dt)
 
 	static ok::ui::widget* layout_btn_widget_activated = &layout_btn_widgets[0];
 	static ok::ui::widget slot_widget;
+
+	static ok::ui::widget offset_button_widget_left_up;
+	static ok::ui::widget offset_button_widget_right_up;
+	static ok::ui::widget offset_button_widget_left_down;
+	static ok::ui::widget offset_button_widget_right_down;
 
 	static ok::graphics::SpriteAtlas* atlas_ui = nullptr;
 
@@ -462,6 +804,11 @@ void Zoner::ItemSpacecraft::UpdateUI(float dt)
 
 	static ok::graphics::SpriteInfo spr_empty_slot_32;
 	static ok::graphics::SpriteInfo spr_full_slot_32;
+
+	static ok::graphics::SpriteInfo spr_offset_btn_left;
+	static ok::graphics::SpriteInfo spr_offset_btn_left_down;
+	static ok::graphics::SpriteInfo spr_offset_btn_right;
+	static ok::graphics::SpriteInfo spr_offset_btn_right_down;
 
 	if (atlas_ui == nullptr)
 	{
@@ -495,6 +842,18 @@ void Zoner::ItemSpacecraft::UpdateUI(float dt)
 
 		spr_full_slot_32 = atlas_ui->Get(ok::String("inventory_top_small_slot"));
 		spr_full_slot_32.hotspot = glm::vec2(0.0, 0.0);
+
+		spr_offset_btn_left = atlas_ui->Get(ok::String("button_01_small_left"));
+		spr_offset_btn_left.hotspot = glm::vec2(0.0, 0.0);
+
+		spr_offset_btn_left_down = atlas_ui->Get(ok::String("button_01_small_left_down"));
+		spr_offset_btn_left_down.hotspot = glm::vec2(0.0, 0.0);
+
+		spr_offset_btn_right = atlas_ui->Get(ok::String("button_01_small_right"));
+		spr_offset_btn_right.hotspot = glm::vec2(0.0, 0.0);
+
+		spr_offset_btn_right_down = atlas_ui->Get(ok::String("button_01_small_right_down"));
+		spr_offset_btn_right_down.hotspot = glm::vec2(0.0, 0.0);
 
 		ok::Input::o().AddBlockedArea(0, ok::Rect2Di(52, 216, 245, 497));
 		ok::Input::o().AddBlockedArea(0, ok::Rect2Di(19, 239, 314, 157));
@@ -629,7 +988,18 @@ void Zoner::ItemSpacecraft::UpdateUI(float dt)
 					else
 					{
 						ok::ui::Image(slot_widget.ptr(), &spr_full_slot_32, i * 43.f);
-						ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_id, i, 0), i * 43.f + 2.f, 2.f);
+
+						if (Zoner::ISpaceScreenGUI::o().GetDragAndDropItem() == equipment_slots_up[i + _equipment_slots_up_offset])
+						{
+							ok::ui::PushEffect_Fade(0.5f);
+						}
+
+						ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_slots_up_id, i, 0), i * 43.f + 2.f, 2.f);
+
+						if (Zoner::ISpaceScreenGUI::o().GetDragAndDropItem() == equipment_slots_up[i + _equipment_slots_up_offset])
+						{
+							ok::ui::PopEffect_Fade();
+						}
 					}
 				}
 
@@ -649,11 +1019,172 @@ void Zoner::ItemSpacecraft::UpdateUI(float dt)
 
 				if (highlighted_slot_index != -1)
 				{
+					if (ok::ui::ws().on_activate)
+					{
+						Zoner::IItem* _drag_and_drop_item = Zoner::ISpaceScreenGUI::o().GetDragAndDropItem();
+						Zoner::IItem* _highlighted_slot_item = equipment_slots_up[highlighted_slot_index + _equipment_slots_up_offset];
 
+						if (_drag_and_drop_item != nullptr)
+						{
+							//placement logic
+							if (_highlighted_slot_item == nullptr)
+							{
+								//place in empty slot
+								//if both sides allowed this operation
+								if (ItemInAllowed(_drag_and_drop_item) &&
+									(_drag_and_drop_item->this_item_owner == nullptr || _drag_and_drop_item->this_item_owner->ItemOutAllowed(_drag_and_drop_item)))
+								{
+									if (_drag_and_drop_item->this_item_owner != nullptr)
+									{
+										_drag_and_drop_item->this_item_owner->ItemOut(_drag_and_drop_item);
+									}
+
+									ItemIn(_drag_and_drop_item);
+
+									equipment_slots_up[highlighted_slot_index + _equipment_slots_up_offset] = _drag_and_drop_item;
+
+									//cache icon
+									if (_drag_and_drop_item->_blueprint_item != nullptr)
+										Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_slots_up_id, _drag_and_drop_item->_blueprint_item, highlighted_slot_index, 0);
+									else if (_drag_and_drop_item->_blueprint_spacecraft != nullptr)
+										Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_slots_up_id, _drag_and_drop_item->_blueprint_spacecraft, highlighted_slot_index, 0);
+
+									if (Zoner::ISpaceScreenGUI::o().IsDragAndDropItemFromInspector())
+									{
+										Zoner::ISpaceScreenGUI::o().RemoveDragAndDropItemFromInspector();
+									}
+
+									Zoner::ISpaceScreenGUI::o().SetDragAndDropItem(nullptr);
+								}
+								else
+								{
+									//cant move item, show effect
+								}
+							}
+							else
+							{
+								//place item in full slot
+								if (_highlighted_slot_item == _drag_and_drop_item)
+								{
+									//Place container back to its slot
+									//if item from inspector
+									if (Zoner::ISpaceScreenGUI::o().IsDragAndDropItemFromInspector())
+									{
+										Zoner::ISpaceScreenGUI::o().RemoveDragAndDropItemFromInspector();
+									}
+
+									Zoner::ISpaceScreenGUI::o().SetDragAndDropItem(nullptr);
+								}
+								else
+								{
+									//if both sides allowed this operation (exchange requires both sides to exist!)
+									if (ItemInAllowed(_drag_and_drop_item, true, _highlighted_slot_item) &&
+										(_drag_and_drop_item->this_item_owner != nullptr &&
+											_drag_and_drop_item->this_item_owner->ItemOutAllowed(_drag_and_drop_item, true, _highlighted_slot_item)))
+									{
+										_drag_and_drop_item->this_item_owner->ItemOut(_drag_and_drop_item, true, _highlighted_slot_item);
+										ItemIn(_drag_and_drop_item, true, _highlighted_slot_item);
+
+										Zoner::IItem* exchanged_item = _highlighted_slot_item;
+										equipment_slots_up[highlighted_slot_index + _equipment_slots_up_offset] = _drag_and_drop_item;
+
+										//cache icon
+										if (_drag_and_drop_item->_blueprint_item != nullptr)
+											Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_slots_up_id, _drag_and_drop_item->_blueprint_item, highlighted_slot_index, 0);
+										else if (_drag_and_drop_item->_blueprint_spacecraft != nullptr)
+											Zoner::ISpaceScreenGUI::o().CacheIcon(_icon_cache_slots_up_id, _drag_and_drop_item->_blueprint_spacecraft, highlighted_slot_index, 0);
+
+
+										if (Zoner::ISpaceScreenGUI::o().IsDragAndDropItemFromInspector())
+										{
+											Zoner::ISpaceScreenGUI::o().RemoveDragAndDropItemFromInspector();
+										}
+
+										//pickup exchanged item for drag and drop
+										Zoner::ISpaceScreenGUI::o().SetDragAndDropItem(exchanged_item);
+									}
+									else
+									{
+										//cant move item, show effect
+									}
+								}
+							}
+						}
+						else
+						{
+							//pickup logic
+							if (_highlighted_slot_item == nullptr)
+							{
+								//this slot is empty, do nothing
+							}
+							else
+							{
+								//slot is full, pickup item
+								Zoner::ISpaceScreenGUI::o().SetDragAndDropItem(_highlighted_slot_item);
+							}
+						}
+					}
 				}
 			}
 			ok::ui::PopTranslate();
 
+
+			//up slots left right offset buttons
+			//left
+			ok::ui::PushTranslate(41.f, 139.f);
+			{
+				ok::ui::PushNonActivable(false);
+					ok::ui::Dummy(offset_button_widget_left_up.ptr(), 0, 0, 20, 35);
+				ok::ui::PopNonActivable();
+
+				if (ok::ui::ws().mouse_down)
+				{
+					if (ok::ui::ws().on_activate)
+					{
+						//act
+						_equipment_slots_up_offset--;
+						if (_equipment_slots_up_offset < 0) _equipment_slots_up_offset = 0;
+						else
+						{
+							Zoner::ISpaceScreenGUI::o().MoveIconsInsideCache(_icon_cache_slots_up_id, 1, 0);
+						}
+					}
+					ok::ui::Image(offset_button_widget_left_up.ptr(), &spr_offset_btn_left_down);
+				}
+				else
+				{
+					ok::ui::Image(offset_button_widget_left_up.ptr(), &spr_offset_btn_left);
+				}
+			}
+			ok::ui::PopTranslate();
+
+			//right
+			ok::ui::PushTranslate(268.f, 139.f);
+			{
+				ok::ui::PushNonActivable(false);
+				ok::ui::Dummy(offset_button_widget_right_up.ptr(), 0, 0, 20, 35);
+				ok::ui::PopNonActivable();
+
+				if (ok::ui::ws().mouse_down)
+				{
+					if (ok::ui::ws().on_activate)
+					{
+						//act
+						_equipment_slots_up_offset++;
+						if (_equipment_slots_up_offset+4 >= static_cast<int>(equipment_slots_up.size())) _equipment_slots_up_offset--;
+						else
+						{
+							Zoner::ISpaceScreenGUI::o().MoveIconsInsideCache(_icon_cache_slots_up_id, -1, 0);
+						}
+					}
+					ok::ui::Image(offset_button_widget_right_up.ptr(), &spr_offset_btn_right_down);
+				}
+				else
+				{
+					ok::ui::Image(offset_button_widget_right_up.ptr(), &spr_offset_btn_right);
+				}
+			}
+			ok::ui::PopTranslate();
 
 			//middle slots
 			{
@@ -692,7 +1223,18 @@ void Zoner::ItemSpacecraft::UpdateUI(float dt)
 			else
 			{
 				ok::ui::Image(slot_widget.ptr(), &spr_full_slot_32, 60.f, 194.f);
-				ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_id, 5+0, 0), 60.f + 2.f, 194.f+2.f);
+
+				if (Zoner::ISpaceScreenGUI::o().GetDragAndDropItem() == equipment_slots_middle[0])
+				{
+					ok::ui::PushEffect_Fade(0.5f);
+				}
+
+				ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_slots_middle_id, 0, 0), 60.f + 2.f, 194.f + 2.f);
+
+				if (Zoner::ISpaceScreenGUI::o().GetDragAndDropItem() == equipment_slots_middle[0])
+				{
+					ok::ui::PopEffect_Fade();
+				}
 			}
 
 			if (equipment_slots_middle[1] == nullptr)
@@ -702,7 +1244,18 @@ void Zoner::ItemSpacecraft::UpdateUI(float dt)
 			else
 			{
 				ok::ui::Image(slot_widget.ptr(), &spr_full_slot_32, 234.f, 194.f);
-				ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_id, 5 + 1, 0), 234.f + 2.f, 194.f + 2.f);
+
+				if (Zoner::ISpaceScreenGUI::o().GetDragAndDropItem() == equipment_slots_middle[1])
+				{
+					ok::ui::PushEffect_Fade(0.5f);
+				}
+
+				ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_slots_middle_id, 1, 0), 234.f + 2.f, 194.f + 2.f);
+
+				if (Zoner::ISpaceScreenGUI::o().GetDragAndDropItem() == equipment_slots_middle[1])
+				{
+					ok::ui::PopEffect_Fade();
+				}
 			}
 
 			if (equipment_slots_middle[2] == nullptr)
@@ -712,7 +1265,18 @@ void Zoner::ItemSpacecraft::UpdateUI(float dt)
 			else
 			{
 				ok::ui::Image(slot_widget.ptr(), &spr_full_slot_32, 60.f, 248.f);
-				ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_id, 5 + 2, 0), 60.f + 2.f, 248.f + 2.f);
+
+				if (Zoner::ISpaceScreenGUI::o().GetDragAndDropItem() == equipment_slots_middle[2])
+				{
+					ok::ui::PushEffect_Fade(0.5f);
+				}
+
+				ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_slots_middle_id, 2, 0), 60.f + 2.f, 248.f + 2.f);
+
+				if (Zoner::ISpaceScreenGUI::o().GetDragAndDropItem() == equipment_slots_middle[2])
+				{
+					ok::ui::PopEffect_Fade();
+				}
 			}
 
 			if (equipment_slots_middle[3] == nullptr)
@@ -722,7 +1286,18 @@ void Zoner::ItemSpacecraft::UpdateUI(float dt)
 			else
 			{
 				ok::ui::Image(slot_widget.ptr(), &spr_full_slot_32, 234.f, 248.f);
-				ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_id, 5 + 3, 0), 234.f + 2.f, 248.f + 2.f);
+
+				if (Zoner::ISpaceScreenGUI::o().GetDragAndDropItem() == equipment_slots_middle[3])
+				{
+					ok::ui::PushEffect_Fade(0.5f);
+				}
+
+				ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_slots_middle_id, 3, 0), 234.f + 2.f, 248.f + 2.f);
+
+				if (Zoner::ISpaceScreenGUI::o().GetDragAndDropItem() == equipment_slots_middle[3])
+				{
+					ok::ui::PopEffect_Fade();
+				}
 			}
 
 
@@ -738,7 +1313,18 @@ void Zoner::ItemSpacecraft::UpdateUI(float dt)
 					else
 					{
 						ok::ui::Image(slot_widget.ptr(), &spr_full_slot_32, i * 43.f);
-						ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_id, 9+i, 0), i * 43.f + 2.f, 2.f);
+
+						if (Zoner::ISpaceScreenGUI::o().GetDragAndDropItem() == equipment_slots_down[i + _equipment_slots_down_offset])
+						{
+							ok::ui::PushEffect_Fade(0.5f);
+						}
+
+						ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_slots_down_id, i, 0), i * 43.f + 2.f, 2.f);
+
+						if (Zoner::ISpaceScreenGUI::o().GetDragAndDropItem() == equipment_slots_down[i + _equipment_slots_down_offset])
+						{
+							ok::ui::PopEffect_Fade();
+						}
 					}
 				}
 
@@ -762,6 +1348,64 @@ void Zoner::ItemSpacecraft::UpdateUI(float dt)
 				}
 			}
 			ok::ui::PopTranslate();
+
+
+			//container slot
+			{
+				ok::ui::PushNonActivable(false);
+				ok::ui::Dummy(slot_widget.ptr(), 298.f, 223.f, 36.f, 36.f);
+				if (ok::ui::ws().mouse_inside)
+				{
+					if (ok::ui::ws().on_activate)
+					{
+						if (Zoner::ISpaceScreenGUI::o().GetDragAndDropItem() == container_slot)
+						{
+							//Place container back to its slot
+							//if item from inspector
+							if (Zoner::ISpaceScreenGUI::o().IsDragAndDropItemFromInspector())
+							{
+								Zoner::ISpaceScreenGUI::o().RemoveDragAndDropItemFromInspector();
+							}
+
+							Zoner::ISpaceScreenGUI::o().SetDragAndDropItem(nullptr);
+						}
+						else
+						{
+							if (Zoner::ISpaceScreenGUI::o().GetDragAndDropItem() == nullptr)
+							{
+								//pick up container from slot
+								Zoner::ISpaceScreenGUI::o().SetDragAndDropItem(container_slot);
+							}
+							else
+							{
+								//place some item in container
+							}
+						}
+					}
+				}
+				ok::ui::PopNonActivable();
+
+				if (container_slot == nullptr)
+				{
+					ok::ui::Image(slot_widget.ptr(), &spr_empty_slot_32, 298.f, 223.f);
+				}
+				else
+				{
+					ok::ui::Image(slot_widget.ptr(), &spr_full_slot_32, 298.f, 223.f);
+
+					if (Zoner::ISpaceScreenGUI::o().GetDragAndDropItem() == container_slot)
+					{
+						ok::ui::PushEffect_Fade(0.5f);
+					}
+
+						ok::ui::Image(slot_widget.ptr(), &Zoner::ISpaceScreenGUI::o().GetIconCache(_icon_cache_container_slot_id, 0, 0), 298.f + 2.f, 223.f + 2.f);
+					
+					if (Zoner::ISpaceScreenGUI::o().GetDragAndDropItem() == container_slot)
+					{
+						ok::ui::PopEffect_Fade();
+					}
+				}
+			}
 		}
 		ok::ui::PopTranslate();
 
@@ -771,12 +1415,144 @@ void Zoner::ItemSpacecraft::UpdateUI(float dt)
 	ok::ui::PopNonActivable();
 
 
+	//spacecraft ui changes here
+
+	//extend equipment up slots
+	if (equipment_slots_up[_equipment_slots_up_offset+4] != nullptr &&
+		_equipment_slots_up_offset + 4 == equipment_slots_up.size() - 1)
+	{
+		equipment_slots_up.push_back(nullptr);
+	}
+
+	//shrink equipment up slots
+	while (
+		equipment_slots_up.size() > 5 &&
+		equipment_slots_up[equipment_slots_up.size() - 1] == nullptr &&
+		equipment_slots_up[equipment_slots_up.size() - 2] == nullptr)
+	{
+		equipment_slots_up.pop_back();
+
+		if (_equipment_slots_up_offset + 4 >= equipment_slots_up.size())
+		_equipment_slots_up_offset--;
+	}
 	//ok::ui::EndUI();
 }
 
 void Zoner::ItemSpacecraft::DestroyUI()
 {
-	Zoner::ISpaceScreenGUI::o().ReleaseIconsCache(_icon_cache_id);
+	//order is important here for performance reason
+	Zoner::ISpaceScreenGUI::o().ReleaseIconsCache(_icon_cache_container_slot_id);
+	Zoner::ISpaceScreenGUI::o().ReleaseIconsCache(_icon_cache_slots_middle_id);
+	Zoner::ISpaceScreenGUI::o().ReleaseIconsCache(_icon_cache_slots_down_id);
+	Zoner::ISpaceScreenGUI::o().ReleaseIconsCache(_icon_cache_slots_up_id);
+}
+
+void Zoner::ItemSpacecraft::ItemIn(Zoner::IItem * item, bool exchange, const Zoner::IItem * exchange_item)
+{
+	item->this_item_owner = this;
+
+	if (exchange)
+	{
+		//on exchange just rewrite existing element in equipment_items
+		auto it = std::find(equipment_items.begin(), equipment_items.end(), exchange_item);
+		*it = item;
+	}
+	else
+	{
+		//items erased from equipment_items on item out, so no need to search them in equipment_items, its guaranteed that this items will not be here
+		equipment_items.push_back(item);
+
+		//if this item already was here dont push it again, just left it where it was in equipment_items
+		/*auto it = std::find(equipment_items.begin(), equipment_items.end(), item);
+
+		if (it == equipment_items.end())
+		{
+			equipment_items.push_back(item);
+		}*/
+	}
+	
+}
+
+void Zoner::ItemSpacecraft::ItemOut(const Zoner::IItem * item, bool exchange, Zoner::IItem * exchange_item)
+{
+	auto it = std::find(equipment_slots_up.begin(), equipment_slots_up.end(), item);
+	std::vector<Zoner::IItem*>* slots_ptr = nullptr;
+	int _slots_icon_cache_id = -1;
+	int _slots_icon_cache_offset = 0;
+
+	if (it != equipment_slots_up.end())
+	{
+		slots_ptr = &equipment_slots_up;
+		_slots_icon_cache_id = _icon_cache_slots_up_id;
+		_slots_icon_cache_offset = _equipment_slots_up_offset;
+	}
+	else
+	{
+		it = std::find(equipment_slots_middle.begin(), equipment_slots_middle.end(), item);
+
+		if (it != equipment_slots_middle.end())
+		{
+			slots_ptr = &equipment_slots_middle;
+			_slots_icon_cache_id = _icon_cache_slots_middle_id;
+			_slots_icon_cache_offset = 0;
+		}
+		else
+		{
+			it = std::find(equipment_slots_down.begin(), equipment_slots_down.end(), item);
+
+			if (it != equipment_slots_down.end())
+			{
+				slots_ptr = &equipment_slots_down;
+				_slots_icon_cache_id = _icon_cache_slots_down_id;
+				_slots_icon_cache_offset = _equipment_slots_down_offset;
+			}
+		}
+	}
+
+	if (slots_ptr != nullptr)
+	{
+		int position = it - slots_ptr->begin();
+		if (exchange)
+		{
+			(*slots_ptr)[position] = exchange_item;
+			exchange_item->this_item_owner = this;
+
+			if (exchange_item->_blueprint_item != nullptr)
+				Zoner::ISpaceScreenGUI::o().CacheIcon(_slots_icon_cache_id, exchange_item->_blueprint_item, position - _slots_icon_cache_offset, 0);
+			else if (exchange_item->_blueprint_spacecraft != nullptr)
+				Zoner::ISpaceScreenGUI::o().CacheIcon(_slots_icon_cache_id, exchange_item->_blueprint_spacecraft, position - _slots_icon_cache_offset, 0);
+
+			//reset item in equipment_items to exchange_item
+			it = std::find(equipment_items.begin(), equipment_items.end(), item);
+			*it = exchange_item;
+		}
+		else
+		{
+			(*slots_ptr)[position] = nullptr;
+			equipment_items.erase(std::find(equipment_items.begin(), equipment_items.end(), item));
+		}
+	}
+}
+
+bool Zoner::ItemSpacecraft::ItemInAllowed(Zoner::IItem * item, bool exchange, Zoner::IItem * exchange_item)
+{
+	auto _item = static_cast<Zoner::IItem*>(&gameObject());
+	Zoner::UID& _item_uid = *_item;
+
+	if (_item_uid == *item || item->FindItem(*_item) != nullptr)
+	{
+		//self nesting cycle detected, cant allow this
+		return false;
+	}
+
+	return true;
+}
+
+bool Zoner::ItemSpacecraft::ItemOutAllowed(Zoner::IItem * item, bool exchange, Zoner::IItem * exchange_item)
+{
+	if (item == container_slot) return false;
+
+	return true;
 }
 
 Zoner::IItem * Zoner::Item::FindItem(Zoner::UID & item_uid)

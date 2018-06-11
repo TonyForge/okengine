@@ -212,7 +212,8 @@ void ok::graphics::RenderTarget::CopyColorBetween(ok::graphics::RenderTarget & f
 	glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, from.framebuffer_color_channel, 0);
 	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, to.framebuffer_color_channel, 0);
 	glDrawBuffer(GL_COLOR_ATTACHMENT1);
-	glBlitFramebuffer(from_x, from_y, width, height, to_x, to_y, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+	glBlitFramebuffer(from_x, from_y, from_x + width, from_y + height, to_x, to_y, to_x + width, to_y + height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
 	if (_bind_stack.size() > 0)
 	{
@@ -239,7 +240,7 @@ void ok::graphics::RenderTarget::CopyColorBetweenSequenceBegin(ok::graphics::Ren
 
 void ok::graphics::RenderTarget::CopyColorBetweenSequenceStep(int from_x, int from_y, int to_x, int to_y, int width, int height)
 {
-	glBlitFramebuffer(from_x, from_y, width, height, to_x, to_y, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	glBlitFramebuffer(from_x, from_y, from_x+width, from_y+height, to_x, to_y, to_x+width, to_y+height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 }
 
 void ok::graphics::RenderTarget::CopyColorBetweenSequenceEnd()

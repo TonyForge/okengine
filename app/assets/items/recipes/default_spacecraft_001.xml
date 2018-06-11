@@ -7,7 +7,7 @@
 		<equipment_slots_down count="0">
 		</equipment_slots_down>
 		<container_slot>
-			<recipe name="default_container_10.xml" />
+			<recipe name="test_container.xml" />
 		</container_slot>
 	</behaviour>
 	<blueprint type="spacecraft" name="nomad" />

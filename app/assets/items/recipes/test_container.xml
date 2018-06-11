@@ -1,0 +1,16 @@
+<recipe>
+	<behaviour class="ItemCargoHold" blocks="4" >
+		<slots>
+			<slot x="0" y="0">
+				<recipe name="test_item.xml" />
+			</slot>
+			<slot x="4" y="1">
+				<recipe name="test_item2.xml" />
+			</slot>
+			<slot x="3" y="1">
+				<recipe name="default_container_30.xml" />
+			</slot>
+		</slots>
+	</behaviour>
+	<blueprint type="item" name="default_container" />
+</recipe>

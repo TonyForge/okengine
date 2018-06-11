@@ -110,8 +110,8 @@ namespace Zoner
 		Zoner::IItem* FindItem(Zoner::UID& item_uid);
 		void CollectItems(std::map<Zoner::UID, Zoner::IItem*>& _collection);
 
-		virtual void OnItemIn(Zoner::IItem* item_ptr);
-		virtual void OnItemOut(Zoner::IItem* item_ptr);
+		void OnItemIn(Zoner::IItem* item_ptr);
+		void OnItemOut(Zoner::IItem* item_ptr);
 		std::map<Zoner::UID, Zoner::IItem*> this_items;
 
 		ok::String _gameengine_id;

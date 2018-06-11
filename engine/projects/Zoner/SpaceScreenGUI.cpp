@@ -403,6 +403,22 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 						if (o()._inspector_items_in_slots[highlighted_slot_index] == nullptr)
 						{
 							//place item in empty slot
+
+							//remove all previous shortcuts of this item if any...
+							{	
+								Zoner::UID& _drag_and_drop_uid = *o()._drag_and_drop_item;
+								auto search_function = [&_drag_and_drop_uid](const Zoner::UID& item_uid) {return item_uid == _drag_and_drop_uid; };
+
+								for (
+										auto it = std::find_if(o()._inspector_items.begin(), o()._inspector_items.end(), search_function);
+										it != o()._inspector_items.end();
+										it = std::find_if(++it, o()._inspector_items.end(), search_function)
+									)
+								{
+									*it = 0;
+								}
+							}
+
 							o()._inspector_items[inventory_panel_top_scroll.items_visible_first_index + highlighted_slot_index] = *o()._drag_and_drop_item;
 
 							if (o()._drag_and_drop_item_shortcut != nullptr)
@@ -429,6 +445,21 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 
 								//EXCHANGE LOGIC
 								{
+									//remove all previous shortcuts of this item if any...
+									{
+										Zoner::UID& _drag_and_drop_uid = *o()._drag_and_drop_item;
+										auto search_function = [&_drag_and_drop_uid](const Zoner::UID& item_uid) {return item_uid == _drag_and_drop_uid; };
+
+										for (
+											auto it = std::find_if(o()._inspector_items.begin(), o()._inspector_items.end(), search_function);
+											it != o()._inspector_items.end();
+											it = std::find_if(++it, o()._inspector_items.end(), search_function)
+											)
+										{
+											*it = 0;
+										}
+									}
+
 									//place item in non empty slot and pick up new item
 									o()._inspector_items[inventory_panel_top_scroll.items_visible_first_index + highlighted_slot_index] = *o()._drag_and_drop_item;
 
@@ -520,6 +551,21 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 							//Open interface for this item
 							o()._inspector_big_slot_item->CreateUI();
 						}
+						else
+						{
+							//clear slot
+							o()._inspector_big_slot_item->DestroyUI();
+							o()._inspector_big_slot_item = nullptr;
+
+							//place item in empty slot
+							o()._inspector_big_slot_item = o()._drag_and_drop_item;
+
+							o()._drag_and_drop_item = nullptr;
+							o()._drag_and_drop_item_shortcut = nullptr;
+
+							//Open interface for this item
+							o()._inspector_big_slot_item->CreateUI();
+						}
 					}
 				}
 			}
@@ -579,6 +625,14 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 	{
 		o()._inspector_items.pop_back();
 	}
+	
+	ok::graphics::SpriteInfo si;
+	si.rect = ok::graphics::TextureRect(o()._icons_cache_64px_tex, 0, 0, 1024, 1024);
+	si.hotspot = glm::vec2(0.f, 0.f);
+
+	ok::ui::PushTranslate(400.f, 0.f);
+	ok::ui::Image(inventory_panel_top_big_slot.ptr(), &si, 0.f, 0.f, 512.f, 512.f);
+	ok::ui::PopTranslate();
 }
 
 void Zoner::SpaceScreenGUI::Create_Inspector()
@@ -760,6 +814,60 @@ ok::graphics::SpriteInfo Zoner::SpaceScreenGUI::GetIconCache(int cache_id, int s
 	int icon_x = icon_offset - icon_y * 16;
 
 	return _GetIconCache(icon_x, icon_y);
+}
+
+void Zoner::SpaceScreenGUI::MoveIconsInsideCache(int cache_id, int shift_x, int shift_y)
+{
+	Zoner::SpaceScreenGUI::_IconsCacheReserve reserve = o()._icons_cache_reserve_records[cache_id];
+
+	_MoveIconCacheSeqBegin();
+	for (int y = 0; y < reserve.size_y; y++)
+	{
+		for (int x = 0; x < reserve.size_x; x++)
+		{
+			int new_x = x + shift_x;
+			int new_y = y + shift_y;
+			if (new_x < 0 || new_y < 0)
+			{
+				//skip this step
+			}
+			else
+			{
+				if (new_x >= reserve.size_x || new_y >= reserve.size_y)
+				{
+					//skip this step
+				}
+				else
+				{
+					_MoveIconCache(reserve.offset + x + y*reserve.size_x, reserve.offset + new_x + new_y*reserve.size_x);
+				}
+			}
+		}
+	}
+	_MoveIconCacheSeqEnd();
+}
+
+void Zoner::SpaceScreenGUI::SetDragAndDropItem(Zoner::IItem * item)
+{
+	o()._drag_and_drop_item = item;
+	o()._drag_and_drop_item_shortcut = nullptr;
+}
+
+Zoner::IItem * Zoner::SpaceScreenGUI::GetDragAndDropItem()
+{
+	return o()._drag_and_drop_item;
+}
+
+bool Zoner::SpaceScreenGUI::IsDragAndDropItemFromInspector()
+{
+	return o()._drag_and_drop_item_shortcut != nullptr;
+}
+
+void Zoner::SpaceScreenGUI::RemoveDragAndDropItemFromInspector()
+{
+	*o()._drag_and_drop_item_shortcut = 0;
+	o()._drag_and_drop_item_shortcut = nullptr;
+	o()._inspector_recache_icons = true;
 }
 
 void Zoner::SpaceScreenGUI::_CacheIcon(ok::GameObject * blueprint, int slot_x, int slot_y)

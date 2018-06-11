@@ -34,11 +34,14 @@ namespace std
 	{
 		inline bool operator() (const Zoner::UID& lhs, const Zoner::UID& rhs) const
 		{
-			return 
-				(lhs.uid[3] < rhs.uid[3]) &&
-				(lhs.uid[2] < rhs.uid[2]) &&
-				(lhs.uid[1] < rhs.uid[1]) &&
-				(lhs.uid[0] < rhs.uid[0]);
+			for (int i = 3; i > -1; i--)
+			{
+				if (lhs.uid[i] < rhs.uid[i]) return true;
+				else if (lhs.uid[i] == rhs.uid[i]) {}
+				else return false;
+			}
+
+			return false;
 		}
 	};
 }
