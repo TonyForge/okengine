@@ -42,6 +42,9 @@ namespace Zoner
 		bool IsDragAndDropItemFromInspector();
 		void RemoveDragAndDropItemFromInspector();
 
+		ok::graphics::RenderTarget& GetRenderCache256();
+		ok::graphics::Texture& GetRenderCache256Tex();
+
 	protected:
 	private:
 		SpaceScreenGUI() { _instance = this; }
@@ -66,6 +69,9 @@ namespace Zoner
 		ok::graphics::Texture* _icons_cache_64px_tex = nullptr;
 
 		const int _icons_cache_items_limit = 256;
+
+		ok::graphics::RenderTarget* _render_cache_256px = nullptr;
+		ok::graphics::Texture* _render_cache_256px_tex = nullptr;
 
 		struct _IconsCacheReserve
 		{

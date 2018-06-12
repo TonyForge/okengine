@@ -3,6 +3,8 @@
 #include "IItem.h"
 #include "..\..\SpriteBatch.h"
 #include "..\..\GameObject.h"
+#include "..\..\RenderTarget.h"
+#include "..\..\Texture.h"
 
 namespace Zoner
 {
@@ -21,6 +23,9 @@ namespace Zoner
 		virtual Zoner::IItem* GetDragAndDropItem() = 0;
 		virtual bool IsDragAndDropItemFromInspector() = 0;
 		virtual void RemoveDragAndDropItemFromInspector() = 0;
+
+		virtual ok::graphics::RenderTarget& GetRenderCache256() = 0;
+		virtual ok::graphics::Texture& GetRenderCache256Tex() = 0;
 	private:
 	protected:
 		static Zoner::ISpaceScreenGUI* _instance;

@@ -20,6 +20,12 @@ void Zoner::SpaceScreenGUI::Update(float dt)
 		o()._icons_cache_64px_tex = new ok::graphics::Texture(o()._icons_cache_64px);
 	}
 
+	if (o()._render_cache_256px == nullptr)
+	{
+		o()._render_cache_256px = new ok::graphics::RenderTarget(256, 256, true, true, false, true);
+		o()._render_cache_256px_tex = new ok::graphics::Texture(o()._render_cache_256px);
+	}
+
 	if (Zoner::IGame::o().StateTrue(Zoner::GameStates::InspectorSwitch))
 	{
 		if (Zoner::IGame::o().StateFalse(Zoner::GameStates::InspectorVisible))
@@ -626,6 +632,8 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 		o()._inspector_items.pop_back();
 	}
 	
+	//ICON CACHE DEBUG DRAW
+	/*
 	ok::graphics::SpriteInfo si;
 	si.rect = ok::graphics::TextureRect(o()._icons_cache_64px_tex, 0, 0, 1024, 1024);
 	si.hotspot = glm::vec2(0.f, 0.f);
@@ -633,6 +641,8 @@ void Zoner::SpaceScreenGUI::Update_Inspector(float dt)
 	ok::ui::PushTranslate(400.f, 0.f);
 	ok::ui::Image(inventory_panel_top_big_slot.ptr(), &si, 0.f, 0.f, 512.f, 512.f);
 	ok::ui::PopTranslate();
+	*/
+	
 }
 
 void Zoner::SpaceScreenGUI::Create_Inspector()
@@ -821,10 +831,77 @@ void Zoner::SpaceScreenGUI::MoveIconsInsideCache(int cache_id, int shift_x, int 
 	Zoner::SpaceScreenGUI::_IconsCacheReserve reserve = o()._icons_cache_reserve_records[cache_id];
 
 	_MoveIconCacheSeqBegin();
-	for (int y = 0; y < reserve.size_y; y++)
+
+	if (shift_x != 0)
 	{
+		//horizontal pass
+		for (int y = 0; y < reserve.size_y; y++)
+		{
+			for (int _x = 0; _x < reserve.size_x; _x++)
+			{
+				int x = _x;
+				if (shift_x > 0) x = reserve.size_x - 1 - _x;
+
+				int new_x = x + shift_x;
+
+				if (new_x < 0)
+				{
+					//skip this step
+				}
+				else
+				{
+					if (new_x >= reserve.size_x)
+					{
+						//skip this step
+					}
+					else
+					{
+						_MoveIconCache(reserve.offset + x + y*reserve.size_x, reserve.offset + new_x + y*reserve.size_x);
+					}
+				}
+			}
+		}
+	}
+
+	if (shift_y != 0)
+	{
+		//vertical pass
 		for (int x = 0; x < reserve.size_x; x++)
 		{
+			for (int _y = 0; _y < reserve.size_y; _y++)
+			{
+				int y = _y;
+				if (shift_y > 0) y = reserve.size_y - 1 - _y;
+
+				int new_y = y + shift_y;
+
+				if (new_y < 0)
+				{
+					//skip this step
+				}
+				else
+				{
+					if (new_y >= reserve.size_y)
+					{
+						//skip this step
+					}
+					else
+					{
+						_MoveIconCache(reserve.offset + x + y*reserve.size_x, reserve.offset + x + new_y*reserve.size_x);
+					}
+				}
+			}
+		}
+	}
+
+
+	/*for (int _y = 0; _y < reserve.size_y; _y++)
+	{
+		for (int _x = 0; _x < reserve.size_x; _x++)
+		{
+			int x = _x;
+			int y = _y;
+			if ()
 			int new_x = x + shift_x;
 			int new_y = y + shift_y;
 			if (new_x < 0 || new_y < 0)
@@ -843,7 +920,7 @@ void Zoner::SpaceScreenGUI::MoveIconsInsideCache(int cache_id, int shift_x, int 
 				}
 			}
 		}
-	}
+	}*/
 	_MoveIconCacheSeqEnd();
 }
 
@@ -868,6 +945,16 @@ void Zoner::SpaceScreenGUI::RemoveDragAndDropItemFromInspector()
 	*o()._drag_and_drop_item_shortcut = 0;
 	o()._drag_and_drop_item_shortcut = nullptr;
 	o()._inspector_recache_icons = true;
+}
+
+ok::graphics::RenderTarget & Zoner::SpaceScreenGUI::GetRenderCache256()
+{
+	return *o()._render_cache_256px;
+}
+
+ok::graphics::Texture & Zoner::SpaceScreenGUI::GetRenderCache256Tex()
+{
+	return *o()._render_cache_256px_tex;
 }
 
 void Zoner::SpaceScreenGUI::_CacheIcon(ok::GameObject * blueprint, int slot_x, int slot_y)

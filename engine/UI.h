@@ -79,6 +79,7 @@ namespace ok
 
 		static void Model(ok::GameObject* model, glm::vec3 euler_angles, glm::vec3 scale, float x = 0.f, float y = 0.f);
 		static void Model(ok::GameObject* model, glm::vec3 euler_angles_pre, glm::vec3 euler_angles_post, glm::vec3 scale, float x = 0.f, float y = 0.f);
+		static void Model(ok::GameObject* model, glm::vec3 euler_angles_pre, glm::vec3 euler_angles, glm::vec3 euler_angles_post, glm::vec3 scale, float x = 0.f, float y = 0.f);
 
 		static ok::ui::widget_state& Dummy(ok::ui::widget_ptr widget, float x, float y, float width, float height);
 		static ok::ui::widget_state& ScrollHorizontal(

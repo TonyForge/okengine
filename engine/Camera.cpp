@@ -287,6 +287,7 @@ glm::mat4 ok::graphics::Camera::GetVPMatrix()
 	if (mP_dirty || mV_dirty)
 	{
 		mVP = GetProjectionMatrix() * GetViewMatrix();
+		
 		mP_dirty = false;
 		mV_dirty = false;
 	}

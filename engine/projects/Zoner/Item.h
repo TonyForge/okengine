@@ -84,6 +84,8 @@ namespace Zoner
 		//int _icon_cache_id;
 		int _equipment_slots_up_offset = 0;
 		int _equipment_slots_down_offset = 0;
+
+		bool _viewer_dirty = false;
 	protected:
 	};
 
