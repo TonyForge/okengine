@@ -22,6 +22,12 @@
     <Filter Include="projects\Zoner\Interfaces">
       <UniqueIdentifier>{785a4a0d-c33f-4d77-86fa-067a582dd838}</UniqueIdentifier>
     </Filter>
+    <Filter Include="projects\Kripta">
+      <UniqueIdentifier>{7f24f8eb-f766-4663-b378-437b7787d0e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="projects\Kripta\Interfaces">
+      <UniqueIdentifier>{e07519f1-aafb-4d65-a812-e000a481c2d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -195,6 +201,12 @@
     <ClCompile Include="projects\Zoner\ISpaceScreenGUI.cpp">
       <Filter>projects\Zoner\Interfaces</Filter>
     </ClCompile>
+    <ClCompile Include="Kripta.cpp">
+      <Filter>projects\Kripta</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\Kripta\Game.cpp">
+      <Filter>projects\Kripta</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -367,6 +379,15 @@
     </ClInclude>
     <ClInclude Include="projects\Zoner\ISpaceScreenGUI.h">
       <Filter>projects\Zoner\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Kripta.h">
+      <Filter>projects\Kripta</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Kripta\Game.h">
+      <Filter>projects\Kripta</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Kripta\IGame.h">
+      <Filter>projects\Kripta\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
