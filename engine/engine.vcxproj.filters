@@ -16,9 +16,6 @@
     <Filter Include="projects">
       <UniqueIdentifier>{e59d570f-479c-4c47-8c07-8940a37c98d5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="projects\Kripta">
-      <UniqueIdentifier>{85fbe099-b058-4ccb-b416-9c5b3957857a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="projects\Zoner">
       <UniqueIdentifier>{864f6ff7-e165-463b-944e-146ae7babc74}</UniqueIdentifier>
     </Filter>
@@ -128,12 +125,6 @@
     </ClCompile>
     <ClCompile Include="engine.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Kripta.cpp">
-      <Filter>projects\Kripta</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Kripta\Maze.cpp">
-      <Filter>projects\Kripta</Filter>
     </ClCompile>
     <ClCompile Include="Spline.cpp">
       <Filter>Source Files</Filter>
@@ -304,12 +295,6 @@
     </ClInclude>
     <ClInclude Include="Pool.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Kripta.h">
-      <Filter>projects\Kripta</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Kripta\Maze.h">
-      <Filter>projects\Kripta</Filter>
     </ClInclude>
     <ClInclude Include="Spline.h">
       <Filter>Header Files</Filter>
