@@ -109,11 +109,23 @@ namespace ok
 		void SetTransformCombineOrder(ok::TransformCombineOrder new_order);
 
 		virtual void OnChange();
+		virtual void OnShow();
+		virtual void OnHide();
+
+		bool IsVisible();
+		void Show();
+		void Hide();
+		void EnableOverrideChildrenVisibility();
+		void DisableOverrideChildrenVisibility();
+		bool IsChildrenVisibilityOverriden();
 
 		static void CopyPaste(ok::Transform& copyFrom, ok::Transform& pasteTo, bool updateChildrens, ok::TransformSpace space = ok::TransformSpace::LocalSpace);
 	protected:
 		std::list<ok::Transform*> _childrens;
 	private:
+		bool _visible = true;
+		bool _override_children_visibility = false;
+		
 		ok::Transform* _parent;
 		ok::RotationDirection _rotation_direction;
 		ok::TransformCombineOrder _transform_combine_order;

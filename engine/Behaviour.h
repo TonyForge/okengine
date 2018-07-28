@@ -27,6 +27,8 @@ namespace ok
 		virtual void OnGameObjectDuplicateEnd();
 		ok::Transform& transform();
 		ok::GameObject& gameObject();
+
+		static bool RenderingDisabled;
 	protected:
 	private:
 		friend class ok::Behaviour_GameObject_Assignee;

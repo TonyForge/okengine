@@ -163,51 +163,61 @@ void ok::graphics::Shader::RegisterAliasSubroutine(const std::string& uniform_na
 
 void ok::graphics::Shader::Bind(ok::graphics::ShaderAliasDispatcher* _dispatcher)
 {
-	glUseProgram(shader_program_id);
-	currentlyBoundShader = this;
-
-	if (options.isBlendEnabled)
+	if (IsBound() == true)
 	{
-		glEnable(GL_BLEND);
-		if (options.blendSeparateEnabled)
+		//do nothing
+	}
+	else
+	{
+		//bind shader
+
+		glUseProgram(shader_program_id);
+		currentlyBoundShader = this;
+
+		if (options.isBlendEnabled)
 		{
-			glBlendEquationSeparate(options.blendEquation_Modes[0], options.blendEquation_Modes[1]);
-			glBlendFuncSeparate(options.blendFunc_Factors[0], options.blendFunc_Factors[1], options.blendFunc_Factors[2], options.blendFunc_Factors[3]);
+			glEnable(GL_BLEND);
+			if (options.blendSeparateEnabled)
+			{
+				glBlendEquationSeparate(options.blendEquation_Modes[0], options.blendEquation_Modes[1]);
+				glBlendFuncSeparate(options.blendFunc_Factors[0], options.blendFunc_Factors[1], options.blendFunc_Factors[2], options.blendFunc_Factors[3]);
+			}
+			else
+			{
+				glBlendEquation(options.blendEquation_Modes[0]);
+				glBlendFunc(options.blendFunc_Factors[0], options.blendFunc_Factors[1]);
+			}
+
+			glBlendColor(options.blendColorConstant[0], options.blendColorConstant[1], options.blendColorConstant[2], options.blendColorConstant[3]);
 		}
 		else
 		{
-			glBlendEquation(options.blendEquation_Modes[0]);
-			glBlendFunc(options.blendFunc_Factors[0], options.blendFunc_Factors[1]);
+			glDisable(GL_BLEND);
 		}
 
-		glBlendColor(options.blendColorConstant[0], options.blendColorConstant[1], options.blendColorConstant[2], options.blendColorConstant[3]);
-	}
-	else
-	{
-		glDisable(GL_BLEND);
+		if (options.isDepthEnabled)
+		{
+			glEnable(GL_DEPTH_TEST);
+
+			glDepthMask(options.depthMask);
+			glDepthFunc(options.depthFunc);
+		}
+		else
+		{
+			glDisable(GL_DEPTH_TEST);
+		}
+
+		if (options.isCullEnabled)
+		{
+			glEnable(GL_CULL_FACE);
+			glCullFace(options.cullFace);
+		}
+		else
+		{
+			glDisable(GL_CULL_FACE);
+		}
 	}
 
-	if (options.isDepthEnabled)
-	{
-		glEnable(GL_DEPTH_TEST);
-
-		glDepthMask(options.depthMask);
-		glDepthFunc(options.depthFunc);
-	}
-	else
-	{
-		glDisable(GL_DEPTH_TEST);
-	}
-
-	if (options.isCullEnabled)
-	{
-		glEnable(GL_CULL_FACE);
-		glCullFace(options.cullFace);
-	}
-	else
-	{
-		glDisable(GL_CULL_FACE);
-	}
 	
 	ok::graphics::ShaderAliasType alias_type;
 	ok::graphics::ShaderAliasReference alias_reference;

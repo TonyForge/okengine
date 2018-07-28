@@ -44,6 +44,9 @@ ok::graphics::Material * ok::graphics::MeshRenderer::GetMaterial()
 
 void ok::graphics::MeshRenderer::Update(float dt)
 {
+	if (RenderingDisabled == true) return;
+
+	if (gameObject().IsVisible())
 	ok::graphics::LayeredRenderer::instance().Render(_renderer_request);
 }
 

@@ -627,6 +627,46 @@ void ok::Transform::OnChange()
 {
 }
 
+void ok::Transform::OnShow()
+{
+}
+
+void ok::Transform::OnHide()
+{
+}
+
+bool ok::Transform::IsVisible()
+{
+	return _visible;
+}
+
+void ok::Transform::Show()
+{
+	if (_visible == false) OnShow();
+	_visible = true;
+}
+
+void ok::Transform::Hide()
+{
+	if (_visible == true) OnHide();
+	_visible = false;
+}
+
+void ok::Transform::EnableOverrideChildrenVisibility()
+{
+	_override_children_visibility = true;
+}
+
+void ok::Transform::DisableOverrideChildrenVisibility()
+{
+	_override_children_visibility = false;
+}
+
+bool ok::Transform::IsChildrenVisibilityOverriden()
+{
+	return _override_children_visibility;
+}
+
 void ok::Transform::CopyPaste(ok::Transform & copyFrom, ok::Transform & pasteTo, bool updateChildrens, ok::TransformSpace space)
 {
 	copyFrom.BeginTransform(space);

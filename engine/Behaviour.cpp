@@ -1,5 +1,8 @@
 #include "Behaviour.h"
 
+bool ok::Behaviour::RenderingDisabled = false;
+
+
 ok::Behaviour::Behaviour() : enabled(true), _gameObject(nullptr)
 {
 

@@ -21,6 +21,8 @@ void ok::GameObject::Update(float dt)
 {
 	if (enabled)
 	{
+		if (IsChildrenVisibilityOverriden() && (false == IsVisible())) ok::Behaviour::RenderingDisabled = true;
+
 		std::list<ok::Transform*>::iterator it = _childrens.begin();
 		std::list<ok::Transform*>::iterator it_end = _childrens.end();
 
@@ -35,6 +37,8 @@ void ok::GameObject::Update(float dt)
 		{
 			_component->Update(dt);
 		}
+
+		if (IsChildrenVisibilityOverriden() && (false == IsVisible())) ok::Behaviour::RenderingDisabled = false;
 	}
 }
 

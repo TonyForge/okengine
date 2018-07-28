@@ -439,6 +439,7 @@
     <ClCompile Include="easylogging\include\easylogging++.cc" />
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="Font.cpp" />
+    <ClCompile Include="FOVMap.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GLBufferObject.cpp" />
     <ClCompile Include="glew\include\GL\glew.c">
@@ -559,6 +560,7 @@
     <ClCompile Include="TransformAnimation.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="VertexAnimation.cpp" />
+    <ClCompile Include="VisibilityMap.cpp" />
     <ClCompile Include="XMLPak.cpp" />
     <ClCompile Include="Zoner.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
@@ -575,6 +577,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Font.h" />
+    <ClInclude Include="FOVMap.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GLBufferObject.h" />
     <ClInclude Include="glew\include\GL\glew.h" />
@@ -690,6 +693,7 @@
     <ClInclude Include="TransformAnimation.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="VertexAnimation.h" />
+    <ClInclude Include="VisibilityMap.h" />
     <ClInclude Include="XMLPak.h" />
     <ClInclude Include="Zoner.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>

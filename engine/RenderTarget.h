@@ -16,7 +16,6 @@ namespace ok
 			unsigned int GetTexture_Color();
 			glm::ivec2 GetSize();
 
-			//not tested
 			static void CopyColorBetween(
 				ok::graphics::RenderTarget& from,
 				ok::graphics::RenderTarget& to,

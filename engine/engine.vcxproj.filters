@@ -207,6 +207,12 @@
     <ClCompile Include="projects\Kripta\Game.cpp">
       <Filter>projects\Kripta</Filter>
     </ClCompile>
+    <ClCompile Include="FOVMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VisibilityMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -388,6 +394,12 @@
     </ClInclude>
     <ClInclude Include="projects\Kripta\IGame.h">
       <Filter>projects\Kripta\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="FOVMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VisibilityMap.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
