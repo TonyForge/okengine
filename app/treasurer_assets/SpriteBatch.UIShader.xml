@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shader name="SpriteBatchUIShader">
+
+  <properties>
+    <transparent enabled="false" />
+    <blend enabled="true" template_file="Blend.DefaultAlpha.xml"/>
+    <cull enabled="false" />
+    <depth enabled="false" />
+  </properties>
+  
+  <aliases>
+    <alias uniform="mvp0" type="mat4" ref="ModelViewProjectionMatrix" />
+	<alias uniform="default_z" type="float" ref="Callback" />
+	<alias uniform="effects_power" type="float" ref="Callback" />
+	<alias uniform="effects_grayscale" type="float" ref="Callback" />
+	<alias uniform="effects_fade" type="float" ref="Callback" />
+  </aliases>
+  
+  <vertex>
+    <![CDATA[
+    #version 330 core
+    layout (location = 0) in vec2 pos0;
+    layout (location = 1) in vec2 uv0;
+    layout (location = 2) in vec4 color0;
+    
+    out vec2 uv0_out;
+    out vec4 color0_out;
+    
+    uniform mat4 mvp0;
+    uniform float default_z;
+    
+    void main()
+    {
+      gl_Position = mvp0 * vec4(pos0.xy, default_z, 1.0);
+      uv0_out = uv0;
+      color0_out = color0;
+    }
+    ]]>
+  </vertex>
+  
+  <fragment>
+    <![CDATA[
+    #version 330 core
+    out vec4 FragColor;
+    
+    in vec2 uv0_out;
+    in vec4 color0_out;
+    
+    uniform sampler2D tex0;
+    uniform float effects_power;
+	uniform float effects_grayscale;
+	uniform float effects_fade;
+	
+    void main()
+    {
+      FragColor = texture(tex0, uv0_out);
+	  float grayscale_color = (FragColor.r+FragColor.g+FragColor.b) * 0.333;
+      FragColor.rgb = mix(mix(FragColor.rgb, vec3(grayscale_color,grayscale_color,grayscale_color), effects_grayscale), color0_out.rgb, color0_out.a)*effects_power;
+	  FragColor.a = FragColor.a * effects_fade;
+    }
+    ]]>
+  </fragment>
+  
+  <geometry>
+    <![CDATA[]]>
+  </geometry>
+</shader>

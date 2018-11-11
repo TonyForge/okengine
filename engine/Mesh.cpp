@@ -175,6 +175,11 @@ int ok::graphics::Mesh::GetTrianglesCount()
 	return _triangles_count;
 }
 
+int ok::graphics::Mesh::GetVertexCount()
+{
+	return _vertex_count;
+}
+
 void ok::graphics::Mesh::EnableSkinDeformer(int bones_count, bool hardware)
 {
 	if (_skin_enabled) return;

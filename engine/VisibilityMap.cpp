@@ -14,9 +14,11 @@ ok::VisibilityMap::VisibilityMap(int width, int height)
 
 ok::GameObject & ok::VisibilityMap::GetPivot(int x, int y)
 {
+	static ok::GameObject _dummy;
+
 	if (x < 0 || y < 0 || x >= _width || y >= _height)
 	{
-		return ok::GameObject();
+		return _dummy;
 	}
 	
 	return _map[x + y * _width];

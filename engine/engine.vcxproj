@@ -33,6 +33,22 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Treasurer_Debug|Win32">
+      <Configuration>Treasurer_Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Treasurer_Debug|x64">
+      <Configuration>Treasurer_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Treasurer_Release|Win32">
+      <Configuration>Treasurer_Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Treasurer_Release|x64">
+      <Configuration>Treasurer_Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Zoner_Debug|Win32">
       <Configuration>Zoner_Debug</Configuration>
       <Platform>Win32</Platform>
@@ -75,6 +91,12 @@
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -96,6 +118,13 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -109,6 +138,12 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
@@ -135,6 +170,13 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -149,6 +191,9 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -156,6 +201,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -167,6 +215,9 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -174,6 +225,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -192,6 +246,11 @@
     <OutDir>$(SolutionDir)app\</OutDir>
     <TargetName>Kripta</TargetName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)app\</OutDir>
+    <TargetName>Treasurer</TargetName>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
@@ -199,6 +258,9 @@
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -216,6 +278,11 @@
     <OutDir>$(SolutionDir)app\</OutDir>
     <TargetName>Kripta</TargetName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)app\</OutDir>
+    <TargetName>Treasurer</TargetName>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
@@ -223,6 +290,9 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|x64'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -275,6 +345,23 @@
       <AdditionalDependencies>opengl32.lib;winmm.lib;ws2_32.lib;$(ProjectDir)sfml\lib\freetype.lib;$(ProjectDir)sfml\lib\flac.lib;$(ProjectDir)sfml\lib\jpeg.lib;$(ProjectDir)sfml\lib\ogg.lib;$(ProjectDir)sfml\lib\openal32.lib;$(ProjectDir)sfml\lib\vorbis.lib;$(ProjectDir)sfml\lib\vorbisenc.lib;$(ProjectDir)sfml\lib\vorbisfile.lib;$(ProjectDir)sfml\lib\sfml-system-s-d.lib;$(ProjectDir)sfml\lib\sfml-window-s-d.lib;$(ProjectDir)sfml\lib\sfml-graphics-s-d.lib;$(ProjectDir)sfml\lib\sfml-audio-s-d.lib;$(ProjectDir)sfml\lib\sfml-network-s-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>TREASURER;GLEW_STATIC;SFML_STATIC;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles>$(ProjectDir)stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>$(ProjectDir)glm\include;$(ProjectDir)easylogging\include;$(ProjectDir)glew\include;$(ProjectDir)sfml\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>$(ProjectDir)stdafx.h</PrecompiledHeaderFile>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;winmm.lib;ws2_32.lib;$(ProjectDir)sfml\lib\freetype.lib;$(ProjectDir)sfml\lib\flac.lib;$(ProjectDir)sfml\lib\jpeg.lib;$(ProjectDir)sfml\lib\ogg.lib;$(ProjectDir)sfml\lib\openal32.lib;$(ProjectDir)sfml\lib\vorbis.lib;$(ProjectDir)sfml\lib\vorbisenc.lib;$(ProjectDir)sfml\lib\vorbisfile.lib;$(ProjectDir)sfml\lib\sfml-system-s-d.lib;$(ProjectDir)sfml\lib\sfml-window-s-d.lib;$(ProjectDir)sfml\lib\sfml-graphics-s-d.lib;$(ProjectDir)sfml\lib\sfml-audio-s-d.lib;$(ProjectDir)sfml\lib\sfml-network-s-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>
@@ -302,6 +389,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -376,6 +476,27 @@
       <AdditionalDependencies>opengl32.lib;winmm.lib;ws2_32.lib;$(ProjectDir)sfml\lib\freetype.lib;$(ProjectDir)sfml\lib\flac.lib;$(ProjectDir)sfml\lib\jpeg.lib;$(ProjectDir)sfml\lib\ogg.lib;$(ProjectDir)sfml\lib\openal32.lib;$(ProjectDir)sfml\lib\vorbis.lib;$(ProjectDir)sfml\lib\vorbisenc.lib;$(ProjectDir)sfml\lib\vorbisfile.lib;$(ProjectDir)sfml\lib\sfml-system-s.lib;$(ProjectDir)sfml\lib\sfml-window-s.lib;$(ProjectDir)sfml\lib\sfml-graphics-s.lib;$(ProjectDir)sfml\lib\sfml-audio-s.lib;$(ProjectDir)sfml\lib\sfml-network-s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>TREASURER;GLEW_STATIC;SFML_STATIC;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles>$(ProjectDir)stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>$(ProjectDir)glm\include;$(ProjectDir)easylogging\include;$(ProjectDir)glew\include;$(ProjectDir)sfml\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>$(ProjectDir)stdafx.h</PrecompiledHeaderFile>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;winmm.lib;ws2_32.lib;$(ProjectDir)sfml\lib\freetype.lib;$(ProjectDir)sfml\lib\flac.lib;$(ProjectDir)sfml\lib\jpeg.lib;$(ProjectDir)sfml\lib\ogg.lib;$(ProjectDir)sfml\lib\openal32.lib;$(ProjectDir)sfml\lib\vorbis.lib;$(ProjectDir)sfml\lib\vorbisenc.lib;$(ProjectDir)sfml\lib\vorbisfile.lib;$(ProjectDir)sfml\lib\sfml-system-s.lib;$(ProjectDir)sfml\lib\sfml-window-s.lib;$(ProjectDir)sfml\lib\sfml-graphics-s.lib;$(ProjectDir)sfml\lib\sfml-audio-s.lib;$(ProjectDir)sfml\lib\sfml-network-s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -427,6 +548,23 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Application.cpp" />
@@ -446,94 +584,148 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">CompileAsCpp</CompileAs>
     </ClCompile>
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Kripta.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="LineBatch.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
+    <ClCompile Include="projects\Kripta\Floor.cpp" />
     <ClCompile Include="projects\Kripta\Game.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="projects\Kripta\KriptaTileMap3D.cpp" />
+    <ClCompile Include="projects\Treasurer\Game.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="projects\Treasurer\PlayerNode.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Zoner\Collision.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Zoner\Commands.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Zoner\Game.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Zoner\IGame.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Zoner\IItem.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Zoner\IShip.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Zoner\ISpace.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Zoner\ISpaceScreenGUI.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Zoner\Item.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Zoner\JumpHole.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Zoner\Preloader.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Zoner\Ship.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Zoner\ShipCommands.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Zoner\SmoothPath.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Zoner\Space.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Zoner\SpaceCommands.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Zoner\SpaceScreenGUI.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Zoner\UID.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="pystring.cpp" />
     <ClCompile Include="Quad.cpp" />
@@ -548,23 +740,33 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="String.cpp" />
     <ClCompile Include="TextBatch.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TileMap2D.cpp" />
     <ClCompile Include="tinyxml\tinyxml2.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="TransformAnimation.cpp" />
+    <ClCompile Include="Treasurer.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="VertexAnimation.cpp" />
     <ClCompile Include="VisibilityMap.cpp" />
     <ClCompile Include="XMLPak.cpp" />
     <ClCompile Include="Zoner.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -585,95 +787,151 @@
     <ClInclude Include="Kripta.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="LineBatch.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="Pool.h" />
+    <ClInclude Include="projects\Kripta\Floor.h" />
     <ClInclude Include="projects\Kripta\Game.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Kripta\IGame.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="projects\Kripta\KriptaTileMap3D.h" />
+    <ClInclude Include="projects\Treasurer\Game.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="projects\Treasurer\PlayerNode.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\Collision.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\Commands.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\Game.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\IGame.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\IItem.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\IShip.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\ISpace.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\ISpaceScreenGUI.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\Item.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\JumpHole.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\Preloader.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\RequestsDispatcher.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\Ship.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\ShipCommands.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\SmoothPath.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\Space.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\SpaceCommands.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\SpaceScreenGUI.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\UID.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="pystring.h" />
     <ClInclude Include="Quad.h" />
@@ -688,16 +946,24 @@
     <ClInclude Include="String.h" />
     <ClInclude Include="TextBatch.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="TileMap2D.h" />
     <ClInclude Include="tinyxml\tinyxml2.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="TransformAnimation.h" />
+    <ClInclude Include="Treasurer.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="UI.h" />
     <ClInclude Include="VertexAnimation.h" />
     <ClInclude Include="VisibilityMap.h" />
     <ClInclude Include="XMLPak.h" />
     <ClInclude Include="Zoner.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

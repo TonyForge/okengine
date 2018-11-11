@@ -28,6 +28,9 @@
     <Filter Include="projects\Kripta\Interfaces">
       <UniqueIdentifier>{e07519f1-aafb-4d65-a812-e000a481c2d9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="projects\Treasurer">
+      <UniqueIdentifier>{c0c41e57-2b90-4b09-a881-d9b632403001}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -212,6 +215,21 @@
     </ClCompile>
     <ClCompile Include="VisibilityMap.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TileMap2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Treasurer.cpp">
+      <Filter>projects\Treasurer</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\Treasurer\Game.cpp">
+      <Filter>projects\Treasurer</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\Treasurer\PlayerNode.cpp">
+      <Filter>projects\Treasurer</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\Kripta\Floor.cpp">
+      <Filter>projects\Kripta</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -400,6 +418,21 @@
     </ClInclude>
     <ClInclude Include="VisibilityMap.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TileMap2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Treasurer.h">
+      <Filter>projects\Treasurer</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Treasurer\Game.h">
+      <Filter>projects\Treasurer</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Treasurer\PlayerNode.h">
+      <Filter>projects\Treasurer</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Kripta\Floor.h">
+      <Filter>projects\Kripta</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

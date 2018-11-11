@@ -23,6 +23,17 @@ namespace ok {
 		AutoClearStencil
 	};
 
+	class Application;
+
+	class ApplicationProperties
+	{
+	public:
+		int screen_width;
+		int screen_height;
+		float time_delta;
+		ok::Application* app_instance;
+	};
+
 	class Application
 	{
 	public:
@@ -30,6 +41,8 @@ namespace ok {
 		void Run();
 		virtual void Init();
 		virtual void Update(float dt);
+
+		static ok::ApplicationProperties Properties;
 	protected:
 		sf::Window* window;
 

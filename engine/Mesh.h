@@ -44,6 +44,7 @@ namespace ok
 			void UpdateIndices();
 			void SwitchIndices(int index);
 			int GetTrianglesCount();
+			int GetVertexCount();
 
 			void EnableMorphDeformer(int targets_count, ok::graphics::MorphingTargetType targets_type, bool hardware);
 			void EnableSkinDeformer(int bones_count, bool hardware);

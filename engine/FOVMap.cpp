@@ -33,7 +33,6 @@ void ok::FOVMap::_ComputeFOV(int x, int y, int radius, bool allow_fov_walls)
 	std::vector<ok::FOVMapCell>& m = *map_ptr;
 
 	int max_obstacles;
-	int c;
 
 	/* first, zero the FOV map */
 	for (auto& cell : m)
@@ -329,12 +328,14 @@ bool ok::FOVMap::GetFOV(int x, int y)
 
 ok::FOVMapCell& ok::FOVMap::Get(int x, int y)
 {
+	static ok::FOVMapCell _dummy;
+
 	if (x >= 0 && y >= 0 && x < width && y < height)
 	{
 		return map[x + y * width];
 	}
 
-	return ok::FOVMapCell();
+	return _dummy;
 }
 
 void ok::FOVMap::CalculateFOV(int x, int y, int radius, bool allow_fov_walls)

@@ -1,5 +1,7 @@
 #include "Application.h"
 
+ok::ApplicationProperties ok::Application::Properties;
+
 ok::Application::Application()
 {
 	_settings_file_name = "settings.xml";
@@ -225,6 +227,13 @@ void ok::Application::Run()
 			
 			glClear(GL_COLOR_BUFFER_BIT | ((auto_clear_depth_enabled) ? GL_DEPTH_BUFFER_BIT : 0) | ((auto_clear_stencil_enabled) ? GL_STENCIL_BUFFER_BIT : 0));
 
+			//-----------------------------------
+			Properties.app_instance = this;
+
+			Properties.screen_width = screen_width;
+			Properties.screen_height = screen_height;
+			
+			Properties.time_delta = time_delta;
 			//-----------------------------------
 
 			Update(time_delta);

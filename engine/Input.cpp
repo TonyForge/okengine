@@ -119,6 +119,16 @@ void ok::Input::OnKeyDown(int key)
 	{
 		PushStateToQueue(key, state_pressed | state_down);
 		last_states_keydown[key] = true;
+
+		if (on_char_listeners.size() > 0)
+		{
+			int translated_key = OnCharTranslate(key);
+
+			for (auto& listener : on_char_listeners)
+			{
+				(*listener)(translated_key);
+			}
+		}
 	}
 }
 
@@ -172,6 +182,99 @@ void ok::Input::Update()
 	}
 
 	states_queue_position = 0;
+}
+
+int ok::Input::OnCharTranslate(int key)
+{
+	if (key >= static_cast<int>(ok::KKey::A) && key <= static_cast<int>(ok::KKey::Z))
+	{
+		//characters
+		if (language == 0) //en
+		{
+			if (KeyDown(ok::KKey::LShift || KeyDown(ok::KKey::RShift)))
+			{
+				return "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[key - static_cast<int>(ok::KKey::A)];
+			}
+			else
+			{
+				return "abcdefghijklmnopqrstuvwxyz"[key - static_cast<int>(ok::KKey::A)];
+			}
+		}
+		else if (language == 1) //ru
+		{
+			if (KeyDown(ok::KKey::LShift || KeyDown(ok::KKey::RShift)))
+			{
+				return "ÔÈÑÂÓÀÏĞØÎËÄÜÒÙÇÉÊÛÅÃÌÖ×Íß"[key - static_cast<int>(ok::KKey::A)];
+			}
+			else
+			{
+				return "ôèñâóàïğøîëäüòùçéêûåãìö÷íÿ"[key - static_cast<int>(ok::KKey::A)];
+			}
+		}
+	}
+	else
+	{
+		if (key >= static_cast<int>(ok::KKey::Num0) && key <= static_cast<int>(ok::KKey::Num9))
+		{
+			if (KeyDown(ok::KKey::LShift || KeyDown(ok::KKey::RShift)))
+			{
+				if (language == 0) //en
+					return ")!@#$%^&*("[key - static_cast<int>(ok::KKey::Num0)];
+				else if (language == 1) //ru
+					return ")!\"¹;%:?*("[key - static_cast<int>(ok::KKey::Num0)];
+			}
+			else
+			{
+				return "0123456789"[key - static_cast<int>(ok::KKey::Num0)];
+			}
+		}
+		else
+		{
+			if (key >= static_cast<int>(ok::KKey::LBracket) && key <= static_cast<int>(ok::KKey::Space))
+			{
+				if (KeyDown(ok::KKey::LShift || KeyDown(ok::KKey::RShift)))
+				{
+					if (language == 0) //en
+						return "{}:<>\"?|~+_ "[key - static_cast<int>(ok::KKey::LBracket)];
+					else if (language == 1) //ru
+						return "ÕÚÆÁŞİ,|¨+_ "[key - static_cast<int>(ok::KKey::LBracket)];
+				}
+				else
+				{
+					if (language == 0) //en
+						 return "[];,.'/\\`=- "[key - static_cast<int>(ok::KKey::LBracket)];
+					else if (language == 1) //ru
+						return "õúæáşı.\\¸=- "[key - static_cast<int>(ok::KKey::LBracket)];
+				}
+			}
+			else
+			{
+				//do nothing
+			}
+		}
+	}
+
+	return -1;
+}
+
+void ok::Input::AddOnCharListener(std::function<void(int)>* listener)
+{
+	on_char_listeners.push_back(listener);
+}
+
+void ok::Input::RemoveOnCharListener(std::function<void(int)>* listener)
+{
+	on_char_listeners.erase(std::find(on_char_listeners.begin(), on_char_listeners.end(), listener));
+}
+
+void ok::Input::EnableLanguageRu()
+{
+	language = 1;
+}
+
+void ok::Input::EnableLanguageEn()
+{
+	language = 0;
 }
 
 void ok::Input::SetCurrentLayer(int layer)

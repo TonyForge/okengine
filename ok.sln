@@ -15,6 +15,10 @@ Global
 		Kripta_Release|x86 = Kripta_Release|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
+		Treasurer_Debug|x64 = Treasurer_Debug|x64
+		Treasurer_Debug|x86 = Treasurer_Debug|x86
+		Treasurer_Release|x64 = Treasurer_Release|x64
+		Treasurer_Release|x86 = Treasurer_Release|x86
 		Zoner_Debug|x64 = Zoner_Debug|x64
 		Zoner_Debug|x86 = Zoner_Debug|x86
 		Zoner_Release|x64 = Zoner_Release|x64
@@ -37,6 +41,14 @@ Global
 		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Release|x64.Build.0 = Release|x64
 		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Release|x86.ActiveCfg = Release|Win32
 		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Release|x86.Build.0 = Release|Win32
+		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Treasurer_Debug|x64.ActiveCfg = Treasurer_Debug|x64
+		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Treasurer_Debug|x64.Build.0 = Treasurer_Debug|x64
+		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Treasurer_Debug|x86.ActiveCfg = Treasurer_Debug|Win32
+		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Treasurer_Debug|x86.Build.0 = Treasurer_Debug|Win32
+		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Treasurer_Release|x64.ActiveCfg = Treasurer_Release|x64
+		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Treasurer_Release|x64.Build.0 = Treasurer_Release|x64
+		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Treasurer_Release|x86.ActiveCfg = Treasurer_Release|Win32
+		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Treasurer_Release|x86.Build.0 = Treasurer_Release|Win32
 		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Zoner_Debug|x64.ActiveCfg = Zoner_Debug|x64
 		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Zoner_Debug|x64.Build.0 = Zoner_Debug|x64
 		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Zoner_Debug|x86.ActiveCfg = Zoner_Debug|Win32

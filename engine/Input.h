@@ -45,6 +45,13 @@ namespace ok
 		void OnMouseMove(float x, float y, float screen_width, float screen_height);
 		void Update();
 
+		int OnCharTranslate(int key);
+		void AddOnCharListener(std::function<void(int)>* listener);
+		void RemoveOnCharListener(std::function<void(int)>* listener);
+
+		void EnableLanguageRu();
+		void EnableLanguageEn();
+
 		void SetCurrentLayer(int layer = 0);
 		void AddBlockedArea(int layer, ok::Rect2Di area);
 		void RemoveBlockedArea(int layer, ok::Rect2Di area);
@@ -84,5 +91,8 @@ namespace ok
 		~Input() {}
 		ok::Input(ok::Input const&) {}
 		ok::Input& operator= (ok::Input const&) {}
+
+		std::vector<std::function<void(int)>*> on_char_listeners;
+		int language = 0;
 	};
 }

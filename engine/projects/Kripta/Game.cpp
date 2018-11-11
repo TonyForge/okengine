@@ -12,5 +12,4 @@ void Kripta::Game::Init()
 
 void Kripta::Game::Update(float dt)
 {
-
 }

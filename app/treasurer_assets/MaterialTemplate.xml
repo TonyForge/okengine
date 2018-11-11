@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<material shader="sprite_batch.shader.xml">
+	<textures count="1">
+		<slot index="0" sampler="tex0" asset = "test.png"/>
+	</textures>
+</material>
