@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
   <application title="Kripta">
-    <screen width="1024" height="768" depth="24" stencil="8" antialiasing="4" fullscreen="false" framerate="60" vsync="false" keep_aspect_ratio="true" fixed_resolution="true"
-			fixed_resolution_resample_enabled="true" fixed_resolution_resample_scale="2.0">
-      <background r="35" g="30" b="40" />
+    <screen width="1024" height="768" depth="24" stencil="8" antialiasing="0" fullscreen="false" framerate="60" vsync="false" keep_aspect_ratio="true" fixed_resolution="true"
+			fixed_resolution_resample_enabled="false" fixed_resolution_resample_scale="1.0">
+      <background r="60" g="60" b="60" />
 	  <depth_clear_with value="0" />
 	  <stencil_clear_with value="0" />
     </screen>
