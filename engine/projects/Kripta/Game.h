@@ -11,5 +11,6 @@ namespace Kripta
 		void Init();
 		void Update(float dt);
 		ok::graphics::RenderTarget* GetScreenBuffer();
+		virtual void LoadMap(ok::String path);
 	};
 }

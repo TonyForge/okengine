@@ -19,6 +19,7 @@ void Kripta::Game::Init()
 	sprite_batch = new ok::graphics::SpriteBatch();
 	line_batch = new ok::graphics::LineBatch();
 
+	LoadMap("map1.tmx");
 }
 
 void Kripta::Game::Update(float dt)
@@ -35,9 +36,9 @@ void Kripta::Game::Update(float dt)
 	sprite_batch->BatchEnd();
 
 
-	line_batch->BatchBegin();
+	/*line_batch->BatchBegin();
 	line_batch->LineAB(glm::vec3(0.f, 0.f, 0.f), glm::vec3(100.f, 100.f, 0.f));
-	line_batch->BatchEnd();
+	line_batch->BatchEnd();*/
 
 	ok::graphics::Camera::PopCamera();
 }
@@ -45,4 +46,58 @@ void Kripta::Game::Update(float dt)
 ok::graphics::RenderTarget * Kripta::Game::GetScreenBuffer()
 {
 	return fixed_resolution_framebuffer;
+}
+
+void Kripta::Game::LoadMap(ok::String path)
+{
+	tinyxml2::XMLDocument doc;
+	doc.LoadFile((ok::String("kripta_assets/maps/")+ path).toAnsiString().c_str());
+
+	tinyxml2::XMLElement* elem;
+	tinyxml2::XMLElement* data_elem;
+
+	elem = doc.FirstChildElement("map");
+
+	ok::String tile_id_str;
+
+	for (tinyxml2::XMLElement* e = elem->FirstChildElement("layer"); e != nullptr; e = e->NextSiblingElement("layer"))
+	{
+		data_elem = e->FirstChildElement("data");
+		auto data = &(data_elem->GetText()[1]);
+
+		
+		
+		for (int y = 0; y < 100; y++)
+		{
+			int x = 0;
+
+			while (*data != '\n')
+			{
+				tile_id_str = "";
+				while ((*data != ',') && (*data != '\n'))
+				{
+					tile_id_str += *data;
+					data++;
+				}
+				data++;
+
+				int tile_id = std::stoi(tile_id_str.toAnsiString());
+
+
+
+				x++;
+				if (x == 99 && y == 99) break;
+			}
+
+			if (x == 99 && y == 99) break;
+
+			data++;
+		}
+		
+
+		/*for (auto sym : data)
+		{
+
+		}*/
+	}
 }
