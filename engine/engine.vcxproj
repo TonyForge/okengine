@@ -608,6 +608,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="projects\Kripta\GameRoom.cpp" />
     <ClCompile Include="projects\Kripta\KriptaTileMap3D.cpp" />
     <ClCompile Include="projects\Treasurer\Game.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">false</ExcludedFromBuild>
@@ -802,6 +803,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="projects\Kripta\GameRoom.h" />
     <ClInclude Include="projects\Kripta\IGame.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>

@@ -231,6 +231,12 @@
     <ClCompile Include="projects\Kripta\Floor.cpp">
       <Filter>projects\Kripta</Filter>
     </ClCompile>
+    <ClCompile Include="projects\Kripta\KriptaTileMap3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\Kripta\GameRoom.cpp">
+      <Filter>projects\Kripta</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -432,6 +438,12 @@
       <Filter>projects\Treasurer</Filter>
     </ClInclude>
     <ClInclude Include="projects\Kripta\Floor.h">
+      <Filter>projects\Kripta</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Kripta\KriptaTileMap3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Kripta\GameRoom.h">
       <Filter>projects\Kripta</Filter>
     </ClInclude>
   </ItemGroup>

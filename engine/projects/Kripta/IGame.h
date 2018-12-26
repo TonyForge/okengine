@@ -14,7 +14,7 @@ namespace Kripta
 	{
 	public:
 		virtual ok::graphics::RenderTarget* GetScreenBuffer() = 0;
-		virtual void LoadMap(ok::String path) = 0;
+		virtual void LoadRoom(ok::String path) = 0;
 		ok::graphics::Camera* camera;
 		ok::graphics::SpriteBatch* sprite_batch;
 		ok::graphics::LineBatch* line_batch;

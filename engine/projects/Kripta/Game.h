@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IGame.h"
+#include "GameRoom.h"
 
 namespace Kripta
 {
@@ -11,6 +12,8 @@ namespace Kripta
 		void Init();
 		void Update(float dt);
 		ok::graphics::RenderTarget* GetScreenBuffer();
-		virtual void LoadMap(ok::String path);
+		virtual void LoadRoom(ok::String path);
+
+		Kripta::GameRoom room;
 	};
 }

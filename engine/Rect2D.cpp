@@ -147,6 +147,19 @@ glm::tvec2<T, glm::packed_highp> ok::Rect2D<T>::PickRayFromCenter(glm::tvec2<T, 
 }
 
 template<class T>
+ok::Rect2D<T> ok::Rect2D<T>::Intersection(ok::Rect2D<T>& other)
+{
+	bool overlap_check = true;
+	if (l > other.GetRight() || other.GetLeft() > GetRight()) overlap_check = false;
+	if (t > other.GetBottom() || other.GetLeft() > GetRight()) overlap_check = false;
+	/*T over_l, over_t, over_r, over_b;
+
+	over_l = glm::max(0,)*/
+
+	return ok::Rect2D<T>();
+}
+
+template<class T>
 bool ok::Rect2D<T>::Contains(float _x, float _y)
 {
 	return _x >= x && _x <= x + w && _y >= y && _y <= y + h;
