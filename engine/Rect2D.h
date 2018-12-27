@@ -37,7 +37,8 @@ namespace ok
 		glm::tvec2<T, glm::packed_highp> GetSize();
 		glm::tvec2<T, glm::packed_highp> GetCenter();
 		glm::tvec2<T, glm::packed_highp> PickRayFromCenter(glm::tvec2<T, glm::packed_highp> ray);
-		ok::Rect2D<T> Intersection(ok::Rect2D<T>& other);
+		bool IsOverlap(ok::Rect2D<T>& other);
+		ok::Rect2D<T> GetOverlap(ok::Rect2D<T>& other);
 
 		bool Contains(float _x, float _y);
 		//operator = with yup difference realisation

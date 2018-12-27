@@ -59,7 +59,7 @@ void ok::graphics::SpriteBatch::Draw(ok::graphics::TextureRect * tex_rect, glm::
 	}
 	if (batch_quads_in_use == 0)
 	{
-		BatchBegin();
+		BatchBegin(_default_z);
 	}
 
 	quad.SetCenter(hotspot);
@@ -90,7 +90,7 @@ void ok::graphics::SpriteBatch::Draw(ok::graphics::SpriteInfo * sprite_info, glm
 	}
 	if (batch_quads_in_use == 0)
 	{
-		BatchBegin();
+		BatchBegin(_default_z);
 	}
 
 	if (sprite_info->tint_power > 0.f)
@@ -131,7 +131,7 @@ void ok::graphics::SpriteBatch::Draw(ok::graphics::Texture* tex, glm::vec2 posit
 	}
 	if (batch_quads_in_use == 0)
 	{
-		BatchBegin();
+		BatchBegin(_default_z);
 	}
 
 	quad.SetCenter(hotspot);
@@ -162,7 +162,7 @@ void ok::graphics::SpriteBatch::Draw(ok::graphics::Texture * tex, glm::mat3 & tr
 	}
 	if (batch_quads_in_use == 0)
 	{
-		BatchBegin();
+		BatchBegin(_default_z);
 	}
 
 	quad.SetCenter(hotspot);
@@ -193,7 +193,7 @@ void ok::graphics::SpriteBatch::Draw(ok::graphics::SpriteInfo * sprite_info, glm
 	}
 	if (batch_quads_in_use == 0)
 	{
-		BatchBegin();
+		BatchBegin(_default_z);
 	}
 
 	if (sprite_info->tint_power > 0.f)
@@ -234,7 +234,7 @@ void ok::graphics::SpriteBatch::Blit(ok::graphics::Texture * tex, int x, int y, 
 	}
 	if (batch_quads_in_use == 0)
 	{
-		BatchBegin();
+		BatchBegin(_default_z);
 	}
 
 	glm::ivec2& tex_size = tex->GetSize();
@@ -265,7 +265,7 @@ void ok::graphics::SpriteBatch::Blit(ok::graphics::SpriteInfo * sprite_info, int
 	}
 	if (batch_quads_in_use == 0)
 	{
-		BatchBegin();
+		BatchBegin(_default_z);
 	}
 
 	if (sprite_info->tint_power > 0.f)

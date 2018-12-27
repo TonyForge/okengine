@@ -810,7 +810,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="projects\Kripta\IObject.h" />
     <ClInclude Include="projects\Kripta\KriptaTileMap3D.h" />
+    <ClInclude Include="projects\Kripta\Object.h" />
     <ClInclude Include="projects\Treasurer\Game.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>

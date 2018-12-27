@@ -147,16 +147,28 @@ glm::tvec2<T, glm::packed_highp> ok::Rect2D<T>::PickRayFromCenter(glm::tvec2<T, 
 }
 
 template<class T>
-ok::Rect2D<T> ok::Rect2D<T>::Intersection(ok::Rect2D<T>& other)
+bool ok::Rect2D<T>::IsOverlap(ok::Rect2D<T>& other)
 {
-	bool overlap_check = true;
-	if (l > other.GetRight() || other.GetLeft() > GetRight()) overlap_check = false;
-	if (t > other.GetBottom() || other.GetLeft() > GetRight()) overlap_check = false;
-	/*T over_l, over_t, over_r, over_b;
+	if (other.GetRight() < GetLeft()) return false;
+	if (other.GetLeft() > GetRight()) return false;
+	if (other.GetBottom() < GetTop()) return false;
+	if (other.GetTop() > GetBottom()) return false;
 
-	over_l = glm::max(0,)*/
+	return true;
+}
 
-	return ok::Rect2D<T>();
+template<class T>
+ok::Rect2D<T> ok::Rect2D<T>::GetOverlap(ok::Rect2D<T>& other)
+{
+	T overlap_left = glm::max(GetLeft(), other.GetLeft());
+	T overlap_right = glm::min(GetRight(), other.GetRight());
+	T overlap_top = glm::max(GetTop(), other.GetTop());
+	T overlap_bottom = glm::min(GetBottom(), other.GetBottom());
+
+	ok::Rect2D<T> result;
+	result.SetLTRB(overlap_left, overlap_top, overlap_right, overlap_bottom);
+
+	return result;
 }
 
 template<class T>

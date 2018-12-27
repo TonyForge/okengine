@@ -12,6 +12,9 @@ void Kripta::Game::Init()
 	camera = new ok::graphics::Camera(ok::graphics::CameraCoordinateSystem::Screen);
 	camera->SetProjectionOrtho(1024, 768, 100.f, 1.f);
 
+	pp_camera = new ok::graphics::Camera(ok::graphics::CameraCoordinateSystem::Screen);
+	pp_camera->SetProjectionOrtho(1024, 768, 100.f, 1.f);
+
 	camera->BeginTransform();
 	camera->SetPosition(glm::vec3(0.f, 0.f, 50.0f));
 	camera->EndTransform(true);
@@ -30,26 +33,138 @@ void Kripta::Game::Update(float dt)
 	ok::graphics::SpriteInfo info;
 	//info.
 
+	glm::vec3 camera_pos;
+
 	camera->BeginTransform(ok::TransformSpace::WorldSpace);
-	glm::vec3 camera_pos = camera->GetPosition();
+	camera_pos = camera->GetPosition();
 	camera->EndTransform(false);
+
+	if (camera_pos.x < -1023) camera_pos.x = -1023;
+	if (camera_pos.x > 32*100+1023) camera_pos.x = 32 * 100 + 1023;
+
+	if (camera_pos.y < -767) camera_pos.y = -767;
+	if (camera_pos.y > 32 * 100 + 767) camera_pos.y = 32 * 100 + 767;
+
+	camera->BeginTransform(ok::TransformSpace::WorldSpace);
+	camera->SetPosition(camera_pos - glm::vec3(100.f, 100.f, 0.f) * dt);
+	camera->EndTransform(false);
+
+	camera->BeginTransform(ok::TransformSpace::WorldSpace);
+	camera_pos = camera->GetPosition();
+	camera->EndTransform(false);
+
+
+
+	pp_camera->BeginTransform(ok::TransformSpace::WorldSpace);
+	pp_camera->SetPosition(glm::floor(camera_pos));
+	pp_camera->EndTransform(false);
 
 	ok::Rect2Df camera_rect;
 	ok::Rect2Df room_rect;
 
 	camera_rect.SetLTRB(camera_pos.x, camera_pos.y, camera_pos.x + 1024.f, camera_pos.y + 768.f);
 	room_rect.SetLTRB(0.f, 0.f, 100.f*32.f, 100.f*32.f);
+	ok::Rect2Df overlap_rect = room_rect.GetOverlap(camera_rect);
 
-	room_rect.
+
+	int tiles_rect_left = static_cast<int>(glm::floor(overlap_rect.GetLeft() / 32.f));
+	int tiles_rect_top = static_cast<int>(glm::floor(overlap_rect.GetTop() / 32.f));
+	int tiles_rect_width = static_cast<int>(glm::ceil(overlap_rect.GetWidth() / 32.f));
+	int tiles_rect_height = static_cast<int>(glm::ceil(overlap_rect.GetHeight() / 32.f));
+
+	if (tiles_rect_width > 99) tiles_rect_width = 99;
+	if (tiles_rect_height > 99) tiles_rect_height = 99;
+
+
+	ok::graphics::SpriteInfo spr_info;
+	spr_info.rect = ok::graphics::TextureRect(tex, 0, 0, 32, 32);
+	spr_info.hotspot = glm::vec2(0.f, 0.f);
+
 
 	//render tiles layer 0
+	ok::graphics::Camera::PushCamera(pp_camera);
 	sprite_batch->BatchBegin(10.f);
-	//sprite_batch->Blit()
-	//sprite_batch->Draw(tex, glm::vec2(0.f, 0.f), glm::vec2(512.f,512.f),false,glm::vec2(0.f,0.f));
+	{
+		int tile_id;
+		int tile_x, tile_y;
 
+		for (int ty = tiles_rect_top; ty < tiles_rect_top + tiles_rect_height; ty++)
+		{
+			for (int tx = tiles_rect_left; tx < tiles_rect_left + tiles_rect_width; tx++)
+			{
+				tile_id = room.tiles_layer_0[tx + ty * 100]-1;
 
+				if (tile_id >= 0)
+				{
+					tile_x = tile_id % (512 / 32);
+					tile_y = tile_id / (512 / 32);
 
+					spr_info.rect = ok::graphics::TextureRect(tex, tile_x * 32, tile_y * 32, 32, 32);
+
+					sprite_batch->Blit(&spr_info, tx * 32, ty * 32);
+				}
+			}
+		}
+	}
 	sprite_batch->BatchEnd();
+	ok::graphics::Camera::PopCamera();
+
+
+	//render tiles layer 1
+	ok::graphics::Camera::PushCamera(pp_camera);
+	sprite_batch->BatchBegin(20.f);
+	{
+		int tile_id;
+		int tile_x, tile_y;
+
+		for (int ty = tiles_rect_top; ty < tiles_rect_top + tiles_rect_height; ty++)
+		{
+			for (int tx = tiles_rect_left; tx < tiles_rect_left + tiles_rect_width; tx++)
+			{
+				tile_id = room.tiles_layer_1[tx + ty * 100] - 1;
+
+				if (tile_id >= 0)
+				{
+					tile_x = tile_id % (512 / 32);
+					tile_y = tile_id / (512 / 32);
+
+					spr_info.rect = ok::graphics::TextureRect(tex, tile_x * 32, tile_y * 32, 32, 32);
+
+					sprite_batch->Blit(&spr_info, tx * 32, ty * 32);
+				}
+			}
+		}
+	}
+	sprite_batch->BatchEnd();
+	ok::graphics::Camera::PopCamera();
+
+	//render tiles layer 2
+	ok::graphics::Camera::PushCamera(pp_camera);
+	sprite_batch->BatchBegin(30.f);
+	{
+		int tile_id;
+		int tile_x, tile_y;
+
+		for (int ty = tiles_rect_top; ty < tiles_rect_top + tiles_rect_height; ty++)
+		{
+			for (int tx = tiles_rect_left; tx < tiles_rect_left + tiles_rect_width; tx++)
+			{
+				tile_id = room.tiles_layer_2[tx + ty * 100] - 1;
+
+				if (tile_id >= 0)
+				{
+					tile_x = tile_id % (512 / 32);
+					tile_y = tile_id / (512 / 32);
+
+					spr_info.rect = ok::graphics::TextureRect(tex, tile_x * 32, tile_y * 32, 32, 32);
+
+					sprite_batch->Blit(&spr_info, tx * 32, ty * 32);
+				}
+			}
+		}
+	}
+	sprite_batch->BatchEnd();
+	ok::graphics::Camera::PopCamera();
 
 
 	/*line_batch->BatchBegin();

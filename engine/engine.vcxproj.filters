@@ -446,5 +446,11 @@
     <ClInclude Include="projects\Kripta\GameRoom.h">
       <Filter>projects\Kripta</Filter>
     </ClInclude>
+    <ClInclude Include="projects\Kripta\IObject.h">
+      <Filter>projects\Kripta\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Kripta\Object.h">
+      <Filter>projects\Kripta</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
