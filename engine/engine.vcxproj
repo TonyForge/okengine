@@ -610,6 +610,7 @@
     </ClCompile>
     <ClCompile Include="projects\Kripta\GameRoom.cpp" />
     <ClCompile Include="projects\Kripta\KriptaTileMap3D.cpp" />
+    <ClCompile Include="projects\Kripta\Object.cpp" />
     <ClCompile Include="projects\Treasurer\Game.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>

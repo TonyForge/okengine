@@ -9,6 +9,15 @@ namespace Kripta
 		Unknown
 	};
 
+	enum class ObjActionID
+	{
+		Wait,
+		Idle,
+		Act,
+		Move,
+		Attack
+	};
+
 	class IObject : public ok::GameObject
 	{
 	public:

@@ -10,9 +10,12 @@
 
 namespace Kripta
 {
+	class IObject;
+
 	class IGame : public ok::Application
 	{
 	public:
+		virtual std::pair<Kripta::IObject*, Kripta::IObject*> PickObjectFromGrid(int grid_x, int grid_y) = 0;
 		virtual ok::graphics::RenderTarget* GetScreenBuffer() = 0;
 		virtual void LoadRoom(ok::String path) = 0;
 		ok::graphics::Camera* camera;

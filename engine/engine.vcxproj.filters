@@ -237,6 +237,9 @@
     <ClCompile Include="projects\Kripta\GameRoom.cpp">
       <Filter>projects\Kripta</Filter>
     </ClCompile>
+    <ClCompile Include="projects\Kripta\Object.cpp">
+      <Filter>projects\Kripta</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">

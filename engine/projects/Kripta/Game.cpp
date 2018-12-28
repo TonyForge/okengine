@@ -264,3 +264,12 @@ void Kripta::Game::LoadRoom(ok::String path)
 		}*/
 	}
 }
+
+std::pair<Kripta::IObject*, Kripta::IObject*> Kripta::Game::PickObjectFromGrid(int grid_x, int grid_y)
+{
+	
+	Kripta::IObject* ground_obj = room.objects_grid_ground[grid_x + grid_y * 100];
+	Kripta::IObject* obj = room.objects_grid[grid_x + grid_y * 100];
+
+	return std::make_pair<Kripta::IObject*, Kripta::IObject*>(ground_obj, obj);
+}
