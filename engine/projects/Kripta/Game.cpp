@@ -3,6 +3,7 @@
 Kripta::Game::Game()
 {
 	_settings_file_name = "kripta.settings.xml";
+	instance = this;
 }
 
 void Kripta::Game::Init()
@@ -265,11 +266,29 @@ void Kripta::Game::LoadRoom(ok::String path)
 	}
 }
 
-std::pair<Kripta::IObject*, Kripta::IObject*> Kripta::Game::PickObjectFromGrid(int grid_x, int grid_y)
+Kripta::RoomPickData Kripta::Game::PickRoom(int grid_x, int grid_y)
 {
-	
-	Kripta::IObject* ground_obj = room.objects_grid_ground[grid_x + grid_y * 100];
-	Kripta::IObject* obj = room.objects_grid[grid_x + grid_y * 100];
+	Kripta::RoomPickData result;
 
-	return std::make_pair<Kripta::IObject*, Kripta::IObject*>(ground_obj, obj);
+	result.floor_obj = room.objects_grid_ground[grid_x + grid_y * 100];
+	result.place_obj = room.objects_grid[grid_x + grid_y * 100];
+
+	switch (room.tiles_layer_0[grid_x + grid_y * 100])
+	{
+		case 1 :
+		{
+			//wall
+			result.wall = true;
+		}
+		break;
+
+		case 2 :
+		{
+			//floor
+			result.floor = true;
+		}
+		break;
+	}
+
+	return result;
 }

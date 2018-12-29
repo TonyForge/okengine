@@ -15,7 +15,8 @@ namespace Kripta
 		Idle,
 		Act,
 		Move,
-		Attack
+		Attack,
+		FalseMove
 	};
 
 	class IObject : public ok::GameObject

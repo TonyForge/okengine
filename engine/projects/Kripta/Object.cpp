@@ -24,7 +24,31 @@ void Kripta::TurnController::Update(float dt)
 
 			if (obj.action_id == Kripta::ObjActionID::Act)
 			{
-				if (obj.action_grid_x)
+				//if (Kripta::IGame::instance->)
+				auto grid_pick = Kripta::IGame::instance->PickRoom(obj.action_grid_x, obj.action_grid_y);
+
+				if (grid_pick.wall)
+				{
+					obj.action_id = Kripta::ObjActionID::FalseMove;
+				}
+
+				if (grid_pick.wall == false)
+				{
+					if (grid_pick.place_obj == nullptr)
+					{
+						obj.action_id = Kripta::ObjActionID::Move;
+					}
+				}
+				
+				/*if (grid_pick.second == nullptr)
+				{
+					obj.action_id = Kripta::ObjActionID::Move;
+				}
+				else
+				{
+
+				}*/
+				//if (obj.action_grid_x)
 			}
 		}
 

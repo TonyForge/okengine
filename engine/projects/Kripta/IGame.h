@@ -12,10 +12,21 @@ namespace Kripta
 {
 	class IObject;
 
+	class RoomPickData
+	{
+	public:
+		Kripta::IObject* floor_obj = nullptr;
+		Kripta::IObject* place_obj = nullptr;
+		bool wall = false;
+		bool floor = false;
+		bool door = false;
+		bool stair = false;
+	};
+
 	class IGame : public ok::Application
 	{
 	public:
-		virtual std::pair<Kripta::IObject*, Kripta::IObject*> PickObjectFromGrid(int grid_x, int grid_y) = 0;
+		virtual Kripta::RoomPickData PickRoom(int grid_x, int grid_y) = 0;
 		virtual ok::graphics::RenderTarget* GetScreenBuffer() = 0;
 		virtual void LoadRoom(ok::String path) = 0;
 		ok::graphics::Camera* camera;
@@ -23,5 +34,7 @@ namespace Kripta
 
 		ok::graphics::SpriteBatch* sprite_batch;
 		ok::graphics::LineBatch* line_batch;
+
+		static Kripta::IGame* instance;
 	};
 }

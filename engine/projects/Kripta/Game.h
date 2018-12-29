@@ -13,7 +13,8 @@ namespace Kripta
 		void Update(float dt);
 		ok::graphics::RenderTarget* GetScreenBuffer();
 		virtual void LoadRoom(ok::String path);
-		virtual std::pair<Kripta::IObject*, Kripta::IObject*> PickObjectFromGrid(int grid_x, int grid_y);
+		
+		virtual Kripta::RoomPickData PickRoom(int grid_x, int grid_y);
 
 		Kripta::GameRoom room;
 	};
