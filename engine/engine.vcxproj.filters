@@ -240,6 +240,12 @@
     <ClCompile Include="projects\Kripta\Object.cpp">
       <Filter>projects\Kripta</Filter>
     </ClCompile>
+    <ClCompile Include="projects\Kripta\Characters.cpp">
+      <Filter>projects\Kripta</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\Kripta\IObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -453,6 +459,9 @@
       <Filter>projects\Kripta\Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="projects\Kripta\Object.h">
+      <Filter>projects\Kripta</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\Kripta\Characters.h">
       <Filter>projects\Kripta</Filter>
     </ClInclude>
   </ItemGroup>

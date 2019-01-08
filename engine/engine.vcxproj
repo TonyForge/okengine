@@ -601,6 +601,7 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
+    <ClCompile Include="projects\Kripta\Characters.cpp" />
     <ClCompile Include="projects\Kripta\Floor.cpp" />
     <ClCompile Include="projects\Kripta\Game.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
@@ -609,6 +610,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Kripta\GameRoom.cpp" />
+    <ClCompile Include="projects\Kripta\IObject.cpp" />
     <ClCompile Include="projects\Kripta\KriptaTileMap3D.cpp" />
     <ClCompile Include="projects\Kripta\Object.cpp" />
     <ClCompile Include="projects\Treasurer\Game.cpp">
@@ -797,6 +799,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="Pool.h" />
+    <ClInclude Include="projects\Kripta\Characters.h" />
     <ClInclude Include="projects\Kripta\Floor.h" />
     <ClInclude Include="projects\Kripta\Game.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>

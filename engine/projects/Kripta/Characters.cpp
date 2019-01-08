@@ -1,0 +1,351 @@
+#include "Characters.h"
+
+Kripta::Hero::Hero()
+{
+	gameObject().AddComponent(new Kripta::TurnController());
+	spr = ok::AssetsBasic::instance().GetSpriteAtlas("sprites.atlas")->Get(ok::String("hero_spr"));
+
+	id = Kripta::ObjectID::Hero;
+}
+
+Kripta::Hero::~Hero()
+{
+	delete gameObject().GetComponent<Kripta::TurnController>();
+}
+
+void Kripta::Hero::Update(float dt)
+{
+	ok::GameObject::Update(dt);
+
+	if (gold >= gold_to_levelup)
+	{
+		gold_to_levelup += 1000;
+		SetLevel(level + 1);
+	}
+
+	Kripta::IGame::instance->PushToPostUpdateList(this);
+
+	if (dead)
+	{
+		return;
+	}
+
+	glm::vec3 pos;
+	BeginTransform();
+	{
+		pos = GetPosition();
+
+		Kripta::IGame::instance->sprite_batch->Draw(&spr, glm::vec2(pos.x, pos.y)+glm::vec2(16.f,16.f), 0.f, glm::vec2(1.f, 1.f));
+		//DrawHealthbar();
+	}
+	EndTransform(false);
+
+	Kripta::IGame::instance->SetHeroXY(pos.x, pos.y);
+
+	auto turn_controller = GetComponent<Kripta::TurnController>();
+
+	if (Kripta::IGame::instance->TurnStage() == 3 && turn_controller->turn_decision_made == true)
+	{
+		turn_controller->turn_decision_made = false;
+		Kripta::TurnController::turn_members_decision_made--;
+	}
+
+	if (Kripta::IGame::instance->TurnStage() == 1 && turn_controller->turn_decision_made == false)
+	{
+		bool turn_complete = false;
+
+		if (ok::Input::instance().KeyDown(ok::KKey::Left))
+		{
+			action_grid_x = grid_x - 1;
+			action_grid_y = grid_y;
+			action_id = Kripta::ObjActionID::Act;
+			turn_complete = true;
+		}
+
+		if (ok::Input::instance().KeyDown(ok::KKey::Right))
+		{
+			action_grid_x = grid_x + 1;
+			action_grid_y = grid_y;
+			action_id = Kripta::ObjActionID::Act;
+			turn_complete = true;
+		}
+
+		if (ok::Input::instance().KeyDown(ok::KKey::Up))
+		{
+			action_grid_x = grid_x;
+			action_grid_y = grid_y - 1;
+			action_id = Kripta::ObjActionID::Act;
+			turn_complete = true;
+		}
+
+		if (ok::Input::instance().KeyDown(ok::KKey::Down))
+		{
+			action_grid_x = grid_x;
+			action_grid_y = grid_y + 1;
+			action_id = Kripta::ObjActionID::Act;
+			turn_complete = true;
+		}
+
+		if (turn_complete)
+		{
+			turn_controller->turn_decision_made = true;
+			Kripta::TurnController::turn_members_decision_made++;
+		}
+	}
+
+	if (Kripta::IGame::instance->TurnStage() == 4)
+	{
+		if (hp <= 0 && Kripta::TurnController::turn_members_died > 0)
+		{
+			Kripta::TurnController::turn_members_died--;
+			dead = true;
+			//SetParent(nullptr);
+			//delete this;
+		}
+	}
+}
+
+void Kripta::Hero::PickUpObject(Kripta::Object * obj)
+{
+	if (obj->id == Kripta::ObjectID::GoldPile)
+	{
+		gold += obj->level;
+	}
+
+	Kripta::IGame::instance->BlockFloor(obj->grid_x, obj->grid_y, nullptr);
+	obj->dead = true;
+	Kripta::IGame::instance->PushToDeathList(obj);
+}
+
+Kripta::Goblin::Goblin()
+{
+	gameObject().AddComponent(new Kripta::TurnController());
+	spr = ok::AssetsBasic::instance().GetSpriteAtlas("sprites.atlas")->Get(ok::String("goblin_spr"));
+	id = Kripta::ObjectID::Goblin;
+}
+
+Kripta::Goblin::~Goblin()
+{
+	Kripta::IGame::instance->CreateTombForMe(this);
+
+	delete gameObject().GetComponent<Kripta::TurnController>();
+}
+
+void Kripta::Goblin::Update(float dt)
+{
+	ok::GameObject::Update(dt);
+
+	Kripta::IGame::instance->PushToPostUpdateList(this);
+
+
+	if (dead) return;
+
+
+	glm::vec3 pos;
+	BeginTransform();
+	{
+		pos = GetPosition();
+
+		if (Kripta::IGame::instance->GetFov(grid_x, grid_y))
+		{
+			Kripta::IGame::instance->sprite_batch->Draw(&spr, glm::vec2(pos.x, pos.y) + glm::vec2(16.f, 16.f), 0.f, glm::vec2(1.f, 1.f));
+			//DrawHealthbar();
+		}
+		
+	}
+	EndTransform(false);
+
+	auto turn_controller = GetComponent<Kripta::TurnController>();
+
+	if (Kripta::IGame::instance->TurnStage() == 3 && turn_controller->turn_decision_made == true)
+	{
+		turn_controller->turn_decision_made = false;
+		Kripta::TurnController::turn_members_decision_made--;
+	}
+
+	if (Kripta::IGame::instance->TurnStage() == 1 && turn_controller->turn_decision_made == false)
+	{
+		bool turn_complete = false;
+
+		glm::vec2 hero_xy = Kripta::IGame::instance->GetHeroXY();
+
+		if (Kripta::IGame::instance->GetFov(grid_x, grid_y))
+		{
+			last_seen_hero_xy = hero_xy;
+		}
+
+		if (last_seen_hero_xy != glm::vec2(grid_x, grid_y))
+		{
+			float cost_n = glm::length2(last_seen_hero_xy - glm::vec2(grid_x, grid_y - 1));
+			float cost_s = glm::length2(last_seen_hero_xy - glm::vec2(grid_x, grid_y + 1));
+			float cost_e = glm::length2(last_seen_hero_xy - glm::vec2(grid_x + 1, grid_y));
+			float cost_w = glm::length2(last_seen_hero_xy - glm::vec2(grid_x - 1, grid_y));
+
+
+			if (cost_n <= cost_s && cost_n <= cost_e && cost_n <= cost_w)
+			if (Kripta::IGame::instance->PickRoom(grid_x, grid_y - 1).floor)
+			{
+				action_grid_x = grid_x;
+				action_grid_y = grid_y - 1;
+			}
+
+			if (cost_s <= cost_n && cost_s <= cost_e && cost_s <= cost_w)
+			if (Kripta::IGame::instance->PickRoom(grid_x, grid_y + 1).floor)
+			{
+				action_grid_x = grid_x;
+				action_grid_y = grid_y + 1;
+			}
+
+			if (cost_e <= cost_n && cost_e <= cost_s && cost_e <= cost_w)
+			if (Kripta::IGame::instance->PickRoom(grid_x + 1, grid_y).floor)
+			{
+				action_grid_x = grid_x + 1;
+				action_grid_y = grid_y;
+			}
+
+			if (cost_w <= cost_n && cost_w <= cost_s && cost_w <= cost_e)
+			if (Kripta::IGame::instance->PickRoom(grid_x - 1, grid_y).floor)
+			{
+				action_grid_x = grid_x - 1;
+				action_grid_y = grid_y;
+			}
+
+			action_id = Kripta::ObjActionID::Act;
+			turn_complete = true;
+		}
+		else
+		{
+			action_grid_x = grid_x;
+			action_grid_y = grid_y;
+			action_id = Kripta::ObjActionID::Act;
+			turn_complete = true;
+		}
+		
+
+		if (turn_complete)
+		{
+			turn_controller->turn_decision_made = true;
+			Kripta::TurnController::turn_members_decision_made++;
+		}
+	}
+
+	if (Kripta::IGame::instance->TurnStage() == 4)
+	{
+		if (hp <= 0 && Kripta::TurnController::turn_members_died > 0)
+		{
+			Kripta::TurnController::turn_members_died--;
+			dead = true;
+			Kripta::IGame::instance->PushToDeathList(this);
+			//SetParent(nullptr);
+			//delete this;
+		}
+	}
+}
+
+Kripta::Tomb::Tomb()
+{
+	spr = ok::AssetsBasic::instance().GetSpriteAtlas("sprites.atlas")->Get(ok::String("hero_spr"));
+	initial_turn = Kripta::IGame::instance->turn_number;
+
+	id = Kripta::ObjectID::Tomb;
+}
+
+Kripta::Tomb::~Tomb()
+{
+}
+
+void Kripta::Tomb::PostUpdate(float dt)
+{
+	if (Kripta::IGame::instance->GetFov(grid_x, grid_y))
+	{
+		BeginTransform();
+		glm::vec3 pos = GetPosition() + glm::vec3(16.f, 16.f, 0.f);
+		EndTransform(false);
+
+		ok::graphics::SpriteInfo blank = ok::AssetsBasic::instance().GetSpriteAtlas("sprites.atlas")->Get(ok::String("blank"));
+
+		blank.tint_color = ok::Color(0.f, 0.f, 0.f, 1.f);
+		blank.tint_power = 1.f;
+		Kripta::IGame::instance->sprite_batch->Draw(&blank, glm::vec2(pos.x - 12.f, pos.y - 16.f - 6.f), 0.f, glm::vec2((1.f / 32.f) * 24.f, (1.f / 32.f) * 4.f));
+
+		blank.tint_color = ok::Color(0.f, 0.5f, 1.f, 1.f);
+		blank.tint_power = 1.f;
+		Kripta::IGame::instance->sprite_batch->Draw(&blank, glm::vec2(pos.x - 12.f, pos.y - 16.f - 6.f), 0.f, glm::vec2((1.f / 32.f) * (24.f * (static_cast<float>(Kripta::IGame::instance->turn_number - initial_turn) / (static_cast<float>(turns_to_respawn)))), (1.f / 32.f) * 4.f));
+
+	}
+}
+
+void Kripta::Tomb::Update(float dt)
+{
+	ok::GameObject::Update(dt);
+
+	Kripta::IGame::instance->PushToPostUpdateList(this);
+
+	if (dead)
+	{
+		return;
+	}
+
+	glm::vec3 pos;
+	BeginTransform();
+	{
+		pos = GetPosition();
+
+		if (Kripta::IGame::instance->GetFov(grid_x, grid_y))
+		{
+			Kripta::IGame::instance->sprite_batch->Draw(&spr, glm::vec2(pos.x, pos.y) + glm::vec2(16.f, 16.f), 0.f, glm::vec2(1.f, 1.f));
+		}
+	}
+	EndTransform(false);
+
+	if ((Kripta::IGame::instance->turn_number - initial_turn) >= turns_to_respawn)
+	{
+		if (creature_id == Kripta::ObjectID::Goblin)
+		{
+			auto goblin = new Kripta::Goblin();
+			goblin->Place(grid_x, grid_y);
+			GetParent()->AddChild(goblin);
+			goblin->SetLevel(level);
+		}
+
+		Kripta::IGame::instance->PushToDeathList(this);
+	}
+}
+
+Kripta::GoldPile::GoldPile()
+{
+	spr = ok::AssetsBasic::instance().GetSpriteAtlas("sprites.atlas")->Get(ok::String("gold_pile"));
+	
+	id = Kripta::ObjectID::GoldPile;
+}
+
+Kripta::GoldPile::~GoldPile()
+{
+}
+
+void Kripta::GoldPile::PostUpdate(float dt)
+{
+}
+
+void Kripta::GoldPile::Update(float dt)
+{
+	ok::GameObject::Update(dt);
+
+	if (dead)
+	{
+		return;
+	}
+
+
+	glm::vec3 pos;
+	BeginTransform();
+	{
+		pos = GetPosition();
+
+		if (Kripta::IGame::instance->GetFov(grid_x, grid_y))
+		{
+			Kripta::IGame::instance->sprite_batch->Draw(&spr, glm::vec2(pos.x, pos.y) + glm::vec2(16.f, 16.f), 0.f, glm::vec2(1.f, 1.f));
+		}
+	}
+	EndTransform(false);
+}
