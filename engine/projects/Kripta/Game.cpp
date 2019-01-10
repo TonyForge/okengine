@@ -365,7 +365,7 @@ void Kripta::Game::LoadRoom(ok::String path)
 					{
 						room.tiles_layer_0[x + y * 100] = tile_id;
 
-						if (tile_id == 1 /*|| tile_id == ?*/)
+						if (tile_id == 1 || tile_id == 5 || tile_id == 6)
 						{
 							fov_map->SetWalkable(x, y, false);
 							fov_map->SetTransparent(x, y, false);
@@ -509,6 +509,34 @@ void Kripta::Game::LoadRoom(ok::String path)
 						//goblin->SetLevel(prop->IntAttribute("value"));
 					}
 				}
+			}
+			break;
+			case 146: //gold pile
+			{
+				auto health_potion = new Kripta::HealthPotion();
+				health_potion->Place(x, y);
+				room.AddChild(health_potion);
+			}
+			break;
+			case 131: //golden guard
+			{
+				auto golden_gruard = new Kripta::GoldenGuard();
+				golden_gruard->Place(x, y);
+				room.AddChild(golden_gruard);
+				golden_gruard->SetLevel(1);
+				golden_gruard->home_grid_xy = glm::vec2(x, y);
+				prop_elem = obj->FirstChildElement("properties");
+
+				if (prop_elem)
+					for (tinyxml2::XMLElement* prop = prop_elem->FirstChildElement("property"); prop != nullptr; prop = prop->NextSiblingElement("property"))
+					{
+						ok::String prop_name = prop->Attribute("name");
+
+						if (prop_name == "level")
+						{
+							golden_gruard->SetLevel(prop->IntAttribute("value"));
+						}
+					}
 			}
 			break;
 			}

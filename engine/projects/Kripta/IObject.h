@@ -10,7 +10,9 @@ namespace Kripta
 		Hero,
 		Goblin,
 		Tomb,
-		GoldPile
+		GoldPile,
+		HealthPotion,
+		GoldenGuard
 	};
 
 	enum class ObjActionID

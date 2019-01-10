@@ -53,4 +53,25 @@ namespace Kripta
 		virtual void Update(float dt);
 		ok::graphics::SpriteInfo spr;
 	};
+
+	class HealthPotion : public Kripta::Object
+	{
+	public:
+		HealthPotion();
+		~HealthPotion();
+		virtual void PostUpdate(float dt);
+		virtual void Update(float dt);
+		ok::graphics::SpriteInfo spr;
+	};
+
+	class GoldenGuard : public Kripta::Object
+	{
+	public:
+		GoldenGuard();
+		virtual ~GoldenGuard();
+		virtual void Update(float dt);
+		ok::graphics::SpriteInfo spr;
+		glm::vec2 last_seen_hero_xy;
+		glm::vec2 home_grid_xy;
+	};
 }

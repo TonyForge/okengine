@@ -306,11 +306,15 @@ void Kripta::Object::Place(int grid_x, int grid_y)
 {
 	if (id != Kripta::ObjectID::Unknown &&
 		id != Kripta::ObjectID::Tomb &&
-		id != Kripta::ObjectID::GoldPile)
+		id != Kripta::ObjectID::GoldPile &&
+		id != Kripta::ObjectID::HealthPotion)
 	Kripta::IGame::instance->BlockGrid(grid_x, grid_y, this);
 
-	if (id == Kripta::ObjectID::GoldPile)
+	if (id == Kripta::ObjectID::GoldPile ||
+		id == Kripta::ObjectID::HealthPotion)
 		Kripta::IGame::instance->BlockFloor(grid_x, grid_y, this);
+
+
 
 	this->grid_x = grid_x;
 	this->grid_y = grid_y;
