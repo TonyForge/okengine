@@ -28,7 +28,6 @@ namespace Kripta
 		virtual ~Goblin();
 		virtual void Update(float dt);
 		ok::graphics::SpriteInfo spr;
-		glm::vec2 last_seen_hero_xy;
 	};
 
 	class Tomb : public Kripta::Object 

@@ -290,14 +290,18 @@ void Kripta::Game::Update(float dt)
 	}
 
 	
-	for (auto obj : _death_list)
+	if (Kripta::TurnController::turn_members_ready == 0 && Kripta::TurnController::turn_in_progress == false)
 	{
-		obj->SetParent(nullptr);
-		delete obj;
+		for (auto obj : _death_list)
+		{
+			obj->SetParent(nullptr);
+			delete obj;
+		}
+
+		_death_list.clear();
 	}
 
 	_post_update_list.clear();
-	_death_list.clear();
 }
 
 ok::graphics::RenderTarget * Kripta::Game::GetScreenBuffer()
@@ -624,6 +628,20 @@ Kripta::RoomPickData Kripta::Game::PickRoom(int grid_x, int grid_y)
 		{
 			//floor
 			result.floor = true;
+		}
+		break;
+
+		case 5:
+		{
+			//stair
+			result.stair = true;
+		}
+		break;
+
+		case 6:
+		{
+			//door
+			result.door = true;
 		}
 		break;
 	}

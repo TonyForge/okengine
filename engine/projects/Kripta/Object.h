@@ -17,6 +17,8 @@ namespace Kripta
 		int grid_x;
 		int grid_y;
 
+		glm::vec2 last_seen_hero_xy;
+
 		int action_grid_x;
 		int action_grid_y;
 		Kripta::ObjActionID action_id = Kripta::ObjActionID::Idle;

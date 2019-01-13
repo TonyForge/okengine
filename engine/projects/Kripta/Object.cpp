@@ -122,6 +122,7 @@ void Kripta::TurnController::Update(float dt)
 						if (grid_pick.door)
 						{
 							obj.action_id = Kripta::ObjActionID::ToDoor;
+
 							obj.movement_path.Reset();
 							obj.movement_path.Add(glm::vec2(obj.grid_x, obj.grid_y));
 							obj.movement_path.Add(
@@ -131,11 +132,31 @@ void Kripta::TurnController::Update(float dt)
 									static_cast<float>(obj.action_grid_y - obj.grid_y)
 								)
 							);
+
+							glm::vec2 h = glm::vec2(
+								static_cast<float>(obj.action_grid_x - obj.grid_x),
+								static_cast<float>(obj.action_grid_y - obj.grid_y)) * 2.f;
+
+							obj.action_grid_x = obj.grid_x + h.x;
+							obj.action_grid_y = obj.grid_y + h.y;
+
+							Kripta::IGame::instance->BlockGrid(obj.grid_x, obj.grid_y, nullptr);
+							Kripta::IGame::instance->BlockGrid(obj.action_grid_x, obj.action_grid_y, &obj);
 						}
 
 						if (grid_pick.stair)
 						{
 							obj.action_id = Kripta::ObjActionID::ToStair;
+
+							obj.movement_path.Reset();
+							obj.movement_path.Add(glm::vec2(obj.grid_x, obj.grid_y));
+							obj.movement_path.Add(
+								glm::vec2(obj.action_grid_x, obj.action_grid_y) +
+								glm::vec2(
+									static_cast<float>(obj.action_grid_x - obj.grid_x),
+									static_cast<float>(obj.action_grid_y - obj.grid_y)
+								)
+							);
 						}
 					}
 
@@ -262,6 +283,29 @@ void Kripta::TurnController::Update(float dt)
 				}
 			}
 
+			if (obj.action_id == Kripta::ObjActionID::ToStair)
+			{
+				if (obj.movement_path.IsEndOfPath() == false)
+				{
+					glm::vec2 next_wp = obj.movement_path.StepPath(dt * 4.f);
+
+					obj.BeginTransform();
+					obj.SetPosition(glm::vec3(next_wp.x, next_wp.y, 0.f) * 32.f);
+					obj.EndTransform(true);
+				}
+				else
+				{
+					obj.action_id = Kripta::ObjActionID::Idle;
+
+					obj.BeginTransform();
+					obj.SetPosition(glm::vec3(obj.action_grid_x, obj.action_grid_y, 0.f) * 32.f);
+					obj.EndTransform(true);
+
+					obj.grid_x = obj.action_grid_x;
+					obj.grid_y = obj.action_grid_y;
+				}
+			}
+
 			if (obj.action_id == Kripta::ObjActionID::Pickup)
 			{
 				obj.action_id = Kripta::ObjActionID::Idle;
@@ -318,6 +362,9 @@ void Kripta::Object::Place(int grid_x, int grid_y)
 
 	this->grid_x = grid_x;
 	this->grid_y = grid_y;
+
+	last_seen_hero_xy.x = grid_x;
+	last_seen_hero_xy.y = grid_y;
 
 	BeginTransform();
 	SetPosition(glm::vec3(grid_x, grid_y, 0.f) * 32.f);

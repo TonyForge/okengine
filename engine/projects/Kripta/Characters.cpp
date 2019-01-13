@@ -173,59 +173,65 @@ void Kripta::Goblin::Update(float dt)
 	{
 		bool turn_complete = false;
 
-		glm::vec2 hero_xy = Kripta::IGame::instance->GetHeroXY();
+		
 
-		if (Kripta::IGame::instance->GetFov(grid_x, grid_y))
+		if (turn_complete == false)
 		{
-			last_seen_hero_xy = hero_xy;
-		}
+			glm::vec2 hero_xy = Kripta::IGame::instance->GetHeroXY();
 
-		if (last_seen_hero_xy != glm::vec2(grid_x, grid_y))
-		{
-			float cost_n = glm::length2(last_seen_hero_xy - glm::vec2(grid_x, grid_y - 1));
-			float cost_s = glm::length2(last_seen_hero_xy - glm::vec2(grid_x, grid_y + 1));
-			float cost_e = glm::length2(last_seen_hero_xy - glm::vec2(grid_x + 1, grid_y));
-			float cost_w = glm::length2(last_seen_hero_xy - glm::vec2(grid_x - 1, grid_y));
+			if (Kripta::IGame::instance->GetFov(grid_x, grid_y))
+			{
+				last_seen_hero_xy = hero_xy;
+			}
+
+			if (last_seen_hero_xy != glm::vec2(grid_x, grid_y))
+			{
+				float cost_n = glm::length2(last_seen_hero_xy - glm::vec2(grid_x, grid_y - 1));
+				float cost_s = glm::length2(last_seen_hero_xy - glm::vec2(grid_x, grid_y + 1));
+				float cost_e = glm::length2(last_seen_hero_xy - glm::vec2(grid_x + 1, grid_y));
+				float cost_w = glm::length2(last_seen_hero_xy - glm::vec2(grid_x - 1, grid_y));
 
 
-			if (cost_n <= cost_s && cost_n <= cost_e && cost_n <= cost_w)
-			if (Kripta::IGame::instance->PickRoom(grid_x, grid_y - 1).floor)
+				if (cost_n <= cost_s && cost_n <= cost_e && cost_n <= cost_w)
+					if (Kripta::IGame::instance->PickRoom(grid_x, grid_y - 1).floor)
+					{
+						action_grid_x = grid_x;
+						action_grid_y = grid_y - 1;
+					}
+
+				if (cost_s <= cost_n && cost_s <= cost_e && cost_s <= cost_w)
+					if (Kripta::IGame::instance->PickRoom(grid_x, grid_y + 1).floor)
+					{
+						action_grid_x = grid_x;
+						action_grid_y = grid_y + 1;
+					}
+
+				if (cost_e <= cost_n && cost_e <= cost_s && cost_e <= cost_w)
+					if (Kripta::IGame::instance->PickRoom(grid_x + 1, grid_y).floor)
+					{
+						action_grid_x = grid_x + 1;
+						action_grid_y = grid_y;
+					}
+
+				if (cost_w <= cost_n && cost_w <= cost_s && cost_w <= cost_e)
+					if (Kripta::IGame::instance->PickRoom(grid_x - 1, grid_y).floor)
+					{
+						action_grid_x = grid_x - 1;
+						action_grid_y = grid_y;
+					}
+
+				action_id = Kripta::ObjActionID::Act;
+				turn_complete = true;
+			}
+			else
 			{
 				action_grid_x = grid_x;
-				action_grid_y = grid_y - 1;
-			}
-
-			if (cost_s <= cost_n && cost_s <= cost_e && cost_s <= cost_w)
-			if (Kripta::IGame::instance->PickRoom(grid_x, grid_y + 1).floor)
-			{
-				action_grid_x = grid_x;
-				action_grid_y = grid_y + 1;
-			}
-
-			if (cost_e <= cost_n && cost_e <= cost_s && cost_e <= cost_w)
-			if (Kripta::IGame::instance->PickRoom(grid_x + 1, grid_y).floor)
-			{
-				action_grid_x = grid_x + 1;
 				action_grid_y = grid_y;
+				action_id = Kripta::ObjActionID::Act;
+				turn_complete = true;
 			}
-
-			if (cost_w <= cost_n && cost_w <= cost_s && cost_w <= cost_e)
-			if (Kripta::IGame::instance->PickRoom(grid_x - 1, grid_y).floor)
-			{
-				action_grid_x = grid_x - 1;
-				action_grid_y = grid_y;
-			}
-
-			action_id = Kripta::ObjActionID::Act;
-			turn_complete = true;
 		}
-		else
-		{
-			action_grid_x = grid_x;
-			action_grid_y = grid_y;
-			action_id = Kripta::ObjActionID::Act;
-			turn_complete = true;
-		}
+		
 		
 
 		if (turn_complete)
@@ -307,7 +313,7 @@ void Kripta::Tomb::Update(float dt)
 	if ((Kripta::IGame::instance->turn_number - initial_turn) >= turns_to_respawn)
 	{
 		if (creature_id == Kripta::ObjectID::Goblin)
-		{
+		{ 
 			auto character = new Kripta::Goblin();
 			character->Place(grid_x, grid_y);
 			GetParent()->AddChild(character);
@@ -319,6 +325,8 @@ void Kripta::Tomb::Update(float dt)
 			auto character = new Kripta::GoldenGuard();
 			character->Place(grid_x, grid_y);
 			GetParent()->AddChild(character);
+			character->home_grid_xy.x = grid_x; 
+			character->home_grid_xy.y = grid_y;
 			character->SetLevel(level);
 		}
 
@@ -507,8 +515,8 @@ void Kripta::GoldenGuard::Update(float dt)
 			if ((glm::abs(home_grid_xy.x - grid_x) > 0.5f) ||
 				(glm::abs(home_grid_xy.y - grid_y) > 0.5f))
 			{
-				action_grid_x = home_grid_xy.x;
-				action_grid_y = home_grid_xy.y;
+				action_grid_x = static_cast<int>(home_grid_xy.x);
+				action_grid_y = static_cast<int>(home_grid_xy.y);
 			}
 			else
 			{
