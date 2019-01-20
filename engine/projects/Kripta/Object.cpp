@@ -137,8 +137,8 @@ void Kripta::TurnController::Update(float dt)
 								static_cast<float>(obj.action_grid_x - obj.grid_x),
 								static_cast<float>(obj.action_grid_y - obj.grid_y)) * 2.f;
 
-							obj.action_grid_x = obj.grid_x + h.x;
-							obj.action_grid_y = obj.grid_y + h.y;
+							obj.action_grid_x = static_cast<int>(static_cast<float>(obj.grid_x) + h.x);
+							obj.action_grid_y = static_cast<int>(static_cast<float>(obj.grid_y) + h.y);
 
 							Kripta::IGame::instance->BlockGrid(obj.grid_x, obj.grid_y, nullptr);
 							Kripta::IGame::instance->BlockGrid(obj.action_grid_x, obj.action_grid_y, &obj);
@@ -363,8 +363,8 @@ void Kripta::Object::Place(int grid_x, int grid_y)
 	this->grid_x = grid_x;
 	this->grid_y = grid_y;
 
-	last_seen_hero_xy.x = grid_x;
-	last_seen_hero_xy.y = grid_y;
+	last_seen_hero_xy.x = static_cast<float>(grid_x);
+	last_seen_hero_xy.y = static_cast<float>(grid_y);
 
 	BeginTransform();
 	SetPosition(glm::vec3(grid_x, grid_y, 0.f) * 32.f);

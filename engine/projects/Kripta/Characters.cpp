@@ -52,44 +52,53 @@ void Kripta::Hero::Update(float dt)
 
 	if (Kripta::IGame::instance->TurnStage() == 1 && turn_controller->turn_decision_made == false)
 	{
-		bool turn_complete = false;
-
-		if (ok::Input::instance().KeyDown(ok::KKey::Left))
+		if (Kripta::IGame::instance->main_menu_enabled)
 		{
-			action_grid_x = grid_x - 1;
-			action_grid_y = grid_y;
-			action_id = Kripta::ObjActionID::Act;
-			turn_complete = true;
+			//do nothing
 		}
-
-		if (ok::Input::instance().KeyDown(ok::KKey::Right))
+		else
 		{
-			action_grid_x = grid_x + 1;
-			action_grid_y = grid_y;
-			action_id = Kripta::ObjActionID::Act;
-			turn_complete = true;
-		}
 
-		if (ok::Input::instance().KeyDown(ok::KKey::Up))
-		{
-			action_grid_x = grid_x;
-			action_grid_y = grid_y - 1;
-			action_id = Kripta::ObjActionID::Act;
-			turn_complete = true;
-		}
 
-		if (ok::Input::instance().KeyDown(ok::KKey::Down))
-		{
-			action_grid_x = grid_x;
-			action_grid_y = grid_y + 1;
-			action_id = Kripta::ObjActionID::Act;
-			turn_complete = true;
-		}
+			bool turn_complete = false;
 
-		if (turn_complete)
-		{
-			turn_controller->turn_decision_made = true;
-			Kripta::TurnController::turn_members_decision_made++;
+			if (ok::Input::instance().KeyDown(ok::KKey::Left))
+			{
+				action_grid_x = grid_x - 1;
+				action_grid_y = grid_y;
+				action_id = Kripta::ObjActionID::Act;
+				turn_complete = true;
+			}
+
+			if (ok::Input::instance().KeyDown(ok::KKey::Right))
+			{
+				action_grid_x = grid_x + 1;
+				action_grid_y = grid_y;
+				action_id = Kripta::ObjActionID::Act;
+				turn_complete = true;
+			}
+
+			if (ok::Input::instance().KeyDown(ok::KKey::Up))
+			{
+				action_grid_x = grid_x;
+				action_grid_y = grid_y - 1;
+				action_id = Kripta::ObjActionID::Act;
+				turn_complete = true;
+			}
+
+			if (ok::Input::instance().KeyDown(ok::KKey::Down))
+			{
+				action_grid_x = grid_x;
+				action_grid_y = grid_y + 1;
+				action_id = Kripta::ObjActionID::Act;
+				turn_complete = true;
+			}
+
+			if (turn_complete)
+			{
+				turn_controller->turn_decision_made = true;
+				Kripta::TurnController::turn_members_decision_made++;
+			}
 		}
 	}
 
@@ -325,8 +334,8 @@ void Kripta::Tomb::Update(float dt)
 			auto character = new Kripta::GoldenGuard();
 			character->Place(grid_x, grid_y);
 			GetParent()->AddChild(character);
-			character->home_grid_xy.x = grid_x; 
-			character->home_grid_xy.y = grid_y;
+			character->home_grid_xy.x = static_cast<float>(grid_x); 
+			character->home_grid_xy.y = static_cast<float>(grid_y);
 			character->SetLevel(level);
 		}
 

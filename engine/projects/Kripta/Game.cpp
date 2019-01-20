@@ -12,6 +12,9 @@ void Kripta::Game::Init()
 {
 	DisableFeature(ok::ApplicationFeature::AutoClearStencil);
 
+	gui_camera = new ok::graphics::Camera(ok::graphics::CameraCoordinateSystem::Screen);
+	gui_camera->SetProjectionOrtho(1024, 768, 100.f, 1.f);
+
 	camera = new ok::graphics::Camera(ok::graphics::CameraCoordinateSystem::Screen);
 	camera->SetProjectionOrtho(1024, 768, 100.f, 1.f);
 
@@ -32,6 +35,12 @@ void Kripta::Game::Init()
 	font_def->SetBrushColor(ok::Color::White);
 	font_def->SetInternalFont(ok::AssetsBasic::instance().GetInternalFont("consola.font.xml"));
 	text_batch->SetBrushFont(font_def);
+
+	font_main_menu = ok::AssetsBasic::instance().GetFont("main_menu_font");
+	font_main_menu->SetBrushOuterGlow(ok::Color(41,15,0,255), 0.65f, 0.15f);
+	font_main_menu->SetBrushBold(0.2f);
+	font_main_menu->SetBrushColor(ok::Color::White);
+	font_main_menu->SetInternalFont(ok::AssetsBasic::instance().GetInternalFont("consola.font.xml"));
 
 	fov_map = new ok::FOVMap(100, 100);
 
@@ -246,6 +255,7 @@ void Kripta::Game::Update(float dt)
 	line_batch->LineAB(glm::vec3(0.f, 0.f, 0.f), glm::vec3(100.f, 100.f, 0.f));
 	line_batch->BatchEnd();*/
 
+
 	ok::graphics::Camera::PopCamera();
 
 	//turn state processing
@@ -260,10 +270,17 @@ void Kripta::Game::Update(float dt)
 
 	if (_turn_stage == 1)
 	{
-		if (Kripta::TurnController::turn_members_decision_made == Kripta::TurnController::turn_members_total)
+		if (main_menu_enabled)
 		{
-			_turn_stage = 2;
-			Kripta::TurnController::turn_in_progress = true;
+			//do nothing
+		}
+		else
+		{
+			if (Kripta::TurnController::turn_members_decision_made == Kripta::TurnController::turn_members_total)
+			{
+				_turn_stage = 2;
+				Kripta::TurnController::turn_in_progress = true;
+			}
 		}
 	}
 
@@ -302,6 +319,34 @@ void Kripta::Game::Update(float dt)
 	}
 
 	_post_update_list.clear();
+
+	if (_turn_stage == 1)
+	{
+		if (main_menu_enabled)
+		{
+
+			ok::graphics::SpriteInfo menu_selector = ok::AssetsBasic::instance().GetSpriteAtlas("gui.atlas")->Get(ok::String("menu_selector"));
+
+			sprite_batch->BatchBegin(4.f);
+			sprite_batch->Draw(&menu_selector, glm::vec2(0.f, 0.f), 0.f, glm::vec2(1.f, 1.f));
+			sprite_batch->BatchEnd();
+
+			text_batch->SetBrushAlignHorizontal(ok::graphics::TextAlign::Center);
+			text_batch->SetBrushAlignVertical(ok::graphics::TextAlign::Top);
+			text_batch->SetBrushSize(32);
+			text_batch->SetBrushPosition(glm::vec2(1024.f, 500.f)*0.5f);
+			text_batch->SetBrushFont(font_main_menu);
+			text_batch->SetRowSpacingPx(4.f);
+			text_batch->SetBrushGradient(ok::Color(255, 205, 0, 255), ok::Color(184, 120, 30, 255));
+			text_batch->SetBrushOuterShadow(ok::Color(0, 0, 0, 127), 0.5f, 0.25f, 0.f, 0.1f);
+			text_batch->BatchBegin();
+			text_batch->Draw(ok::String(L"ÍÎÂÀß ÈÃÐÀ\nÑÎÕÐÀÍÈÒÜ\nÇÀÃÐÓÇÈÒÜ\nÂÛÕÎÄ"));
+			text_batch->BatchEnd();
+			text_batch->SetRowSpacingPx(0.f);
+			//process main menu
+		}
+	}
+
 }
 
 ok::graphics::RenderTarget * Kripta::Game::GetScreenBuffer()
@@ -606,6 +651,16 @@ void Kripta::Game::SetHeroXY(float x, float y)
 	room.hero_y = y;
 	room.camera_x = x - 1024.f*0.5f;
 	room.camera_y = y - 768.f*0.5f;
+}
+
+void Kripta::Game::SaveGame()
+{
+	
+}
+
+void Kripta::Game::LoadGame()
+{
+
 }
 
 Kripta::RoomPickData Kripta::Game::PickRoom(int grid_x, int grid_y)

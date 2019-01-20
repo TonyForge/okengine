@@ -76,6 +76,9 @@ namespace Kripta
 	class IGame : public ok::Application
 	{
 	public:
+		virtual void SaveGame() = 0;
+		virtual void LoadGame() = 0;
+
 		virtual void CreateTombForMe(Kripta::IObject* me) = 0;
 		virtual void PushToPostUpdateList(Kripta::IObject* obj) = 0;
 		virtual void PushToDeathList(Kripta::IObject* obj) = 0;
@@ -90,13 +93,17 @@ namespace Kripta
 		virtual void LoadRoom(ok::String path) = 0;
 		ok::graphics::Camera* camera;
 		ok::graphics::Camera* pp_camera;
+		ok::graphics::Camera* gui_camera;
 
 		ok::graphics::SpriteBatch* sprite_batch;
 		ok::graphics::TextBatch2D* text_batch;
 		ok::graphics::LineBatch* line_batch;
 		ok::graphics::Font* font_def;
+		ok::graphics::Font* font_main_menu;
+		
 
 		static Kripta::IGame* instance;
 		int turn_number = 0;
+		bool main_menu_enabled = true;
 	};
 }

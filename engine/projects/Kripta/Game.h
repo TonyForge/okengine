@@ -30,6 +30,9 @@ namespace Kripta
 
 		Kripta::GameRoom room;
 
+		virtual void SaveGame();
+		virtual void LoadGame();
+
 	private:
 		std::vector<Kripta::IObject*> _post_update_list;
 		std::vector<Kripta::IObject*> _death_list;
