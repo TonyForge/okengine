@@ -324,26 +324,143 @@ void Kripta::Game::Update(float dt)
 	{
 		if (main_menu_enabled)
 		{
+			if (_save_game_selection_enabled == 1 || _load_game_selection_enabled == 1)
+			{
+				if (ok::Input::o().KeyPressed(ok::KKey::Escape))
+				{
+					_save_game_selection_enabled = 0;
+					_load_game_selection_enabled = 0;
+				}
 
-			ok::graphics::SpriteInfo menu_selector = ok::AssetsBasic::instance().GetSpriteAtlas("gui.atlas")->Get(ok::String("menu_selector"));
+				if (ok::Input::o().KeyPressed(ok::KKey::Down)) _save_load_game_item_selected++;
+				if (ok::Input::o().KeyPressed(ok::KKey::Up)) _save_load_game_item_selected--;
 
-			sprite_batch->BatchBegin(4.f);
-			sprite_batch->Draw(&menu_selector, glm::vec2(0.f, 0.f), 0.f, glm::vec2(1.f, 1.f));
-			sprite_batch->BatchEnd();
+				if (_save_load_game_item_selected > 4) _save_load_game_item_selected = 0;
+				if (_save_load_game_item_selected < 0) _save_load_game_item_selected = 4;
 
-			text_batch->SetBrushAlignHorizontal(ok::graphics::TextAlign::Center);
-			text_batch->SetBrushAlignVertical(ok::graphics::TextAlign::Top);
-			text_batch->SetBrushSize(32);
-			text_batch->SetBrushPosition(glm::vec2(1024.f, 500.f)*0.5f);
-			text_batch->SetBrushFont(font_main_menu);
-			text_batch->SetRowSpacingPx(4.f);
-			text_batch->SetBrushGradient(ok::Color(255, 205, 0, 255), ok::Color(184, 120, 30, 255));
-			text_batch->SetBrushOuterShadow(ok::Color(0, 0, 0, 127), 0.5f, 0.25f, 0.f, 0.1f);
-			text_batch->BatchBegin();
-			text_batch->Draw(ok::String(L"ÍÎÂÀß ÈÃÐÀ\nÑÎÕÐÀÍÈÒÜ\nÇÀÃÐÓÇÈÒÜ\nÂÛÕÎÄ"));
-			text_batch->BatchEnd();
-			text_batch->SetRowSpacingPx(0.f);
-			//process main menu
+				if (ok::Input::o().KeyPressed(ok::KKey::Return))
+				{
+					if (_save_game_selection_enabled)
+					{
+						//save game
+					}
+
+					if (_load_game_selection_enabled)
+					{
+						//load game
+					}
+				}
+
+				ok::graphics::SpriteInfo menu_selector = ok::AssetsBasic::instance().GetSpriteAtlas("gui.atlas")->Get(ok::String("menu_selector"));
+
+				ok::graphics::Camera::PushCamera(gui_camera);
+
+				sprite_batch->BatchBegin(4.f);
+
+				if (_save_load_game_item_selected == 0)
+					sprite_batch->Draw(&menu_selector, glm::vec2(519.f, -270.f), 0.f, glm::vec2(1.f, 1.f));
+
+				if (_save_load_game_item_selected == 1)
+					sprite_batch->Draw(&menu_selector, glm::vec2(519.f, -336.f), 0.f, glm::vec2(1.f, 1.f));
+
+				if (_save_load_game_item_selected == 2)
+					sprite_batch->Draw(&menu_selector, glm::vec2(519.f, -400.f), 0.f, glm::vec2(1.f, 1.f));
+
+				if (_save_load_game_item_selected == 3)
+					sprite_batch->Draw(&menu_selector, glm::vec2(519.f, -464.f), 0.f, glm::vec2(1.f, 1.f));
+
+				if (_save_load_game_item_selected == 4)
+					sprite_batch->Draw(&menu_selector, glm::vec2(519.f, -527.f), 0.f, glm::vec2(1.f, 1.f));
+
+
+				sprite_batch->BatchEnd();
+
+				ok::graphics::Camera::PopCamera();
+
+				text_batch->SetBrushAlignHorizontal(ok::graphics::TextAlign::Center);
+				text_batch->SetBrushAlignVertical(ok::graphics::TextAlign::Top);
+				text_batch->SetBrushSize(32);
+				text_batch->SetBrushPosition(glm::vec2(1024.f, 500.f)*0.5f);
+				text_batch->SetBrushFont(font_main_menu);
+				text_batch->SetRowSpacingPx(4.f);
+				text_batch->SetBrushGradient(ok::Color(255, 205, 0, 255), ok::Color(184, 120, 30, 255));
+				text_batch->SetBrushOuterShadow(ok::Color(0, 0, 0, 127), 0.5f, 0.25f, 0.f, 0.1f);
+				text_batch->BatchBegin();
+				text_batch->Draw(ok::String(L"-ÏÓÑÒÎ-\n-ÏÓÑÒÎ-\n-ÏÓÑÒÎ-\n-ÏÓÑÒÎ-\n-ÏÓÑÒÎ-"));
+				text_batch->BatchEnd();
+				text_batch->SetRowSpacingPx(0.f);
+			}
+
+			if (_save_game_selection_enabled == 0 && _load_game_selection_enabled == 0)
+			{
+				if (ok::Input::o().KeyPressed(ok::KKey::Down)) _main_menu_item_selected++;
+				if (ok::Input::o().KeyPressed(ok::KKey::Up)) _main_menu_item_selected--;
+
+				if (_main_menu_item_selected > 3) _main_menu_item_selected = 0;
+				if (_main_menu_item_selected < 0) _main_menu_item_selected = 3;
+
+				if (ok::Input::o().KeyPressed(ok::KKey::Return))
+				{
+					if (_main_menu_item_selected == 0)
+					{
+						//new game
+					}
+
+					if (_main_menu_item_selected == 1)
+					{
+						//save game
+						_save_game_selection_enabled = 1;
+					}
+
+					if (_main_menu_item_selected == 2)
+					{
+						//load game
+						_load_game_selection_enabled = 1;
+					}
+
+					if (_main_menu_item_selected == 3)
+					{
+						//exit
+					}
+				}
+
+				ok::graphics::SpriteInfo menu_selector = ok::AssetsBasic::instance().GetSpriteAtlas("gui.atlas")->Get(ok::String("menu_selector"));
+
+				ok::graphics::Camera::PushCamera(gui_camera);
+
+				sprite_batch->BatchBegin(4.f);
+
+				if (_main_menu_item_selected == 0)
+					sprite_batch->Draw(&menu_selector, glm::vec2(519.f, -270.f), 0.f, glm::vec2(1.f, 1.f));
+
+				if (_main_menu_item_selected == 1)
+					sprite_batch->Draw(&menu_selector, glm::vec2(519.f, -336.f), 0.f, glm::vec2(1.f, 1.f));
+
+				if (_main_menu_item_selected == 2)
+					sprite_batch->Draw(&menu_selector, glm::vec2(519.f, -400.f), 0.f, glm::vec2(1.f, 1.f));
+
+				if (_main_menu_item_selected == 3)
+					sprite_batch->Draw(&menu_selector, glm::vec2(519.f, -464.f), 0.f, glm::vec2(1.f, 1.f));
+
+				sprite_batch->BatchEnd();
+
+				ok::graphics::Camera::PopCamera();
+
+				text_batch->SetBrushAlignHorizontal(ok::graphics::TextAlign::Center);
+				text_batch->SetBrushAlignVertical(ok::graphics::TextAlign::Top);
+				text_batch->SetBrushSize(32);
+				text_batch->SetBrushPosition(glm::vec2(1024.f, 500.f)*0.5f);
+				text_batch->SetBrushFont(font_main_menu);
+				text_batch->SetRowSpacingPx(4.f);
+				text_batch->SetBrushGradient(ok::Color(255, 205, 0, 255), ok::Color(184, 120, 30, 255));
+				text_batch->SetBrushOuterShadow(ok::Color(0, 0, 0, 127), 0.5f, 0.25f, 0.f, 0.1f);
+				text_batch->BatchBegin();
+				text_batch->Draw(ok::String(L"ÍÎÂÀß ÈÃÐÀ\nÑÎÕÐÀÍÈÒÜ\nÇÀÃÐÓÇÈÒÜ\nÂÛÕÎÄ"));
+				text_batch->BatchEnd();
+				text_batch->SetRowSpacingPx(0.f);
+				//process main menu
+			}
+			
 		}
 	}
 
@@ -655,7 +772,113 @@ void Kripta::Game::SetHeroXY(float x, float y)
 
 void Kripta::Game::SaveGame()
 {
+	std::ofstream f;
+
+	if (_save_load_game_item_selected == 0)
+		f.open("savegame0.dat", std::ofstream::binary);
+
+	if (_save_load_game_item_selected == 1)
+		f.open("savegame1.dat", std::ofstream::binary);
+
+	if (_save_load_game_item_selected == 2)
+		f.open("savegame2.dat", std::ofstream::binary);
+
+	if (_save_load_game_item_selected == 3)
+		f.open("savegame3.dat", std::ofstream::binary);
+
+	if (_save_load_game_item_selected == 4)
+		f.open("savegame4.dat", std::ofstream::binary);
+
+	f.write((char*)(&_turn_stage), sizeof(_turn_stage));
+
+	f.write((char*)room.tiles_layer_0, sizeof(room.tiles_layer_0));
+	f.write((char*)room.tiles_layer_1, sizeof(room.tiles_layer_0));
+	f.write((char*)room.tiles_layer_2, sizeof(room.tiles_layer_0));
+
+
+	char data_block[4 * 20];
+
+	for (int y = 0; y < 100; y++)
+	{
+		for (int x = 0; x < 100; x++)
+		{
+			Kripta::Object* obj = (Kripta::Object*)room.objects_grid[x + y * 100];
+
+			memset(data_block, 0, sizeof(data_block));
+
+			if (obj != nullptr)
+			{
+				memcpy(&data_block[4 * 0], (char*)(&(obj->id)), 4);
+				memcpy(&data_block[4 * 1], (char*)(&(obj->grid_x)), 4);
+				memcpy(&data_block[4 * 2], (char*)(&(obj->grid_y)), 4);
+				memcpy(&data_block[4 * 3], (char*)(&(obj->level)), 4);
+				memcpy(&data_block[4 * 4], (char*)(&(obj->hp)), 4);
+				memcpy(&data_block[4 * 5], (char*)(&(obj->action_id)), 4);
+				memcpy(&data_block[4 * 6], (char*)(&(obj->action_grid_x)), 4);
+				memcpy(&data_block[4 * 7], (char*)(&(obj->action_grid_y)), 4);
+				memcpy(&data_block[4 * 8], (char*)(&(obj->last_seen_hero_xy.x)), 4);
+				memcpy(&data_block[4 * 9], (char*)(&(obj->last_seen_hero_xy.y)), 4);
+
+				//custom fields
+				if (obj->id == Kripta::ObjectID::Hero)
+				{
+					Kripta::Hero* _obj = (Kripta::Hero*)obj;
+					memcpy(&data_block[4 * 10], (char*)(&(_obj->gold)), 4);
+					memcpy(&data_block[4 * 11], (char*)(&(_obj->gold_to_levelup)), 4);
+				}
+			}
+			else
+			{
+				int empty_id = -1;
+				memcpy(&data_block[4 * 0], (char*)(&(empty_id)), 4);
+			}
+
+			f.write(data_block, sizeof(data_block));
+		}
+	}
+
+	for (int y = 0; y < 100; y++)
+	{
+		for (int x = 0; x < 100; x++)
+		{
+			Kripta::Object* obj = (Kripta::Object*)room.objects_grid_ground[x + y * 100];
+
+			memset(data_block, 0, sizeof(data_block));
+
+			if (obj != nullptr)
+			{
+				memcpy(&data_block[4 * 0], (char*)(&(obj->id)), 4);
+				memcpy(&data_block[4 * 1], (char*)(&(obj->grid_x)), 4);
+				memcpy(&data_block[4 * 2], (char*)(&(obj->grid_y)), 4);
+				memcpy(&data_block[4 * 3], (char*)(&(obj->level)), 4);
+				memcpy(&data_block[4 * 4], (char*)(&(obj->hp)), 4);
+				memcpy(&data_block[4 * 5], (char*)(&(obj->action_id)), 4);
+				memcpy(&data_block[4 * 6], (char*)(&(obj->action_grid_x)), 4);
+				memcpy(&data_block[4 * 7], (char*)(&(obj->action_grid_y)), 4);
+				memcpy(&data_block[4 * 8], (char*)(&(obj->last_seen_hero_xy.x)), 4);
+				memcpy(&data_block[4 * 9], (char*)(&(obj->last_seen_hero_xy.y)), 4);
+
+				//custom fields
+				if (obj->id == Kripta::ObjectID::Tomb)
+				{
+					Kripta::Tomb* _obj = (Kripta::Tomb*)obj;
+					memcpy(&data_block[4 * 10], (char*)(&(_obj->creature_id)), 4);
+					memcpy(&data_block[4 * 11], (char*)(&(_obj->initial_turn)), 4);
+					memcpy(&data_block[4 * 12], (char*)(&(_obj->turns_to_respawn)), 4);
+				}
+			}
+			else
+			{
+				int empty_id = -1;
+				memcpy(&data_block[4 * 0], (char*)(&(empty_id)), 4);
+			}
+
+			f.write(data_block, sizeof(data_block));
+		}
+	}
 	
+
+	f.close();
 }
 
 void Kripta::Game::LoadGame()

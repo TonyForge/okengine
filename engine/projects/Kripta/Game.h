@@ -37,6 +37,11 @@ namespace Kripta
 		std::vector<Kripta::IObject*> _post_update_list;
 		std::vector<Kripta::IObject*> _death_list;
 		int _turn_stage = 0;
-		ok::FOVMap* fov_map; 
+		ok::FOVMap* fov_map;
+
+		int _main_menu_item_selected = 0;
+		int _save_game_selection_enabled = 0;
+		int _load_game_selection_enabled = 0;
+		int _save_load_game_item_selected = 0;
 	};
 }
