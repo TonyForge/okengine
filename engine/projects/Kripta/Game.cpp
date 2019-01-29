@@ -44,6 +44,7 @@ void Kripta::Game::Init()
 
 	fov_map = new ok::FOVMap(100, 100);
 
+	room.Reset();
 	LoadRoom("map1.tmx");
 }
 
@@ -304,6 +305,8 @@ void Kripta::Game::Update(float dt)
 		_turn_stage = 0;
 		fov_map->CalculateFOV(static_cast<int>(glm::floor(room.hero_x / 32.f)), static_cast<int>(glm::floor(room.hero_y / 32.f)), 12, true);
 		turn_number++;
+
+
 	}
 
 	
@@ -322,6 +325,14 @@ void Kripta::Game::Update(float dt)
 
 	if (_turn_stage == 1)
 	{
+		if (_main_menu_requested)
+		{
+			_main_menu_requested = 0;
+			main_menu_enabled = 1;
+			_save_game_selection_enabled = 0;
+			_load_game_selection_enabled = 0;
+		}
+
 		if (main_menu_enabled)
 		{
 			if (_save_game_selection_enabled == 1 || _load_game_selection_enabled == 1)
@@ -343,11 +354,19 @@ void Kripta::Game::Update(float dt)
 					if (_save_game_selection_enabled)
 					{
 						//save game
+						SaveGame();
+						main_menu_enabled = 0;
+						_save_game_selection_enabled = 0;
+						_load_game_selection_enabled = 0;
 					}
 
 					if (_load_game_selection_enabled)
 					{
 						//load game
+						LoadGame();
+						main_menu_enabled = 0;
+						_save_game_selection_enabled = 0;
+						_load_game_selection_enabled = 0;
 					}
 				}
 
@@ -386,7 +405,7 @@ void Kripta::Game::Update(float dt)
 				text_batch->SetBrushGradient(ok::Color(255, 205, 0, 255), ok::Color(184, 120, 30, 255));
 				text_batch->SetBrushOuterShadow(ok::Color(0, 0, 0, 127), 0.5f, 0.25f, 0.f, 0.1f);
 				text_batch->BatchBegin();
-				text_batch->Draw(ok::String(L"-осярн-\n-осярн-\n-осярн-\n-осярн-\n-осярн-"));
+				text_batch->Draw(savegame_text);
 				text_batch->BatchEnd();
 				text_batch->SetRowSpacingPx(0.f);
 			}
@@ -399,23 +418,162 @@ void Kripta::Game::Update(float dt)
 				if (_main_menu_item_selected > 3) _main_menu_item_selected = 0;
 				if (_main_menu_item_selected < 0) _main_menu_item_selected = 3;
 
+				if (ok::Input::o().KeyPressed(ok::KKey::Escape))
+				{
+					main_menu_enabled = 0;
+					_save_game_selection_enabled = 0;
+					_load_game_selection_enabled = 0;
+				}
+				else
 				if (ok::Input::o().KeyPressed(ok::KKey::Return))
 				{
 					if (_main_menu_item_selected == 0)
 					{
 						//new game
+						NewGame();
+						main_menu_enabled = 0;
+						_save_game_selection_enabled = 0;
+						_load_game_selection_enabled = 0;
 					}
 
 					if (_main_menu_item_selected == 1)
 					{
 						//save game
 						_save_game_selection_enabled = 1;
+
+						savegame_text = "";
+
+						std::ifstream f;
+						f.open("savegame0.dat", std::ofstream::binary);
+						if (f.fail())
+						{
+							savegame0_step = -1;
+							savegame_text += ok::String(L"-осярн-\n");
+						}
+						else
+						{
+							f.read((char*)(&savegame0_step), sizeof(savegame0_step));
+							f.close();
+							savegame_text += ok::String(std::to_wstring(savegame0_step)) + ok::String(L"\n");
+						}
+						f.open("savegame1.dat", std::ofstream::binary);
+						if (f.fail())
+						{
+							savegame1_step = -1;
+							savegame_text += ok::String(L"-осярн-\n");
+						}
+						else
+						{
+							f.read((char*)(&savegame1_step), sizeof(savegame1_step));
+							f.close();
+							savegame_text += ok::String(std::to_wstring(savegame1_step)) + ok::String(L"\n");
+						}
+						f.open("savegame2.dat", std::ofstream::binary);
+						if (f.fail())
+						{
+							savegame2_step = -1;
+							savegame_text += ok::String(L"-осярн-\n");
+						}
+						else
+						{
+							f.read((char*)(&savegame2_step), sizeof(savegame2_step));
+							f.close();
+							savegame_text += ok::String(std::to_wstring(savegame2_step)) + ok::String(L"\n");
+						}
+						f.open("savegame3.dat", std::ofstream::binary);
+						if (f.fail())
+						{
+							savegame3_step = -1;
+							savegame_text += ok::String(L"-осярн-\n");
+						}
+						else
+						{
+							f.read((char*)(&savegame3_step), sizeof(savegame3_step));
+							f.close();
+							savegame_text += ok::String(std::to_wstring(savegame3_step)) + ok::String(L"\n");
+						}
+						f.open("savegame4.dat", std::ofstream::binary);
+						if (f.fail())
+						{
+							savegame4_step = -1;
+							savegame_text += ok::String(L"-осярн-\n");
+						}
+						else
+						{
+							f.read((char*)(&savegame4_step), sizeof(savegame4_step));
+							f.close();
+							savegame_text += ok::String(std::to_wstring(savegame4_step)) + ok::String(L"\n");
+						}
 					}
 
 					if (_main_menu_item_selected == 2)
 					{
 						//load game
 						_load_game_selection_enabled = 1;
+
+						savegame_text = "";
+
+						std::ifstream f;
+						f.open("savegame0.dat", std::ofstream::binary);
+						if (f.fail())
+						{
+							savegame0_step = -1;
+							savegame_text += ok::String(L"-осярн-\n");
+						}
+						else
+						{
+							f.read((char*)(&savegame0_step), sizeof(savegame0_step));
+							f.close();
+							savegame_text += ok::String(std::to_wstring(savegame0_step)) + ok::String(L"\n");
+						}
+						f.open("savegame1.dat", std::ofstream::binary);
+						if (f.fail())
+						{
+							savegame1_step = -1;
+							savegame_text += ok::String(L"-осярн-\n");
+						}
+						else
+						{
+							f.read((char*)(&savegame1_step), sizeof(savegame1_step));
+							f.close();
+							savegame_text += ok::String(std::to_wstring(savegame1_step)) + ok::String(L"\n");
+						}
+						f.open("savegame2.dat", std::ofstream::binary);
+						if (f.fail())
+						{
+							savegame2_step = -1;
+							savegame_text += ok::String(L"-осярн-\n");
+						}
+						else
+						{
+							f.read((char*)(&savegame2_step), sizeof(savegame2_step));
+							f.close();
+							savegame_text += ok::String(std::to_wstring(savegame2_step)) + ok::String(L"\n");
+						}
+						f.open("savegame3.dat", std::ofstream::binary);
+						if (f.fail())
+						{
+							savegame3_step = -1;
+							savegame_text += ok::String(L"-осярн-\n");
+						}
+						else
+						{
+							f.read((char*)(&savegame3_step), sizeof(savegame3_step));
+							f.close();
+							savegame_text += ok::String(std::to_wstring(savegame3_step)) + ok::String(L"\n");
+						}
+						f.open("savegame4.dat", std::ofstream::binary);
+						if (f.fail())
+						{
+							savegame4_step = -1;
+							savegame_text += ok::String(L"-осярн-\n");
+						}
+						else
+						{
+							f.read((char*)(&savegame4_step), sizeof(savegame4_step));
+							f.close();
+							savegame_text += ok::String(std::to_wstring(savegame4_step)) + ok::String(L"\n");
+						}
 					}
 
 					if (_main_menu_item_selected == 3)
@@ -462,8 +620,23 @@ void Kripta::Game::Update(float dt)
 			}
 			
 		}
+		else
+		{
+			if (ok::Input::o().KeyPressed(ok::KKey::Escape))
+			{
+				main_menu_enabled = 1;
+				_save_game_selection_enabled = 0;
+				_load_game_selection_enabled = 0;
+			}
+		}
 	}
-
+	else
+	{
+		if (ok::Input::o().KeyPressed(ok::KKey::Escape))
+		{
+			_main_menu_requested = 1;
+		}
+	}
 }
 
 ok::graphics::RenderTarget * Kripta::Game::GetScreenBuffer()
@@ -473,6 +646,33 @@ ok::graphics::RenderTarget * Kripta::Game::GetScreenBuffer()
 
 void Kripta::Game::LoadRoom(ok::String path)
 {
+
+	Kripta::TurnController::turn_members_decision_made = 0;
+
+	for (int y = 0; y < 100; y++)
+	{
+		for (int x = 0; x < 100; x++)
+		{
+			if (room.objects_grid[x + y * 100] != nullptr)
+			{
+				room.objects_grid[x + y * 100]->SetParent(nullptr);
+				delete (Kripta::Object*)room.objects_grid[x + y * 100];
+			}
+
+			if (room.objects_grid_ground[x + y * 100] != nullptr)
+			{
+				room.objects_grid_ground[x + y * 100]->SetParent(nullptr);
+				delete (Kripta::Object*)room.objects_grid_ground[x + y * 100];
+			}
+
+			if (room.objects_grid_ground_special[x + y * 100] != nullptr)
+			{
+				room.objects_grid_ground_special[x + y * 100]->SetParent(nullptr);
+				delete (Kripta::Object*)room.objects_grid_ground_special[x + y * 100];
+			}
+		}
+	}
+
 	room.Reset();
 	fov_map->Clear();
 
@@ -618,7 +818,10 @@ void Kripta::Game::LoadRoom(ok::String path)
 				hero->Place(x, y);
 				room.AddChild(hero);
 				SetHeroXY(static_cast<float>(x) * 32.f + 16.f, static_cast<float>(y) * 32.f + 16.f);
-				hero->SetLevel(2);
+				hero->SetLevel(hero_level);
+				hero->hp = hero_hp;
+				hero->gold = hero_gold;
+				hero->gold_to_levelup = hero_gold_to_levelup;
 
 				prop_elem = obj->FirstChildElement("properties");
 
@@ -714,6 +917,11 @@ void Kripta::Game::LoadRoom(ok::String path)
 	fov_map->CalculateFOV(static_cast<int>(glm::floor(room.hero_x / 32.f)), static_cast<int>(glm::floor(room.hero_y / 32.f)), 12, true);
 }
 
+void Kripta::Game::BlockFloorSpecial(int grid_x, int grid_y, Kripta::IObject * owner)
+{
+	room.objects_grid_ground_special[grid_x + grid_y * 100] = owner;
+}
+
 void Kripta::Game::BlockFloor(int grid_x, int grid_y, Kripta::IObject * owner)
 {
 	room.objects_grid_ground[grid_x + grid_y * 100] = owner;
@@ -789,12 +997,26 @@ void Kripta::Game::SaveGame()
 	if (_save_load_game_item_selected == 4)
 		f.open("savegame4.dat", std::ofstream::binary);
 
-	f.write((char*)(&_turn_stage), sizeof(_turn_stage));
-
+	f.write((char*)(&turn_number), sizeof(turn_number));
+	
 	f.write((char*)room.tiles_layer_0, sizeof(room.tiles_layer_0));
 	f.write((char*)room.tiles_layer_1, sizeof(room.tiles_layer_0));
 	f.write((char*)room.tiles_layer_2, sizeof(room.tiles_layer_0));
 
+	for (int y = 0; y < 100; y++)
+	{
+		for (int x = 0; x < 100; x++)
+		{
+			auto fov_data = fov_map->Get(x, y);
+			auto isfov = fov_data.IsFov();
+			auto iswalkable = fov_data.IsWalkable();
+			auto istransparent = fov_data.IsTransparent();
+
+			f.write((char*)&isfov, sizeof(isfov));
+			f.write((char*)&iswalkable, sizeof(iswalkable));
+			f.write((char*)&istransparent, sizeof(istransparent));
+		}
+	}
 
 	char data_block[4 * 20];
 
@@ -826,6 +1048,13 @@ void Kripta::Game::SaveGame()
 					memcpy(&data_block[4 * 10], (char*)(&(_obj->gold)), 4);
 					memcpy(&data_block[4 * 11], (char*)(&(_obj->gold_to_levelup)), 4);
 				}
+
+				if (obj->id == Kripta::ObjectID::GoldenGuard)
+				{
+					Kripta::GoldenGuard* _obj = (Kripta::GoldenGuard*)obj;
+					memcpy(&data_block[4 * 10], (char*)(&(_obj->home_grid_xy.x)), 4);
+					memcpy(&data_block[4 * 11], (char*)(&(_obj->home_grid_xy.y)), 4);
+				}
 			}
 			else
 			{
@@ -842,6 +1071,37 @@ void Kripta::Game::SaveGame()
 		for (int x = 0; x < 100; x++)
 		{
 			Kripta::Object* obj = (Kripta::Object*)room.objects_grid_ground[x + y * 100];
+
+			memset(data_block, 0, sizeof(data_block));
+
+			if (obj != nullptr)
+			{
+				memcpy(&data_block[4 * 0], (char*)(&(obj->id)), 4);
+				memcpy(&data_block[4 * 1], (char*)(&(obj->grid_x)), 4);
+				memcpy(&data_block[4 * 2], (char*)(&(obj->grid_y)), 4);
+				memcpy(&data_block[4 * 3], (char*)(&(obj->level)), 4);
+				memcpy(&data_block[4 * 4], (char*)(&(obj->hp)), 4);
+				memcpy(&data_block[4 * 5], (char*)(&(obj->action_id)), 4);
+				memcpy(&data_block[4 * 6], (char*)(&(obj->action_grid_x)), 4);
+				memcpy(&data_block[4 * 7], (char*)(&(obj->action_grid_y)), 4);
+				memcpy(&data_block[4 * 8], (char*)(&(obj->last_seen_hero_xy.x)), 4);
+				memcpy(&data_block[4 * 9], (char*)(&(obj->last_seen_hero_xy.y)), 4);
+			}
+			else
+			{
+				int empty_id = -1;
+				memcpy(&data_block[4 * 0], (char*)(&(empty_id)), 4);
+			}
+
+			f.write(data_block, sizeof(data_block));
+		}
+	}
+
+	for (int y = 0; y < 100; y++)
+	{
+		for (int x = 0; x < 100; x++)
+		{
+			Kripta::Object* obj = (Kripta::Object*)room.objects_grid_ground_special[x + y * 100];
 
 			memset(data_block, 0, sizeof(data_block));
 
@@ -883,7 +1143,293 @@ void Kripta::Game::SaveGame()
 
 void Kripta::Game::LoadGame()
 {
+	std::ifstream f;
 
+	if (_save_load_game_item_selected == 0)
+		f.open("savegame0.dat", std::ofstream::binary);
+
+	if (_save_load_game_item_selected == 1)
+		f.open("savegame1.dat", std::ofstream::binary);
+
+	if (_save_load_game_item_selected == 2)
+		f.open("savegame2.dat", std::ofstream::binary);
+
+	if (_save_load_game_item_selected == 3)
+		f.open("savegame3.dat", std::ofstream::binary);
+
+	if (_save_load_game_item_selected == 4)
+		f.open("savegame4.dat", std::ofstream::binary);
+
+	if (f.fail()) return;
+
+	Kripta::TurnController::turn_members_decision_made = 0;
+
+	for (int y = 0; y < 100; y++)
+	{
+		for (int x = 0; x < 100; x++)
+		{
+			if (room.objects_grid[x + y * 100] != nullptr)
+			{
+				room.objects_grid[x + y * 100]->SetParent(nullptr);
+				delete (Kripta::Object*)room.objects_grid[x + y * 100];
+			}
+
+			if (room.objects_grid_ground[x + y * 100] != nullptr)
+			{
+				room.objects_grid_ground[x + y * 100]->SetParent(nullptr);
+				delete (Kripta::Object*)room.objects_grid_ground[x + y * 100];
+			}
+
+			if (room.objects_grid_ground_special[x + y * 100] != nullptr)
+			{
+				room.objects_grid_ground_special[x + y * 100]->SetParent(nullptr);
+				delete (Kripta::Object*)room.objects_grid_ground_special[x + y * 100];
+			}
+		}
+	}
+
+	room.Reset();
+	fov_map->Clear();
+
+	f.read((char*)(&turn_number), sizeof(turn_number));
+
+	f.read((char*)room.tiles_layer_0, sizeof(room.tiles_layer_0));
+	f.read((char*)room.tiles_layer_1, sizeof(room.tiles_layer_0));
+	f.read((char*)room.tiles_layer_2, sizeof(room.tiles_layer_0));
+
+	for (int y = 0; y < 100; y++)
+	{
+		for (int x = 0; x < 100; x++)
+		{
+			auto fov_data = fov_map->Get(x, y);
+			auto isfov = fov_data.IsFov();
+			auto iswalkable = fov_data.IsWalkable();
+			auto istransparent = fov_data.IsTransparent();
+
+			f.read((char*)&isfov, sizeof(isfov));
+			f.read((char*)&iswalkable, sizeof(iswalkable));
+			f.read((char*)&istransparent, sizeof(istransparent));
+
+			fov_map->SetWalkable(x, y, iswalkable);
+			fov_map->SetTransparent(x, y, istransparent);
+		}
+	}
+
+	char data_block[4 * 20];
+	Kripta::Object tmp_obj;
+
+	for (int y = 0; y < 100; y++)
+	{
+		for (int x = 0; x < 100; x++)
+		{
+			Kripta::Object* obj = (Kripta::Object*)room.objects_grid[x + y * 100];
+			if (obj != nullptr)
+			{
+				delete obj;
+				room.objects_grid[x + y * 100] = nullptr;
+			}
+				
+			f.read(data_block, sizeof(data_block));
+
+			memcpy((char*)(&(tmp_obj.id)), &data_block[4 * 0], 4);
+			memcpy((char*)(&(tmp_obj.grid_x)), &data_block[4 * 1], 4);
+			memcpy((char*)(&(tmp_obj.grid_y)), &data_block[4 * 2], 4);
+			memcpy((char*)(&(tmp_obj.level)), &data_block[4 * 3], 4);
+			memcpy((char*)(&(tmp_obj.hp)), &data_block[4 * 4], 4);
+			memcpy((char*)(&(tmp_obj.action_id)), &data_block[4 * 5], 4);
+			memcpy((char*)(&(tmp_obj.action_grid_x)), &data_block[4 * 6], 4);
+			memcpy((char*)(&(tmp_obj.action_grid_y)), &data_block[4 * 7], 4);
+			memcpy((char*)(&(tmp_obj.last_seen_hero_xy.x)),&data_block[4 * 8],  4);
+			memcpy((char*)(&(tmp_obj.last_seen_hero_xy.y)), &data_block[4 * 9],  4);
+
+			if ((int)tmp_obj.id == -1) continue;
+
+			if (tmp_obj.id == Kripta::ObjectID::Hero)
+			{
+				auto hero = new Kripta::Hero();
+				hero->Place(tmp_obj.grid_x, tmp_obj.grid_y);
+				room.AddChild(hero);
+				SetHeroXY(static_cast<float>(tmp_obj.grid_x) * 32.f + 16.f, static_cast<float>(tmp_obj.grid_y) * 32.f + 16.f);
+				hero->SetLevel(tmp_obj.level);
+				hero->hp = tmp_obj.hp;
+				hero->action_id = tmp_obj.action_id;
+				hero->action_grid_x = tmp_obj.action_grid_x;
+				hero->action_grid_y = tmp_obj.action_grid_y;
+				hero->last_seen_hero_xy = tmp_obj.last_seen_hero_xy;
+
+				memcpy((char*)(&(hero->gold)), &data_block[4 * 10],  4);
+				memcpy((char*)(&(hero->gold_to_levelup)), &data_block[4 * 11], 4);
+
+				hero_gold = hero->gold;
+				hero_gold_to_levelup = hero->gold_to_levelup;
+				hero_hp = hero->hp;
+				hero_level = hero->level;
+
+				obj = hero;
+			}
+
+			if (tmp_obj.id == Kripta::ObjectID::Goblin)
+			{
+				auto goblin = new Kripta::Goblin();
+				goblin->Place(tmp_obj.grid_x, tmp_obj.grid_y);
+				room.AddChild(goblin);
+				goblin->SetLevel(tmp_obj.level);
+				goblin->hp = tmp_obj.hp;
+				goblin->action_id = tmp_obj.action_id;
+				goblin->action_grid_x = tmp_obj.action_grid_x;
+				goblin->action_grid_y = tmp_obj.action_grid_y;
+				goblin->last_seen_hero_xy = tmp_obj.last_seen_hero_xy;
+
+				obj = goblin;
+			}
+
+			if (tmp_obj.id == Kripta::ObjectID::GoldenGuard)
+			{
+				auto golden_guard = new Kripta::GoldenGuard();
+				golden_guard->Place(tmp_obj.grid_x, tmp_obj.grid_y);
+				room.AddChild(golden_guard);
+				golden_guard->SetLevel(tmp_obj.level);
+				golden_guard->hp = tmp_obj.hp;
+				golden_guard->action_id = tmp_obj.action_id;
+				golden_guard->action_grid_x = tmp_obj.action_grid_x;
+				golden_guard->action_grid_y = tmp_obj.action_grid_y;
+				golden_guard->last_seen_hero_xy = tmp_obj.last_seen_hero_xy;
+
+				memcpy((char*)(&(golden_guard->home_grid_xy.x)), &data_block[4 * 10], 4);
+				memcpy((char*)(&(golden_guard->home_grid_xy.y)), &data_block[4 * 11], 4);
+
+				obj = golden_guard;
+			}
+
+			room.objects_grid[x + y * 100] = obj;
+		}
+	}
+
+	for (int y = 0; y < 100; y++)
+	{
+		for (int x = 0; x < 100; x++)
+		{
+			Kripta::Object* obj = (Kripta::Object*)room.objects_grid_ground[x + y * 100];
+			if (obj != nullptr)
+			{
+				delete obj;
+				room.objects_grid_ground[x + y * 100] = nullptr;
+			}
+
+			f.read(data_block, sizeof(data_block));
+
+			memcpy((char*)(&(tmp_obj.id)), &data_block[4 * 0], 4);
+			memcpy((char*)(&(tmp_obj.grid_x)), &data_block[4 * 1], 4);
+			memcpy((char*)(&(tmp_obj.grid_y)), &data_block[4 * 2], 4);
+			memcpy((char*)(&(tmp_obj.level)), &data_block[4 * 3], 4);
+			memcpy((char*)(&(tmp_obj.hp)), &data_block[4 * 4], 4);
+			memcpy((char*)(&(tmp_obj.action_id)), &data_block[4 * 5], 4);
+			memcpy((char*)(&(tmp_obj.action_grid_x)), &data_block[4 * 6], 4);
+			memcpy((char*)(&(tmp_obj.action_grid_y)), &data_block[4 * 7], 4);
+			memcpy((char*)(&(tmp_obj.last_seen_hero_xy.x)), &data_block[4 * 8], 4);
+			memcpy((char*)(&(tmp_obj.last_seen_hero_xy.y)), &data_block[4 * 9], 4);
+
+			if ((int)tmp_obj.id == -1) continue;
+
+			if (tmp_obj.id == Kripta::ObjectID::GoldPile)
+			{
+				auto gold_pile = new Kripta::GoldPile();
+				gold_pile->Place(tmp_obj.grid_x, tmp_obj.grid_y);
+				room.AddChild(gold_pile);
+				gold_pile->SetLevel(tmp_obj.level);
+				gold_pile->hp = tmp_obj.hp;
+				gold_pile->action_id = tmp_obj.action_id;
+				gold_pile->action_grid_x = tmp_obj.action_grid_x;
+				gold_pile->action_grid_y = tmp_obj.action_grid_y;
+				gold_pile->last_seen_hero_xy = tmp_obj.last_seen_hero_xy;
+
+				obj = gold_pile;
+			}
+
+			if (tmp_obj.id == Kripta::ObjectID::HealthPotion)
+			{
+				auto health_potion = new Kripta::HealthPotion();
+				health_potion->Place(tmp_obj.grid_x, tmp_obj.grid_y);
+				room.AddChild(health_potion);
+				health_potion->SetLevel(tmp_obj.level);
+				health_potion->hp = tmp_obj.hp;
+				health_potion->action_id = tmp_obj.action_id;
+				health_potion->action_grid_x = tmp_obj.action_grid_x;
+				health_potion->action_grid_y = tmp_obj.action_grid_y;
+				health_potion->last_seen_hero_xy = tmp_obj.last_seen_hero_xy;
+
+				obj = health_potion;
+			}
+
+			room.objects_grid_ground[x + y * 100] = obj;
+		}
+	}
+
+	for (int y = 0; y < 100; y++)
+	{
+		for (int x = 0; x < 100; x++)
+		{
+			Kripta::Object* obj = (Kripta::Object*)room.objects_grid_ground_special[x + y * 100];
+			if (obj != nullptr)
+			{
+				delete obj;
+				room.objects_grid_ground_special[x + y * 100] = nullptr;
+			}
+
+			f.read(data_block, sizeof(data_block));
+
+			memcpy((char*)(&(tmp_obj.id)), &data_block[4 * 0], 4);
+			memcpy((char*)(&(tmp_obj.grid_x)), &data_block[4 * 1], 4);
+			memcpy((char*)(&(tmp_obj.grid_y)), &data_block[4 * 2], 4);
+			memcpy((char*)(&(tmp_obj.level)), &data_block[4 * 3], 4);
+			memcpy((char*)(&(tmp_obj.hp)), &data_block[4 * 4], 4);
+			memcpy((char*)(&(tmp_obj.action_id)), &data_block[4 * 5], 4);
+			memcpy((char*)(&(tmp_obj.action_grid_x)), &data_block[4 * 6], 4);
+			memcpy((char*)(&(tmp_obj.action_grid_y)), &data_block[4 * 7], 4);
+			memcpy((char*)(&(tmp_obj.last_seen_hero_xy.x)), &data_block[4 * 8], 4);
+			memcpy((char*)(&(tmp_obj.last_seen_hero_xy.y)), &data_block[4 * 9], 4);
+
+			if ((int)tmp_obj.id == -1) continue;
+
+			if (tmp_obj.id == Kripta::ObjectID::Tomb)
+			{
+				auto tomb = new Kripta::Tomb();
+				tomb->Place(tmp_obj.grid_x, tmp_obj.grid_y);
+				room.AddChild(tomb);
+				tomb->SetLevel(tmp_obj.level);
+				tomb->hp = tmp_obj.hp;
+				tomb->action_id = tmp_obj.action_id;
+				tomb->action_grid_x = tmp_obj.action_grid_x;
+				tomb->action_grid_y = tmp_obj.action_grid_y;
+				tomb->last_seen_hero_xy = tmp_obj.last_seen_hero_xy;
+
+				memcpy((char*)(&(tomb->creature_id)), &data_block[4 * 10], 4);
+				memcpy((char*)(&(tomb->initial_turn)), &data_block[4 * 11], 4);
+				memcpy((char*)(&(tomb->turns_to_respawn)), &data_block[4 * 12], 4);
+
+				obj = tomb;
+			}
+
+			room.objects_grid_ground_special[x + y * 100] = obj;
+		}
+	}
+
+
+	f.close();
+
+	fov_map->CalculateFOV(static_cast<int>(glm::floor(room.hero_x / 32.f)), static_cast<int>(glm::floor(room.hero_y / 32.f)), 12, true);
+}
+
+void Kripta::Game::NewGame()
+{
+	turn_number = 0;
+
+	hero_gold = 0;
+	hero_gold_to_levelup = 1000;
+	hero_level = 2;
+	hero_hp = 6;
+
+	LoadRoom("map1.tmx");
 }
 
 Kripta::RoomPickData Kripta::Game::PickRoom(int grid_x, int grid_y)

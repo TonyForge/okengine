@@ -364,3 +364,18 @@ void ok::FOVMap::Clear(bool walkable, bool transparent, bool fov)
 		cell._transparent = transparent;
 	}
 }
+
+bool ok::FOVMapCell::IsFov()
+{
+	return _fov;
+}
+
+bool ok::FOVMapCell::IsTransparent()
+{
+	return _transparent;
+}
+
+bool ok::FOVMapCell::IsWalkable()
+{
+	return _walkable;
+}

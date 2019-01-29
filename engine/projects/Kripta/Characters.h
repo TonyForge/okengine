@@ -70,7 +70,6 @@ namespace Kripta
 		virtual ~GoldenGuard();
 		virtual void Update(float dt);
 		ok::graphics::SpriteInfo spr;
-		glm::vec2 last_seen_hero_xy;
 		glm::vec2 home_grid_xy;
 	};
 }

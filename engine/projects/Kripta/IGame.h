@@ -76,6 +76,7 @@ namespace Kripta
 	class IGame : public ok::Application
 	{
 	public:
+		virtual void NewGame() = 0;
 		virtual void SaveGame() = 0;
 		virtual void LoadGame() = 0;
 
@@ -84,6 +85,7 @@ namespace Kripta
 		virtual void PushToDeathList(Kripta::IObject* obj) = 0;
 		virtual bool GetFov(int grid_x, int grid_y) = 0;
 		virtual int TurnStage() = 0;
+		virtual void BlockFloorSpecial(int grid_x, int grid_y, Kripta::IObject* owner) = 0;
 		virtual void BlockFloor(int grid_x, int grid_y, Kripta::IObject* owner) = 0;
 		virtual void BlockGrid(int grid_x, int grid_y, Kripta::IObject* owner) = 0;
 		virtual void SetHeroXY(float x, float y) = 0;
@@ -105,5 +107,10 @@ namespace Kripta
 		static Kripta::IGame* instance;
 		int turn_number = 0;
 		bool main_menu_enabled = true;
+
+		int hero_level = 2;
+		int hero_gold = 0;
+		int hero_gold_to_levelup = 1000;
+		int hero_hp = 6;
 	};
 }

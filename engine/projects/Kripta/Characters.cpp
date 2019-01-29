@@ -10,6 +10,14 @@ Kripta::Hero::Hero()
 
 Kripta::Hero::~Hero()
 {
+	if (Kripta::IGame::instance->main_menu_enabled)
+	{
+		//do nothing
+	}
+	else
+	{
+	}
+
 	delete gameObject().GetComponent<Kripta::TurnController>();
 }
 
@@ -141,7 +149,15 @@ Kripta::Goblin::Goblin()
 
 Kripta::Goblin::~Goblin()
 {
-	Kripta::IGame::instance->CreateTombForMe(this);
+	if (Kripta::IGame::instance->main_menu_enabled)
+	{
+		//do nothing
+	}
+	else
+	{
+		Kripta::IGame::instance->CreateTombForMe(this);
+	}
+	
 
 	delete gameObject().GetComponent<Kripta::TurnController>();
 }
@@ -273,6 +289,14 @@ Kripta::Tomb::Tomb()
 
 Kripta::Tomb::~Tomb()
 {
+	if (Kripta::IGame::instance->main_menu_enabled)
+	{
+		//do nothing
+	}
+	else
+	{
+		Kripta::IGame::instance->BlockFloorSpecial(grid_x, grid_y, nullptr);
+	}
 }
 
 void Kripta::Tomb::PostUpdate(float dt)
@@ -352,6 +376,13 @@ Kripta::GoldPile::GoldPile()
 
 Kripta::GoldPile::~GoldPile()
 {
+	if (Kripta::IGame::instance->main_menu_enabled)
+	{
+		//do nothing
+	}
+	else
+	{
+	}
 }
 
 void Kripta::GoldPile::PostUpdate(float dt)
@@ -390,6 +421,13 @@ Kripta::HealthPotion::HealthPotion()
 
 Kripta::HealthPotion::~HealthPotion()
 {
+	if (Kripta::IGame::instance->main_menu_enabled)
+	{
+		//do nothing
+	}
+	else
+	{
+	}
 }
 
 void Kripta::HealthPotion::PostUpdate(float dt)
@@ -428,7 +466,14 @@ Kripta::GoldenGuard::GoldenGuard()
 
 Kripta::GoldenGuard::~GoldenGuard()
 {
-	Kripta::IGame::instance->CreateTombForMe(this);
+	if (Kripta::IGame::instance->main_menu_enabled)
+	{
+		//do nothing
+	}
+	else
+	{
+		Kripta::IGame::instance->CreateTombForMe(this);
+	}
 
 	delete gameObject().GetComponent<Kripta::TurnController>();
 }

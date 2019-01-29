@@ -8,6 +8,9 @@ namespace ok
 	{
 	public:
 		FOVMapCell() : _fov(false), _transparent(false), _walkable(false) {}
+		bool IsFov();
+		bool IsTransparent();
+		bool IsWalkable();
 	private:
 		friend class ok::FOVMap;
 		bool _fov;

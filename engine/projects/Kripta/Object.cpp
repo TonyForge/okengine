@@ -358,7 +358,8 @@ void Kripta::Object::Place(int grid_x, int grid_y)
 		id == Kripta::ObjectID::HealthPotion)
 		Kripta::IGame::instance->BlockFloor(grid_x, grid_y, this);
 
-
+	if (id == Kripta::ObjectID::Tomb)
+		Kripta::IGame::instance->BlockFloorSpecial(grid_x, grid_y, this);
 
 	this->grid_x = grid_x;
 	this->grid_y = grid_y;
