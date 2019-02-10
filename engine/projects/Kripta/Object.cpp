@@ -151,11 +151,11 @@ void Kripta::TurnController::Update(float dt)
 							obj.movement_path.Reset();
 							obj.movement_path.Add(glm::vec2(obj.grid_x, obj.grid_y));
 							obj.movement_path.Add(
-								glm::vec2(obj.action_grid_x, obj.action_grid_y) +
+								glm::vec2(obj.action_grid_x, obj.action_grid_y) /*+
 								glm::vec2(
 									static_cast<float>(obj.action_grid_x - obj.grid_x),
-									static_cast<float>(obj.action_grid_y - obj.grid_y)
-								)
+									static_cast<float>(obj.action_grid_y - obj.grid_y)*/
+								//)
 							);
 						}
 					}
@@ -303,6 +303,8 @@ void Kripta::TurnController::Update(float dt)
 
 					obj.grid_x = obj.action_grid_x;
 					obj.grid_y = obj.action_grid_y;
+
+					obj.MoveToNextFloor();
 				}
 			}
 
@@ -316,6 +318,11 @@ void Kripta::TurnController::Update(float dt)
 
 void Kripta::Object::PickUpObject(Kripta::Object * obj)
 {
+}
+
+void Kripta::Object::MoveToNextFloor()
+{
+	Kripta::IGame::instance->MoveMeToNextFloor(this);
 }
 
 void Kripta::Object::PostUpdate(float dt)
@@ -348,17 +355,24 @@ void Kripta::Object::SetLevel(int level)
 
 void Kripta::Object::Place(int grid_x, int grid_y)
 {
+	if (id == Kripta::ObjectID::Hero)
+	{
+		Kripta::IGame::instance->SetHeroActionXY(static_cast<float>(grid_x), static_cast<float>(grid_y));
+	}
+
 	if (id != Kripta::ObjectID::Unknown &&
 		id != Kripta::ObjectID::Tomb &&
 		id != Kripta::ObjectID::GoldPile &&
-		id != Kripta::ObjectID::HealthPotion)
+		id != Kripta::ObjectID::HealthPotion &&
+		id != Kripta::ObjectID::Stair)
 	Kripta::IGame::instance->BlockGrid(grid_x, grid_y, this);
 
 	if (id == Kripta::ObjectID::GoldPile ||
 		id == Kripta::ObjectID::HealthPotion)
 		Kripta::IGame::instance->BlockFloor(grid_x, grid_y, this);
 
-	if (id == Kripta::ObjectID::Tomb)
+	if (id == Kripta::ObjectID::Tomb ||
+		id == Kripta::ObjectID::Stair)
 		Kripta::IGame::instance->BlockFloorSpecial(grid_x, grid_y, this);
 
 	this->grid_x = grid_x;

@@ -310,6 +310,8 @@ void ok::Application::Run()
 
 			time_delta = 0.f;
 		}
+
+		if (_application_shutdown == true) running = false;
 	}
 
 	if (fixed_resolution)
@@ -328,6 +330,11 @@ void ok::Application::Init()
 
 void ok::Application::Update(float dt)
 {
+}
+
+void ok::Application::Shutdown()
+{
+	_application_shutdown = true;
 }
 
 

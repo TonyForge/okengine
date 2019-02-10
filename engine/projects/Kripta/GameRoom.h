@@ -17,6 +17,7 @@ namespace Kripta
 		Kripta::IObject* objects_grid[100 * 100];
 		void Reset();
 		float hero_x, hero_y;
+		int hero_action_x, hero_action_y;
 		float camera_x, camera_y;
 	private:
 	protected:

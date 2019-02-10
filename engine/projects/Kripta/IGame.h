@@ -80,6 +80,7 @@ namespace Kripta
 		virtual void SaveGame() = 0;
 		virtual void LoadGame() = 0;
 
+		virtual void MoveMeToNextFloor(Kripta::IObject* me) = 0;
 		virtual void CreateTombForMe(Kripta::IObject* me) = 0;
 		virtual void PushToPostUpdateList(Kripta::IObject* obj) = 0;
 		virtual void PushToDeathList(Kripta::IObject* obj) = 0;
@@ -90,6 +91,8 @@ namespace Kripta
 		virtual void BlockGrid(int grid_x, int grid_y, Kripta::IObject* owner) = 0;
 		virtual void SetHeroXY(float x, float y) = 0;
 		virtual glm::vec2 GetHeroXY() = 0;
+		virtual void SetHeroActionXY(float x, float y) = 0;
+		virtual glm::vec2 GetHeroActionXY() = 0;
 		virtual Kripta::RoomPickData PickRoom(int grid_x, int grid_y) = 0;
 		virtual ok::graphics::RenderTarget* GetScreenBuffer() = 0;
 		virtual void LoadRoom(ok::String path) = 0;

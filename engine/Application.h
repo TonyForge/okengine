@@ -41,7 +41,7 @@ namespace ok {
 		void Run();
 		virtual void Init();
 		virtual void Update(float dt);
-
+		virtual void Shutdown();
 		static ok::ApplicationProperties Properties;
 	protected:
 		sf::Window* window;
@@ -81,5 +81,7 @@ namespace ok {
 		void EnableFeature(ok::ApplicationFeature feature);
 		void DisableFeature(ok::ApplicationFeature feature);
 	private:
+
+		bool _application_shutdown = false;
 	};
 }

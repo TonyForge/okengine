@@ -10,7 +10,7 @@ namespace Kripta
 	{
 	public:
 		virtual void PickUpObject(Kripta::Object* obj);
-
+		virtual void MoveToNextFloor();
 		int level = 0;
 		int hp;
 

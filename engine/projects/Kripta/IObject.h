@@ -12,7 +12,8 @@ namespace Kripta
 		Tomb,
 		GoldPile,
 		HealthPotion,
-		GoldenGuard
+		GoldenGuard,
+		Stair
 	};
 
 	enum class ObjActionID

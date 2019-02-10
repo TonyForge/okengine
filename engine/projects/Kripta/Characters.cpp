@@ -58,7 +58,7 @@ void Kripta::Hero::Update(float dt)
 		Kripta::TurnController::turn_members_decision_made--;
 	}
 
-	if (Kripta::IGame::instance->TurnStage() == 1 && turn_controller->turn_decision_made == false)
+	if (Kripta::IGame::instance->TurnStage() == 11 && turn_controller->turn_decision_made == false)
 	{
 		if (Kripta::IGame::instance->main_menu_enabled)
 		{
@@ -104,6 +104,7 @@ void Kripta::Hero::Update(float dt)
 
 			if (turn_complete)
 			{
+				Kripta::IGame::instance->SetHeroActionXY(static_cast<float>(action_grid_x), static_cast<float>(action_grid_y));
 				turn_controller->turn_decision_made = true;
 				Kripta::TurnController::turn_members_decision_made++;
 			}
@@ -139,6 +140,7 @@ void Kripta::Hero::PickUpObject(Kripta::Object * obj)
 	obj->dead = true;
 	Kripta::IGame::instance->PushToDeathList(obj);
 }
+
 
 Kripta::Goblin::Goblin()
 {
@@ -203,13 +205,19 @@ void Kripta::Goblin::Update(float dt)
 		if (turn_complete == false)
 		{
 			glm::vec2 hero_xy = Kripta::IGame::instance->GetHeroXY();
+			glm::vec2 hero_action_xy = Kripta::IGame::instance->GetHeroActionXY();
+
+			int i_hero_action_x = static_cast<int>(hero_action_xy.x);
+			int i_hero_action_y = static_cast<int>(hero_action_xy.y);
 
 			if (Kripta::IGame::instance->GetFov(grid_x, grid_y))
 			{
 				last_seen_hero_xy = hero_xy;
 			}
 
-			if (last_seen_hero_xy != glm::vec2(grid_x, grid_y))
+			auto hero_action_room_pick = Kripta::IGame::instance->PickRoom(i_hero_action_x, i_hero_action_y);
+
+			if (last_seen_hero_xy != glm::vec2(grid_x, grid_y) && hero_action_room_pick.door == false)
 			{
 				float cost_n = glm::length2(last_seen_hero_xy - glm::vec2(grid_x, grid_y - 1));
 				float cost_s = glm::length2(last_seen_hero_xy - glm::vec2(grid_x, grid_y + 1));
@@ -281,7 +289,7 @@ void Kripta::Goblin::Update(float dt)
 
 Kripta::Tomb::Tomb()
 {
-	spr = ok::AssetsBasic::instance().GetSpriteAtlas("sprites.atlas")->Get(ok::String("hero_spr"));
+	spr = ok::AssetsBasic::instance().GetSpriteAtlas("sprites.atlas")->Get(ok::String("tomb"));
 	initial_turn = Kripta::IGame::instance->turn_number;
 
 	id = Kripta::ObjectID::Tomb;
@@ -414,7 +422,7 @@ void Kripta::GoldPile::Update(float dt)
 
 Kripta::HealthPotion::HealthPotion()
 {
-	spr = ok::AssetsBasic::instance().GetSpriteAtlas("sprites.atlas")->Get(ok::String("hero"));
+	spr = ok::AssetsBasic::instance().GetSpriteAtlas("sprites.atlas")->Get(ok::String("health_potion"));
 
 	id = Kripta::ObjectID::HealthPotion;
 }
@@ -460,7 +468,7 @@ void Kripta::HealthPotion::Update(float dt)
 Kripta::GoldenGuard::GoldenGuard()
 {
 	gameObject().AddComponent(new Kripta::TurnController());
-	spr = ok::AssetsBasic::instance().GetSpriteAtlas("sprites.atlas")->Get(ok::String("goblin_spr"));
+	spr = ok::AssetsBasic::instance().GetSpriteAtlas("sprites.atlas")->Get(ok::String("golden_guard"));
 	id = Kripta::ObjectID::GoldenGuard;
 }
 
@@ -600,5 +608,35 @@ void Kripta::GoldenGuard::Update(float dt)
 			//SetParent(nullptr);
 			//delete this;
 		}
+	}
+}
+
+Kripta::Stair::Stair()
+{
+	id = Kripta::ObjectID::Stair;
+}
+
+Kripta::Stair::~Stair()
+{
+	if (Kripta::IGame::instance->main_menu_enabled)
+	{
+		//do nothing
+	}
+	else
+	{
+	}
+}
+
+void Kripta::Stair::PostUpdate(float dt)
+{
+}
+
+void Kripta::Stair::Update(float dt)
+{
+	ok::GameObject::Update(dt);
+
+	if (dead)
+	{
+		return;
 	}
 }

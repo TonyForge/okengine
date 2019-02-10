@@ -19,10 +19,13 @@ namespace Kripta
 		virtual void BlockFloorSpecial(int grid_x, int grid_y, Kripta::IObject* owner);
 		virtual void BlockFloor(int grid_x, int grid_y, Kripta::IObject* owner);
 		virtual void CreateTombForMe(Kripta::IObject* me);
+		virtual void MoveMeToNextFloor(Kripta::IObject* me);
 
 		virtual void PushToPostUpdateList(Kripta::IObject* obj);
 		virtual void PushToDeathList(Kripta::IObject* obj);
 		virtual glm::vec2 GetHeroXY();
+		virtual void SetHeroActionXY(float x, float y);
+		virtual glm::vec2 GetHeroActionXY();
 		virtual bool GetFov(int grid_x, int grid_y);
 		virtual int TurnStage();
 		virtual void BlockGrid(int grid_x, int grid_y, Kripta::IObject* owner);
@@ -35,6 +38,9 @@ namespace Kripta
 		virtual void LoadGame();
 		virtual void NewGame();
 	private:
+		bool _move_hero_to_next_room = false;
+		ok::String _next_room_name;
+
 		std::vector<Kripta::IObject*> _post_update_list;
 		std::vector<Kripta::IObject*> _death_list;
 		int _turn_stage = 0;

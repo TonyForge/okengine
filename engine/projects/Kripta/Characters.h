@@ -72,4 +72,14 @@ namespace Kripta
 		ok::graphics::SpriteInfo spr;
 		glm::vec2 home_grid_xy;
 	};
+
+	class Stair : public Kripta::Object
+	{
+	public:
+		Stair();
+		~Stair();
+		virtual void PostUpdate(float dt);
+		virtual void Update(float dt);
+		ok::String room_name;
+	};
 }

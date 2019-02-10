@@ -264,8 +264,24 @@ void Kripta::Game::Update(float dt)
 	{
 		if (Kripta::TurnController::turn_members_decision_made == 0)
 		{
-			_turn_stage = 1;
+			_turn_stage = 11;
 			Kripta::TurnController::turn_members_ready = 0;
+		}
+	}
+
+	if (_turn_stage == 11)
+	{
+		if (main_menu_enabled)
+		{
+			//do nothing
+		}
+		else
+		{
+			if (Kripta::TurnController::turn_members_decision_made == 1)
+			{
+				_turn_stage = 1;
+				Kripta::TurnController::turn_in_progress = true;
+			}
 		}
 	}
 
@@ -312,18 +328,35 @@ void Kripta::Game::Update(float dt)
 	
 	if (Kripta::TurnController::turn_members_ready == 0 && Kripta::TurnController::turn_in_progress == false)
 	{
-		for (auto obj : _death_list)
+		if (_death_list.size() > 0)
 		{
-			obj->SetParent(nullptr);
-			delete obj;
-		}
+			static std::vector<Kripta::IObject*> _death_list_copy;
+			_death_list_copy = _death_list;
+			_death_list.clear();
 
-		_death_list.clear();
+			for (auto obj : _death_list_copy)
+			{
+				obj->SetParent(nullptr);
+				delete obj;
+			}
+
+			_death_list_copy.clear();
+		}
+		
 	}
 
 	_post_update_list.clear();
 
-	if (_turn_stage == 1)
+	if (Kripta::TurnController::turn_in_progress == false)
+	{
+		if (_move_hero_to_next_room)
+		{
+			LoadRoom(_next_room_name);
+			_move_hero_to_next_room = false;
+		}
+	}
+
+	if (_turn_stage == 11)
 	{
 		if (_main_menu_requested)
 		{
@@ -579,6 +612,7 @@ void Kripta::Game::Update(float dt)
 					if (_main_menu_item_selected == 3)
 					{
 						//exit
+						Shutdown();
 					}
 				}
 
@@ -908,6 +942,28 @@ void Kripta::Game::LoadRoom(ok::String path)
 					}
 			}
 			break;
+			case 5 : //stair
+			{
+				auto stair_obj = new Kripta::Stair();
+				stair_obj->Place(x, y);
+				room.AddChild(stair_obj);
+
+				prop_elem = obj->FirstChildElement("properties");
+
+				if (prop_elem)
+					for (tinyxml2::XMLElement* prop = prop_elem->FirstChildElement("property"); prop != nullptr; prop = prop->NextSiblingElement("property"))
+					{
+						ok::String prop_name = prop->Attribute("name");
+
+						if (prop_name == "room_name")
+						{
+							ok::String room_name = ok::String(prop->Attribute("value"));
+
+							stair_obj->room_name = room_name;
+						}
+					}
+			}
+			break;
 			}
 
 			
@@ -919,12 +975,37 @@ void Kripta::Game::LoadRoom(ok::String path)
 
 void Kripta::Game::BlockFloorSpecial(int grid_x, int grid_y, Kripta::IObject * owner)
 {
-	room.objects_grid_ground_special[grid_x + grid_y * 100] = owner;
+	auto prev = room.objects_grid_ground_special[grid_x + grid_y * 100];
+	if (prev != nullptr && owner != nullptr)
+	{
+		owner->dead = true;
+		PushToDeathList(owner);
+		//PushToDeathList
+		//PushToDeathList(prev);
+		//room.objects_grid_ground_special[grid_x + grid_y * 100] = nullptr;
+	}
+	else
+	{
+		room.objects_grid_ground_special[grid_x + grid_y * 100] = owner;
+	}
+	
 }
 
 void Kripta::Game::BlockFloor(int grid_x, int grid_y, Kripta::IObject * owner)
 {
-	room.objects_grid_ground[grid_x + grid_y * 100] = owner;
+	auto prev = room.objects_grid_ground[grid_x + grid_y * 100];
+	if (prev != nullptr && owner != nullptr)
+	{
+		owner->dead = true;
+		PushToDeathList(owner);
+		//delete prev;
+		//room.objects_grid_ground[grid_x + grid_y * 100] = nullptr;
+	}
+	else
+	{
+		room.objects_grid_ground[grid_x + grid_y * 100] = owner;
+	}
+	
 }
 
 void Kripta::Game::CreateTombForMe(Kripta::IObject * me)
@@ -938,6 +1019,27 @@ void Kripta::Game::CreateTombForMe(Kripta::IObject * me)
 
 	tomb->creature_id = obj->id;
 	tomb->turns_to_respawn = 5;
+}
+
+void Kripta::Game::MoveMeToNextFloor(Kripta::IObject * me)
+{
+	if (((Kripta::Object*)(me))->id == Kripta::ObjectID::Hero)
+	{
+		Kripta::Hero* hero = (Kripta::Hero*)me;
+		//turn_number = 0;
+
+		hero_gold = hero->gold;
+		hero_gold_to_levelup = hero->gold_to_levelup;
+		hero_level = hero->level;
+		hero_hp = hero->hp;
+
+		auto stair = room.objects_grid_ground_special[hero->grid_x + hero->grid_y * 100];
+		_next_room_name = ((Kripta::Stair*)stair)->room_name + ok::String(".tmx");
+		_move_hero_to_next_room = true;
+		//auto room_pick = PickRoom(hero->grid_x, hero->grid_y);
+		//auto stair = room.objects_grid_ground_special[hero->grid_x + hero->grid_y * 100];
+		//LoadRoom();
+	}
 }
 
 void Kripta::Game::PushToPostUpdateList(Kripta::IObject * obj)
@@ -955,6 +1057,17 @@ glm::vec2 Kripta::Game::GetHeroXY()
 	return glm::vec2(glm::floor(room.hero_x / 32.f),glm::floor(room.hero_y / 32.f));
 }
 
+void Kripta::Game::SetHeroActionXY(float x, float y)
+{
+	room.hero_action_x = x;
+	room.hero_action_y = y;
+}
+
+glm::vec2 Kripta::Game::GetHeroActionXY()
+{
+	return glm::vec2(room.hero_action_x, room.hero_action_y);
+}
+
 bool Kripta::Game::GetFov(int grid_x, int grid_y)
 {
 	return fov_map->GetFOV(grid_x, grid_y);
@@ -967,7 +1080,19 @@ int Kripta::Game::TurnStage()
 
 void Kripta::Game::BlockGrid(int grid_x, int grid_y, Kripta::IObject* owner)
 {
-	room.objects_grid[grid_x + grid_y * 100] = owner;
+	auto prev = room.objects_grid[grid_x + grid_y * 100];
+	if (prev != nullptr && owner != nullptr)
+	{
+		owner->dead = true;
+		PushToDeathList(owner);
+		//delete prev;
+		//room.objects_grid[grid_x + grid_y * 100] = nullptr;
+	}
+	else
+	{
+		room.objects_grid[grid_x + grid_y * 100] = owner;
+	}
+	
 }
 
 void Kripta::Game::SetHeroXY(float x, float y)
@@ -1125,6 +1250,22 @@ void Kripta::Game::SaveGame()
 					memcpy(&data_block[4 * 10], (char*)(&(_obj->creature_id)), 4);
 					memcpy(&data_block[4 * 11], (char*)(&(_obj->initial_turn)), 4);
 					memcpy(&data_block[4 * 12], (char*)(&(_obj->turns_to_respawn)), 4);
+				}
+
+				if (obj->id == Kripta::ObjectID::Stair)
+				{
+					Kripta::Stair* _obj = (Kripta::Stair*)obj;
+
+					int sym_count = (int)(_obj->room_name.getSize());
+					char sym_count_char = static_cast<char>(sym_count);
+
+					memcpy(&data_block[4 * (10 + 0)], (char*)(&(sym_count_char)), 1);
+
+					for (int i = 0; i < sym_count; i++)
+					{
+						int sym = static_cast<int>(_obj->room_name[i]);
+						memcpy(&data_block[4 * (10 + i + 1)], (char*)(&(sym)), 4);
+					}
 				}
 			}
 			else
@@ -1408,6 +1549,33 @@ void Kripta::Game::LoadGame()
 				memcpy((char*)(&(tomb->turns_to_respawn)), &data_block[4 * 12], 4);
 
 				obj = tomb;
+			}
+
+			if (tmp_obj.id == Kripta::ObjectID::Stair)
+			{
+				auto stair = new Kripta::Stair();
+				stair->Place(tmp_obj.grid_x, tmp_obj.grid_y);
+				room.AddChild(stair);
+				stair->SetLevel(tmp_obj.level);
+				stair->hp = tmp_obj.hp;
+				stair->action_id = tmp_obj.action_id;
+				stair->action_grid_x = tmp_obj.action_grid_x;
+				stair->action_grid_y = tmp_obj.action_grid_y;
+				stair->last_seen_hero_xy = tmp_obj.last_seen_hero_xy;
+
+				char sym_count_char = data_block[4 * 10];
+				int sym_count = static_cast<int>(sym_count_char);
+				stair->room_name = "";
+
+				for (int i = 0; i < sym_count; i++)
+				{
+					int sym;
+
+					memcpy((char*)(&(sym)), &data_block[4 * (10 + i + 1)], 4);
+					stair->room_name += ok::String((char)sym);
+				}
+
+				obj = stair;
 			}
 
 			room.objects_grid_ground_special[x + y * 100] = obj;

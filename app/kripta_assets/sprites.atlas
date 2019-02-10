@@ -1,6 +1,13 @@
 <atlas>
     <sprite texture="tiles.png" name="hero_spr" left="0" top="256" width="38" height="36" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
 	<sprite texture="tiles.png" name="goblin_spr" left="38" top="256" width="39" height="39" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="golden_guard" left="77" top="260" width="34" height="34" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
 	<sprite texture="tiles.png" name="blank" left="96" top="0" width="32" height="32" hotspot_x="0.0" hotspot_y="0.0" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
 	<sprite texture="tiles.png" name="gold_pile" left="2" top="294" width="32" height="32" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="torch_frame_0" left="2" top="331" width="32" height="36" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="torch_frame_1" left="34" top="331" width="32" height="36" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="torch_frame_2" left="66" top="331" width="32" height="36" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="tomb" left="102" top="297" width="32" height="32" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="health_potion" left="38" top="297" width="32" height="32" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="mysterious_potion" left="70" top="297" width="32" height="32" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
 </atlas>
