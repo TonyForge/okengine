@@ -1,4 +1,3 @@
-#include "C:\Projects\okengine\engine\stdafx.h"
 #include "Random.h"
 
 ok::Random::Random() : linear_normalized_dis(0.0, std::nextafter(1.0, DBL_MAX))

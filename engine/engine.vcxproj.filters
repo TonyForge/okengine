@@ -216,9 +216,6 @@
     <ClCompile Include="VisibilityMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TileMap2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Treasurer.cpp">
       <Filter>projects\Treasurer</Filter>
     </ClCompile>
@@ -230,9 +227,6 @@
     </ClCompile>
     <ClCompile Include="projects\Kripta\Floor.cpp">
       <Filter>projects\Kripta</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Kripta\KriptaTileMap3D.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="projects\Kripta\GameRoom.cpp">
       <Filter>projects\Kripta</Filter>
@@ -437,9 +431,6 @@
     <ClInclude Include="VisibilityMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TileMap2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Treasurer.h">
       <Filter>projects\Treasurer</Filter>
     </ClInclude>
@@ -451,9 +442,6 @@
     </ClInclude>
     <ClInclude Include="projects\Kripta\Floor.h">
       <Filter>projects\Kripta</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Kripta\KriptaTileMap3D.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="projects\Kripta\GameRoom.h">
       <Filter>projects\Kripta</Filter>

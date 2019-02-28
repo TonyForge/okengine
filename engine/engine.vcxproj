@@ -601,27 +601,42 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
-    <ClCompile Include="projects\Kripta\Characters.cpp" />
-    <ClCompile Include="projects\Kripta\Floor.cpp" />
+    <ClCompile Include="projects\Kripta\Characters.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="projects\Kripta\Floor.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="projects\Kripta\Game.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="projects\Kripta\GameRoom.cpp" />
+    <ClCompile Include="projects\Kripta\GameRoom.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="projects\Kripta\IObject.cpp" />
-    <ClCompile Include="projects\Kripta\KriptaTileMap3D.cpp" />
-    <ClCompile Include="projects\Kripta\Object.cpp" />
+    <ClCompile Include="projects\Kripta\Object.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="projects\Treasurer\Game.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Treasurer\PlayerNode.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="projects\Zoner\Collision.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
@@ -754,7 +769,6 @@
     <ClCompile Include="String.cpp" />
     <ClCompile Include="TextBatch.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="TileMap2D.cpp" />
     <ClCompile Include="tinyxml\tinyxml2.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="TransformAnimation.cpp" />
@@ -762,6 +776,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="VertexAnimation.cpp" />
@@ -800,33 +816,51 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="Pool.h" />
-    <ClInclude Include="projects\Kripta\Characters.h" />
-    <ClInclude Include="projects\Kripta\Floor.h" />
+    <ClInclude Include="projects\Kripta\Characters.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="projects\Kripta\Floor.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="projects\Kripta\Game.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="projects\Kripta\GameRoom.h" />
+    <ClInclude Include="projects\Kripta\GameRoom.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="projects\Kripta\IGame.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="projects\Kripta\IObject.h" />
-    <ClInclude Include="projects\Kripta\KriptaTileMap3D.h" />
-    <ClInclude Include="projects\Kripta\Object.h" />
+    <ClInclude Include="projects\Kripta\IObject.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="projects\Kripta\Object.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="projects\Treasurer\Game.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Treasurer\PlayerNode.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="projects\Zoner\Collision.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
@@ -956,7 +990,6 @@
     <ClInclude Include="String.h" />
     <ClInclude Include="TextBatch.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="TileMap2D.h" />
     <ClInclude Include="tinyxml\tinyxml2.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="TransformAnimation.h" />
@@ -964,6 +997,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Treasurer_Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Kripta_Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Zoner_Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="UI.h" />
     <ClInclude Include="VertexAnimation.h" />
