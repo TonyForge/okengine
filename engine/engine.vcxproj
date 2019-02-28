@@ -734,6 +734,7 @@
     <ClCompile Include="pystring.cpp" />
     <ClCompile Include="Quad.cpp" />
     <ClCompile Include="LayeredRenderer.cpp" />
+    <ClCompile Include="Random.cpp" />
     <ClCompile Include="Rect2D.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -944,6 +945,7 @@
     <ClInclude Include="pystring.h" />
     <ClInclude Include="Quad.h" />
     <ClInclude Include="LayeredRenderer.h" />
+    <ClInclude Include="Random.h" />
     <ClInclude Include="Rect2D.h" />
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="Shader.h" />

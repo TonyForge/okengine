@@ -12,6 +12,8 @@ void Kripta::Game::Init()
 {
 	DisableFeature(ok::ApplicationFeature::AutoClearStencil);
 
+	random.Seed();
+
 	gui_camera = new ok::graphics::Camera(ok::graphics::CameraCoordinateSystem::Screen);
 	gui_camera->SetProjectionOrtho(1024, 768, 100.f, 1.f);
 
@@ -26,6 +28,7 @@ void Kripta::Game::Init()
 	camera->EndTransform(true);
 
 	sprite_batch = new ok::graphics::SpriteBatch();
+	sprite_batch->SetMaterial(ok::AssetsBasic::instance().GetMaterial("SpriteBatch.TintAlphaMaterial.xml"));
 	line_batch = new ok::graphics::LineBatch();
 	text_batch = new ok::graphics::TextBatch2D(1024, 768);
 
@@ -185,7 +188,15 @@ void Kripta::Game::Update(float dt)
 	sprite_batch->BatchEnd();
 	ok::graphics::Camera::PopCamera();
 
+
 	sprite_batch->BatchBegin(25.f);
+
+	for (auto obj : _pre_update_list)
+	{
+		obj->PreUpdate(dt);
+	}
+	_pre_update_list.clear();
+
 	room.Update(dt);
 	sprite_batch->BatchEnd();
 
@@ -259,13 +270,47 @@ void Kripta::Game::Update(float dt)
 
 	ok::graphics::Camera::PopCamera();
 
-	//turn state processing
-	if (_turn_stage == 0)
+	if (_turn_stage == 4 && Kripta::TurnController::turn_members_died == 0)
 	{
-		if (Kripta::TurnController::turn_members_decision_made == 0)
+		Kripta::TurnController::turn_members_ready = 0;
+		Kripta::TurnController::turn_in_progress = false;
+		_turn_stage = 0;
+		fov_map->CalculateFOV(static_cast<int>(glm::floor(room.hero_x / 32.f)), static_cast<int>(glm::floor(room.hero_y / 32.f)), 12, true);
+		turn_number++;
+	}
+
+	if (_turn_stage == 44)
+	{
+		_turn_stage = 4;
+	}
+
+	if (_turn_stage == 3 && (Kripta::TurnController::turn_members_decision_made == 0))
+	{
+		_turn_stage = 44;
+	}
+
+	if (_turn_stage == 2)
+	{
+		if (Kripta::TurnController::turn_members_ready == Kripta::TurnController::turn_members_total)
 		{
-			_turn_stage = 11;
-			Kripta::TurnController::turn_members_ready = 0;
+			_turn_stage = 3;
+		}
+	}
+
+
+	if (_turn_stage == 1)
+	{
+		if (main_menu_enabled)
+		{
+			//do nothing
+		}
+		else
+		{
+			if (Kripta::TurnController::turn_members_decision_made == Kripta::TurnController::turn_members_total)
+			{
+				_turn_stage = 2;
+				Kripta::TurnController::turn_in_progress = true;
+			}
 		}
 	}
 
@@ -285,46 +330,15 @@ void Kripta::Game::Update(float dt)
 		}
 	}
 
-	if (_turn_stage == 1)
+	//turn state processing
+	if (_turn_stage == 0)
 	{
-		if (main_menu_enabled)
+		if (Kripta::TurnController::turn_members_decision_made == 0)
 		{
-			//do nothing
-		}
-		else
-		{
-			if (Kripta::TurnController::turn_members_decision_made == Kripta::TurnController::turn_members_total)
-			{
-				_turn_stage = 2;
-				Kripta::TurnController::turn_in_progress = true;
-			}
+			_turn_stage = 11;
+			Kripta::TurnController::turn_members_ready = 0;
 		}
 	}
-
-	if (_turn_stage == 2)
-	{
-		if (Kripta::TurnController::turn_members_ready == Kripta::TurnController::turn_members_total)
-		{
-			_turn_stage = 3;
-		}
-	}
-
-	if (_turn_stage == 3 && (Kripta::TurnController::turn_members_decision_made == 0))
-	{
-		_turn_stage = 4;	
-	}
-
-	if (_turn_stage == 4 && Kripta::TurnController::turn_members_died == 0)
-	{
-		Kripta::TurnController::turn_members_ready = 0;
-		Kripta::TurnController::turn_in_progress = false;
-		_turn_stage = 0;
-		fov_map->CalculateFOV(static_cast<int>(glm::floor(room.hero_x / 32.f)), static_cast<int>(glm::floor(room.hero_y / 32.f)), 12, true);
-		turn_number++;
-
-
-	}
-
 	
 	if (Kripta::TurnController::turn_members_ready == 0 && Kripta::TurnController::turn_in_progress == false)
 	{
@@ -341,6 +355,7 @@ void Kripta::Game::Update(float dt)
 			}
 
 			_death_list_copy.clear();
+			_pre_update_list.clear();
 		}
 		
 	}
@@ -680,6 +695,7 @@ ok::graphics::RenderTarget * Kripta::Game::GetScreenBuffer()
 
 void Kripta::Game::LoadRoom(ok::String path)
 {
+	_pre_update_list.clear();
 
 	Kripta::TurnController::turn_members_decision_made = 0;
 
@@ -765,7 +781,7 @@ void Kripta::Game::LoadRoom(ok::String path)
 					{
 						room.tiles_layer_0[x + y * 100] = tile_id;
 
-						if (tile_id == 1 || tile_id == 5 || tile_id == 6)
+						if (tile_id == 1 || tile_id == 5 || tile_id == 6 || tile_id == 7)
 						{
 							fov_map->SetWalkable(x, y, false);
 							fov_map->SetTransparent(x, y, false);
@@ -893,6 +909,153 @@ void Kripta::Game::LoadRoom(ok::String path)
 				}
 			}
 			break;
+			case 132: //skeleton
+			{
+				auto skeleton = new Kripta::Skeleton();
+				skeleton->Place(x, y);
+				room.AddChild(skeleton);
+				skeleton->SetLevel(1);
+
+				prop_elem = obj->FirstChildElement("properties");
+
+				if (prop_elem)
+					for (tinyxml2::XMLElement* prop = prop_elem->FirstChildElement("property"); prop != nullptr; prop = prop->NextSiblingElement("property"))
+					{
+						ok::String prop_name = prop->Attribute("name");
+
+						if (prop_name == "level")
+						{
+							skeleton->SetLevel(prop->IntAttribute("value"));
+						}
+					}
+			}
+			break;
+			case 133: //slime
+			{
+				auto slime = new Kripta::Slime();
+				slime->Place(x, y);
+				room.AddChild(slime);
+				slime->SetLevel(1);
+
+				prop_elem = obj->FirstChildElement("properties");
+
+				if (prop_elem)
+					for (tinyxml2::XMLElement* prop = prop_elem->FirstChildElement("property"); prop != nullptr; prop = prop->NextSiblingElement("property"))
+					{
+						ok::String prop_name = prop->Attribute("name");
+
+						if (prop_name == "level")
+						{
+							slime->SetLevel(prop->IntAttribute("value"));
+						}
+					}
+			}
+			break;
+			case 134: //slime tiny
+			{
+				auto slime_tiny = new Kripta::SlimeTiny();
+				slime_tiny->Place(x, y);
+				room.AddChild(slime_tiny);
+				slime_tiny->SetLevel(1);
+
+				prop_elem = obj->FirstChildElement("properties");
+
+				if (prop_elem)
+					for (tinyxml2::XMLElement* prop = prop_elem->FirstChildElement("property"); prop != nullptr; prop = prop->NextSiblingElement("property"))
+					{
+						ok::String prop_name = prop->Attribute("name");
+
+						if (prop_name == "level")
+						{
+							slime_tiny->SetLevel(prop->IntAttribute("value"));
+						}
+					}
+			}
+			break;
+			case 135: //vampire
+			{
+				auto vampire = new Kripta::Vampire();
+				vampire->Place(x, y);
+				room.AddChild(vampire);
+				vampire->SetLevel(1);
+
+				prop_elem = obj->FirstChildElement("properties");
+
+				if (prop_elem)
+					for (tinyxml2::XMLElement* prop = prop_elem->FirstChildElement("property"); prop != nullptr; prop = prop->NextSiblingElement("property"))
+					{
+						ok::String prop_name = prop->Attribute("name");
+
+						if (prop_name == "level")
+						{
+							vampire->SetLevel(prop->IntAttribute("value"));
+						}
+					}
+			}
+			break;
+			case 136: //bat
+			{
+				auto bat = new Kripta::Bat();
+				bat->Place(x, y);
+				room.AddChild(bat);
+				bat->SetLevel(1);
+
+				prop_elem = obj->FirstChildElement("properties");
+
+				if (prop_elem)
+					for (tinyxml2::XMLElement* prop = prop_elem->FirstChildElement("property"); prop != nullptr; prop = prop->NextSiblingElement("property"))
+					{
+						ok::String prop_name = prop->Attribute("name");
+
+						if (prop_name == "level")
+						{
+							bat->SetLevel(prop->IntAttribute("value"));
+						}
+					}
+			}
+			break;
+			case 137: //spider
+			{
+				auto spider = new Kripta::Spider();
+				spider->Place(x, y);
+				room.AddChild(spider);
+				spider->SetLevel(1);
+
+				prop_elem = obj->FirstChildElement("properties");
+
+				if (prop_elem)
+					for (tinyxml2::XMLElement* prop = prop_elem->FirstChildElement("property"); prop != nullptr; prop = prop->NextSiblingElement("property"))
+					{
+						ok::String prop_name = prop->Attribute("name");
+
+						if (prop_name == "level")
+						{
+							spider->SetLevel(prop->IntAttribute("value"));
+						}
+					}
+			}
+			break;
+			case 138: //ghost
+			{
+				auto ghost = new Kripta::Ghost();
+				ghost->Place(x, y);
+				room.AddChild(ghost);
+				ghost->SetLevel(1);
+
+				prop_elem = obj->FirstChildElement("properties");
+
+				if (prop_elem)
+					for (tinyxml2::XMLElement* prop = prop_elem->FirstChildElement("property"); prop != nullptr; prop = prop->NextSiblingElement("property"))
+					{
+						ok::String prop_name = prop->Attribute("name");
+
+						if (prop_name == "level")
+						{
+							ghost->SetLevel(prop->IntAttribute("value"));
+						}
+					}
+			}
+			break;
 			case 145: //gold pile
 			{
 				auto gold_pile = new Kripta::GoldPile();
@@ -914,11 +1077,18 @@ void Kripta::Game::LoadRoom(ok::String path)
 				}
 			}
 			break;
-			case 146: //gold pile
+			case 146: //health potion
 			{
 				auto health_potion = new Kripta::HealthPotion();
 				health_potion->Place(x, y);
 				room.AddChild(health_potion);
+			}
+			break;
+			case 147: //mysterious potion
+			{
+				auto mysterious_potion = new Kripta::MysteriousPotion();
+				mysterious_potion->Place(x, y);
+				room.AddChild(mysterious_potion);
 			}
 			break;
 			case 131: //golden guard
@@ -962,6 +1132,51 @@ void Kripta::Game::LoadRoom(ok::String path)
 							stair_obj->room_name = room_name;
 						}
 					}
+			}
+			break;
+			case 9: //switch
+			{
+				auto switch_obj = new Kripta::Switch();
+				switch_obj->Place(x, y);
+				room.AddChild(switch_obj);
+
+				prop_elem = obj->FirstChildElement("properties");
+
+				switch_obj->state = 1;
+
+				if (prop_elem)
+					for (tinyxml2::XMLElement* prop = prop_elem->FirstChildElement("property"); prop != nullptr; prop = prop->NextSiblingElement("property"))
+					{
+						ok::String prop_name = prop->Attribute("name");
+
+						if (prop_name == "act_id")
+						{
+							switch_obj->act_id = prop->IntAttribute("value");
+						}
+
+						if (prop_name == "act_x")
+						{
+							switch_obj->act_x = prop->IntAttribute("value");
+						}
+
+						if (prop_name == "act_y")
+						{
+							switch_obj->act_y = prop->IntAttribute("value");
+						}
+
+						if (prop_name == "once")
+						{
+							switch_obj->once = prop->BoolAttribute("value");
+						}
+					}
+			}
+			break;
+			case 162: //torch
+			{
+				auto torch_obj = new Kripta::Torch();
+				torch_obj->Place(x, y);
+				room.AddChild(torch_obj);
+
 			}
 			break;
 			}
@@ -1042,6 +1257,11 @@ void Kripta::Game::MoveMeToNextFloor(Kripta::IObject * me)
 	}
 }
 
+void Kripta::Game::PushToPreUpdateList(Kripta::IObject * obj)
+{
+	_pre_update_list.push_back(obj);
+}
+
 void Kripta::Game::PushToPostUpdateList(Kripta::IObject * obj)
 {
 	_post_update_list.push_back(obj);
@@ -1059,8 +1279,8 @@ glm::vec2 Kripta::Game::GetHeroXY()
 
 void Kripta::Game::SetHeroActionXY(float x, float y)
 {
-	room.hero_action_x = x;
-	room.hero_action_y = y;
+	room.hero_action_x = static_cast<int>(x);
+	room.hero_action_y = static_cast<int>(y);
 }
 
 glm::vec2 Kripta::Game::GetHeroActionXY()
@@ -1284,6 +1504,8 @@ void Kripta::Game::SaveGame()
 
 void Kripta::Game::LoadGame()
 {
+	_pre_update_list.clear();
+
 	std::ifstream f;
 
 	if (_save_load_game_item_selected == 0)
@@ -1600,12 +1822,19 @@ void Kripta::Game::NewGame()
 	LoadRoom("map1.tmx");
 }
 
+ok::GameObject * Kripta::Game::GetRoom()
+{
+	return &room;
+}
+
 Kripta::RoomPickData Kripta::Game::PickRoom(int grid_x, int grid_y)
 {
 	Kripta::RoomPickData result;
 
+	result.tile_ptr = &(room.tiles_layer_0[grid_x + grid_y * 100]);
 	result.floor_obj = room.objects_grid_ground[grid_x + grid_y * 100];
 	result.place_obj = room.objects_grid[grid_x + grid_y * 100];
+	result.special_obj = room.objects_grid_ground_special[grid_x + grid_y * 100];
 
 	switch (room.tiles_layer_0[grid_x + grid_y * 100])
 	{
@@ -1634,6 +1863,13 @@ Kripta::RoomPickData Kripta::Game::PickRoom(int grid_x, int grid_y)
 		{
 			//door
 			result.door = true;
+		}
+		break;
+
+		case 7:
+		{
+			//door
+			result.wall = true;
 		}
 		break;
 	}

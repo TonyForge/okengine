@@ -13,6 +13,7 @@ namespace Kripta
 		virtual void MoveToNextFloor();
 		int level = 0;
 		int hp;
+		int hpmax;
 
 		int grid_x;
 		int grid_y;
@@ -26,11 +27,14 @@ namespace Kripta
 		Kripta::ObjectID id;
 		Kripta::LinWay movement_path;
 
+		virtual void PreUpdate(float dt);
 		virtual void PostUpdate(float dt);
-		void SetLevel(int level);
+		virtual void SetLevel(int level);
 		void Place(int grid_x, int grid_y);
-		void Kick(int attack_level);
+		virtual void Kick(int attack_level);
+		virtual void YouKick(int target_level);
 		void DrawHealthbar();
+		virtual void Touch(Kripta::Object* owner);
 	private:
 	protected:
 	};

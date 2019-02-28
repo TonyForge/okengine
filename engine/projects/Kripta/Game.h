@@ -21,6 +21,7 @@ namespace Kripta
 		virtual void CreateTombForMe(Kripta::IObject* me);
 		virtual void MoveMeToNextFloor(Kripta::IObject* me);
 
+		virtual void PushToPreUpdateList(Kripta::IObject* obj);
 		virtual void PushToPostUpdateList(Kripta::IObject* obj);
 		virtual void PushToDeathList(Kripta::IObject* obj);
 		virtual glm::vec2 GetHeroXY();
@@ -37,10 +38,13 @@ namespace Kripta
 		virtual void SaveGame();
 		virtual void LoadGame();
 		virtual void NewGame();
+
+		ok::GameObject* GetRoom();
 	private:
 		bool _move_hero_to_next_room = false;
 		ok::String _next_room_name;
 
+		std::vector<Kripta::IObject*> _pre_update_list;
 		std::vector<Kripta::IObject*> _post_update_list;
 		std::vector<Kripta::IObject*> _death_list;
 		int _turn_stage = 0;

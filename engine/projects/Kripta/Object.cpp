@@ -23,7 +23,7 @@ void Kripta::TurnController::Update(float dt)
 
 	Kripta::Object& obj = *static_cast<Kripta::Object*>(&gameObject());
 	
-	if (turn_in_progress)
+	if (turn_in_progress && turn_decision_made)
 	{
 		if (obj.action_id == Kripta::ObjActionID::Wait)
 		{
@@ -43,7 +43,15 @@ void Kripta::TurnController::Update(float dt)
 
 				if (grid_pick.wall)
 				{
-					obj.action_id = Kripta::ObjActionID::FalseMove;
+					if (grid_pick.floor_obj)
+					{
+						obj.action_id = Kripta::ObjActionID::FalseMoveAndPickup;
+					}
+					else
+					{
+						obj.action_id = Kripta::ObjActionID::FalseMove;
+					}
+					
 					obj.movement_path.Reset();
 					obj.movement_path.Add(glm::vec2(obj.grid_x, obj.grid_y));
 					obj.movement_path.Add(
@@ -103,6 +111,7 @@ void Kripta::TurnController::Update(float dt)
 							}
 							else
 							{
+								obj.YouKick(((Kripta::Object*)grid_pick.place_obj)->level);
 								grid_pick.place_obj->Kick(obj.level);
 								obj.action_id = Kripta::ObjActionID::Attack;
 								obj.movement_path.Reset();
@@ -180,6 +189,32 @@ void Kripta::TurnController::Update(float dt)
 					obj.BeginTransform();
 					obj.SetPosition(glm::vec3(obj.grid_x, obj.grid_y, 0.f) * 32.f);
 					obj.EndTransform(true);
+				}
+			}
+
+			if (obj.action_id == Kripta::ObjActionID::FalseMoveAndPickup)
+			{
+				if (obj.movement_path.IsEndOfPath() == false)
+				{
+					glm::vec2 next_wp = obj.movement_path.StepPath(dt * 4.f);
+
+					obj.BeginTransform();
+					obj.SetPosition(glm::vec3(next_wp.x, next_wp.y, 0.f) * 32.f);
+					obj.EndTransform(true);
+				}
+				else
+				{
+					obj.action_id = Kripta::ObjActionID::Idle;
+
+					obj.BeginTransform();
+					obj.SetPosition(glm::vec3(obj.grid_x, obj.grid_y, 0.f) * 32.f);
+					obj.EndTransform(true);
+
+					auto grid_pick = Kripta::IGame::instance->PickRoom(obj.action_grid_x, obj.action_grid_y);
+
+					Kripta::Object* floor_obj = static_cast<Kripta::Object*>(grid_pick.floor_obj);
+
+					obj.PickUpObject(floor_obj);
 				}
 			}
 
@@ -325,6 +360,10 @@ void Kripta::Object::MoveToNextFloor()
 	Kripta::IGame::instance->MoveMeToNextFloor(this);
 }
 
+void Kripta::Object::PreUpdate(float dt)
+{
+}
+
 void Kripta::Object::PostUpdate(float dt)
 {
 	if (Kripta::IGame::instance->GetFov(grid_x, grid_y))
@@ -351,6 +390,7 @@ void Kripta::Object::SetLevel(int level)
 {
 	this->level = level;
 	hp = 3 * level;
+	hpmax = hp;
 }
 
 void Kripta::Object::Place(int grid_x, int grid_y)
@@ -364,11 +404,17 @@ void Kripta::Object::Place(int grid_x, int grid_y)
 		id != Kripta::ObjectID::Tomb &&
 		id != Kripta::ObjectID::GoldPile &&
 		id != Kripta::ObjectID::HealthPotion &&
-		id != Kripta::ObjectID::Stair)
+		id != Kripta::ObjectID::Stair &&
+		id != Kripta::ObjectID::Switch && 
+		id != Kripta::ObjectID::Torch &&
+		id != Kripta::ObjectID::MysteriousPotion)
 	Kripta::IGame::instance->BlockGrid(grid_x, grid_y, this);
 
 	if (id == Kripta::ObjectID::GoldPile ||
-		id == Kripta::ObjectID::HealthPotion)
+		id == Kripta::ObjectID::HealthPotion ||
+		id == Kripta::ObjectID::Switch ||
+		id == Kripta::ObjectID::Torch ||
+		id == Kripta::ObjectID::MysteriousPotion)
 		Kripta::IGame::instance->BlockFloor(grid_x, grid_y, this);
 
 	if (id == Kripta::ObjectID::Tomb ||
@@ -388,6 +434,8 @@ void Kripta::Object::Place(int grid_x, int grid_y)
 
 void Kripta::Object::Kick(int attack_level)
 {
+	if (dead == true) return;
+
 	int hp_prev = hp;
 	hp -= attack_level;
 
@@ -395,6 +443,10 @@ void Kripta::Object::Kick(int attack_level)
 	{
 		Kripta::TurnController::turn_members_died++;
 	}
+}
+
+void Kripta::Object::YouKick(int target_level)
+{
 }
 
 void Kripta::Object::DrawHealthbar()
@@ -411,5 +463,9 @@ void Kripta::Object::DrawHealthbar()
 
 	blank.tint_color = ok::Color(0.f, 1.f, 0.f, 1.f);
 	blank.tint_power = 1.f;
-	Kripta::IGame::instance->sprite_batch->Draw(&blank, glm::vec2(pos.x - 12.f, pos.y - 16.f - 6.f), 0.f, glm::vec2((1.f / 32.f) * (24.f * (static_cast<float>(hp) / (3.f*static_cast<float>(level)))), (1.f / 32.f) * 4.f));
+	Kripta::IGame::instance->sprite_batch->Draw(&blank, glm::vec2(pos.x - 12.f, pos.y - 16.f - 6.f), 0.f, glm::vec2((1.f / 32.f) * (24.f * (static_cast<float>(hp) / (static_cast<float>(hpmax)))), (1.f / 32.f) * 4.f));
+}
+
+void Kripta::Object::Touch(Kripta::Object * owner)
+{
 }

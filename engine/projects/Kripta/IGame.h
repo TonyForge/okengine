@@ -7,6 +7,7 @@
 #include "..\..\FOVMap.h"
 #include "..\..\SpriteBatch.h"
 #include "..\..\LineBatch.h"
+#include "..\..\Random.h"
 
 namespace Kripta
 {
@@ -17,10 +18,12 @@ namespace Kripta
 	public:
 		Kripta::IObject* floor_obj = nullptr;
 		Kripta::IObject* place_obj = nullptr;
+		Kripta::IObject* special_obj = nullptr;
 		bool wall = false;
 		bool floor = false;
 		bool door = false;
 		bool stair = false;
+		int* tile_ptr;
 	};
 
 	class LinWay
@@ -80,8 +83,11 @@ namespace Kripta
 		virtual void SaveGame() = 0;
 		virtual void LoadGame() = 0;
 
+		virtual ok::GameObject* GetRoom() = 0;
+
 		virtual void MoveMeToNextFloor(Kripta::IObject* me) = 0;
 		virtual void CreateTombForMe(Kripta::IObject* me) = 0;
+		virtual void PushToPreUpdateList(Kripta::IObject* obj) = 0;
 		virtual void PushToPostUpdateList(Kripta::IObject* obj) = 0;
 		virtual void PushToDeathList(Kripta::IObject* obj) = 0;
 		virtual bool GetFov(int grid_x, int grid_y) = 0;
@@ -115,5 +121,7 @@ namespace Kripta
 		int hero_gold = 0;
 		int hero_gold_to_levelup = 1000;
 		int hero_hp = 6;
+
+		ok::Random random;
 	};
 }
