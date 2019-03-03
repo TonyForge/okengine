@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<material shader="TextBatch2D.DefaultShader.xml">
+	<textures count="1">
+		<slot index="0" sampler="tex0" asset = "" smooth="true" wrapping="GL_CLAMP" r="0" g="0" b="0"/>
+	</textures>
+</material>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<blend
+	separate="true"
+	modeRGBA=""
+	srcRGBA="" dstRGBA=""
+	modeRGB="GL_FUNC_ADD" modeA="GL_FUNC_ADD"
+	srcRGB="GL_SRC_ALPHA" dstRGB="GL_ONE_MINUS_SRC_ALPHA"
+	srcA="GL_ONE" dstA="GL_ZERO"
+	clrR="0.0" clrG="0.0" clrB="0.0" clrA="0.0"
+/>

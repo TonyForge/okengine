@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<material shader="LineBatch.DefaultShader.xml">
+	<textures count="1">
+		<slot index="0" sampler="tex0" asset = "line_sdf.png" smooth="true" wrapping="GL_REPEAT" r="0" g="0" b="0"/>
+	</textures>
+</material>

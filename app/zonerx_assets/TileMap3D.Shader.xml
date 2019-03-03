@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shader name="FlatShader">
+
+  <properties>
+    <transparent enabled="false" />
+    <blend enabled="true" template_file="Blend.DefaultAlpha.xml"/>
+    <cull enabled="true" face="GL_BACK" />
+    <depth enabled="true" depth_mask="GL_TRUE" depth_func="GL_GREATER"/>
+  </properties>
+  
+  <aliases>
+    <alias uniform="mvp0" type="mat4" ref="ModelViewProjectionMatrix" />
+  </aliases>
+  
+  <vertex>
+    <![CDATA[
+    #version 330 core
+	
+    layout (location = 0) in vec3 pos0;
+    layout (location = 1) in vec2 uv0;
+	layout (location = 2) in vec2 uv1;
+	layout (location = 3) in vec2 uv2;
+	layout (location = 2) in vec3 nrm0;
+
+    out vec2 uv0_out;
+	out vec3 nrm_out;
+	
+    uniform mat4 mvp0;
+	
+    void main()
+    {
+		nrm_out = nrm0;
+		gl_Position = mvp0 * vec4(pos0.xyz+vec3(uv1.x*10.0, uv1.y*10.0, 0.0) 1.0);
+		uv0_out = vec2(uv0.x+uv2.x, 1.0 - (uv0.y+uv2.y));
+    }
+    ]]>
+  </vertex>
+  
+  <fragment>
+    <![CDATA[
+    #version 330 core
+    out vec4 FragColor;
+    
+    in vec2 uv0_out;
+	in vec3 nrm_out;
+	
+    uniform sampler2D tex0;
+    
+    void main()
+    {
+      FragColor = texture(tex0, uv0_out);
+    }
+    ]]>
+  </fragment>
+  
+  <geometry>
+    <![CDATA[]]>
+  </geometry>
+</shader>
