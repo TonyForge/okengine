@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "engine", "engine\engine.vcxproj", "{8A73AEE6-FFF4-42D0-B690-09B761D39F48}"
 EndProject
@@ -23,6 +23,10 @@ Global
 		Zoner_Debug|x86 = Zoner_Debug|x86
 		Zoner_Release|x64 = Zoner_Release|x64
 		Zoner_Release|x86 = Zoner_Release|x86
+		ZonerX_Debug|x64 = ZonerX_Debug|x64
+		ZonerX_Debug|x86 = ZonerX_Debug|x86
+		ZonerX_Release|x64 = ZonerX_Release|x64
+		ZonerX_Release|x86 = ZonerX_Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Debug|x64.ActiveCfg = Debug|x64
@@ -57,8 +61,19 @@ Global
 		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Zoner_Release|x64.Build.0 = Zoner_Release|x64
 		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Zoner_Release|x86.ActiveCfg = Zoner_Release|Win32
 		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.Zoner_Release|x86.Build.0 = Zoner_Release|Win32
+		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.ZonerX_Debug|x64.ActiveCfg = ZonerX_Debug|x64
+		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.ZonerX_Debug|x64.Build.0 = ZonerX_Debug|x64
+		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.ZonerX_Debug|x86.ActiveCfg = ZonerX_Debug|Win32
+		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.ZonerX_Debug|x86.Build.0 = ZonerX_Debug|Win32
+		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.ZonerX_Release|x64.ActiveCfg = ZonerX_Release|x64
+		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.ZonerX_Release|x64.Build.0 = ZonerX_Release|x64
+		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.ZonerX_Release|x86.ActiveCfg = ZonerX_Release|Win32
+		{8A73AEE6-FFF4-42D0-B690-09B761D39F48}.ZonerX_Release|x86.Build.0 = ZonerX_Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C255774F-F3AE-4902-B19C-FD38545215B0}
 	EndGlobalSection
 EndGlobal

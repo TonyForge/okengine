@@ -31,6 +31,12 @@
     <Filter Include="projects\Treasurer">
       <UniqueIdentifier>{c0c41e57-2b90-4b09-a881-d9b632403001}</UniqueIdentifier>
     </Filter>
+    <Filter Include="projects\ZonerX">
+      <UniqueIdentifier>{1d42afdd-cb13-4ddb-add3-4c4ac396142a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="projects\ZonerX\Interfaces">
+      <UniqueIdentifier>{507742f1-131c-4a5b-a5bf-166bf0e82552}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -242,6 +248,12 @@
     </ClCompile>
     <ClCompile Include="Random.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\ZonerX\Game.cpp">
+      <Filter>projects\ZonerX</Filter>
+    </ClCompile>
+    <ClCompile Include="ZonerX.cpp">
+      <Filter>projects\ZonerX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -457,6 +469,18 @@
     </ClInclude>
     <ClInclude Include="Random.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ZonerX.h">
+      <Filter>projects\ZonerX</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\ZonerX\IGame.h">
+      <Filter>projects\ZonerX\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\ZonerX\Game.h">
+      <Filter>projects\ZonerX</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\ZonerX\IActor.h">
+      <Filter>projects\ZonerX\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

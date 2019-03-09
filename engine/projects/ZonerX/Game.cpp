@@ -3,7 +3,7 @@
 ZonerX::Game::Game()
 {
 	_settings_file_name = "zonerx.settings.xml";
-	//instance = this;
+	instance = this;
 }
 
 void ZonerX::Game::Init()
