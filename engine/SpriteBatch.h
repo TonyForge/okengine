@@ -93,6 +93,7 @@ namespace ok
 
 			void Draw(ok::graphics::SpriteInfo* sprite_info, glm::mat3& transform_matrix);
 
+
 			//Pixel perfect blitting functions (camera must be pixel aligned too!)
 			void Blit(ok::graphics::Texture* tex, int x, int y, glm::vec2 hotspot, bool flip_y = false);
 			void Blit(ok::graphics::SpriteInfo* sprite_info, int x, int y);

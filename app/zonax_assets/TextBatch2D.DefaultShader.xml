@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shader name="TextBatchDefaultShader">
+
+  <properties>
+    <transparent enabled="false" />
+    <blend enabled="true" template_file="Blend.DefaultAlpha.xml"/>
+    <cull enabled="false" />
+    <depth enabled="false" />
+  </properties>
+  
+  <aliases>
+    <alias uniform="mvp0" type="mat4" ref="ModelViewProjectionMatrix" />
+	<alias uniform="fx[0]" type="float_array" ref="Callback" />
+  </aliases>
+  
+  <aliases_subroutines>
+	<alias uniform="filters[0]" type="px_subroutine_array" ref="Callback" />
+  </aliases_subroutines>
+  
+  <vertex>
+    <![CDATA[
+    #version 400 core
+    layout (location = 0) in vec4 pos0uv0;
+    
+    out vec2 uv0_out;
+	out float upside_out;
+    in int gl_VertexID;
+	
+    uniform mat4 mvp0;
+	uniform float fx[42];
+	
+    void main()
+    {
+		upside_out = 1.0-step(2.0,mod(gl_VertexID, 4));
+		
+		gl_Position = mvp0 * vec4(pos0uv0.xy+vec2(fx[5]*upside_out,0.0), 0.0, 1.0);
+		
+		uv0_out = pos0uv0.zw;
+    }
+    ]]>
+  </vertex>
+  
+  <fragment>
+    <![CDATA[
+    #version 400 core
+    out vec4 FragColor;
+    
+    in vec2 uv0_out;
+	in float upside_out;
+	   
+    uniform sampler2D tex0;
+	uniform float fx[42];
+	
+	float global_sdf;
+	
+	float median(float r, float g, float b) {
+		return max(min(r, g), min(max(r, g), b));
+	}
+	
+	subroutine vec4 FilterSubroutine(vec4 color);
+	
+	subroutine uniform FilterSubroutine filters[4];
+	
+	subroutine ( FilterSubroutine ) vec4 FilterUndefined(vec4 color)
+	{
+		return color;
+	}
+	
+	subroutine ( FilterSubroutine ) vec4 FilterDefault(vec4 color)
+	{
+		color = texture(tex0, uv0_out);
+		global_sdf = median(color.r, color.g, color.b);
+		
+		float distance_field_range = 0.45 * (1.0 - fx[4]);
+
+		color.rgb = vec3(fx[0],fx[1],fx[2]);
+		color.a = smoothstep(distance_field_range,distance_field_range + 0.1,global_sdf)*fx[3];
+		
+		return color;
+	}
+	
+	
+	subroutine ( FilterSubroutine ) vec4 FilterGradient(vec4 color)
+	{
+		vec4 gradient_color = mix(vec4(fx[10],fx[11],fx[12],fx[13]), vec4(fx[6],fx[7],fx[8],fx[9]), (clamp(upside_out,0.25,0.75)-0.25)/0.5);
+		color.rgb = mix(color.rgb, gradient_color.rgb, gradient_color.a);
+		
+		return color;
+	}
+	
+	
+	subroutine ( FilterSubroutine ) vec4 FilterInnerGlow(vec4 color)
+	{
+		color.rgb = mix(color.rgb, vec3(fx[20],fx[21],fx[22]), (1.0-smoothstep(fx[24],fx[25],global_sdf)) * color.a * fx[23]);
+		
+		return color;
+	}
+	
+		
+	subroutine ( FilterSubroutine ) vec4 FilterInnerShadow(vec4 color)
+	{
+		vec3 ShadowSample = texture(tex0, uv0_out + vec2(fx[32],fx[33])).rgb;
+	
+		float inner_shadow = smoothstep(fx[30],fx[31],median(ShadowSample.r, ShadowSample.g, ShadowSample.b));
+		color.rgb = mix(color.rgb, vec3(fx[26],fx[27],fx[28]), (1.0-inner_shadow) * color.a * fx[29]);
+		
+		return color;
+	}
+	
+	subroutine ( FilterSubroutine ) vec4 FilterOuterGlow(vec4 color)
+	{
+		color.rgb = vec3(fx[14],fx[15],fx[16]);
+		color.a = smoothstep(fx[18],fx[19],texture(tex0, uv0_out).a)*fx[17];
+		
+		return color;
+	}
+	
+	subroutine ( FilterSubroutine ) vec4 FilterOuterShadow(vec4 color)
+	{
+		global_sdf = texture(tex0, uv0_out + vec2(fx[40],fx[41])).a;
+	
+		color.rgb = vec3(fx[34],fx[35],fx[36]);
+		color.a = smoothstep(fx[38],fx[39],global_sdf)*fx[37];
+		
+		return color;
+	}
+
+    void main()
+    {
+		vec4 color;
+		
+		color = filters[0](color);
+		color = filters[1](color);
+		color = filters[2](color);
+		color = filters[3](color);
+		
+		FragColor = color;
+    }
+    ]]>
+  </fragment>
+  
+  <geometry>
+    <![CDATA[]]>
+  </geometry>
+</shader>

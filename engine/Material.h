@@ -15,6 +15,7 @@ namespace ok
 			GLenum wrapping;
 			bool smooth;
 			ok::Color background_color;
+			bool fixed_asset = false;
 		protected:
 		private:
 		};
@@ -30,7 +31,7 @@ namespace ok
 			void Bind(ok::graphics::ShaderAliasDispatcher* dispatcher = nullptr);
 			bool GetTransparent();
 			void LinkSlotToSampler(const std::string & sampler_name, int texture_slot_index);
-			void SetSlotProperties(int texture_slot_index, bool smooth, GLenum wrapping, ok::Color background_color);
+			void SetSlotProperties(int texture_slot_index, bool smooth, GLenum wrapping, ok::Color background_color, bool fixed_asset = false);
 			void BindSubroutines(ok::graphics::ShaderAliasDispatcher* dispatcher = nullptr);
 			unsigned int GetSubroutineIndex(GLenum shadertype, const std::string& name);
 			ok::graphics::Shader* GetShader();

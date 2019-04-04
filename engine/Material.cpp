@@ -20,6 +20,9 @@ ok::graphics::Material::Material(ok::graphics::Shader* shader, int texture_slots
 
 void ok::graphics::Material::SetTexture(int texture_slot_index, ok::graphics::Texture * texture)
 {
+	auto& _slot_data = _texture_slots[texture_slot_index].second;
+
+	if (_slot_data.fixed_asset == false)
 	_texture_slots[texture_slot_index].second.texture = texture;
 }
 
@@ -30,7 +33,7 @@ void ok::graphics::Material::SetTexture(const std::string& sampler_name, ok::gra
 
 	for (auto&& slot : _texture_slots)
 	{
-		if (slot.first == texture_channel_index)
+		if (slot.first == texture_channel_index && slot.second.fixed_asset == false)
 		{
 			slot.second.texture = texture;
 		}
@@ -76,13 +79,14 @@ void ok::graphics::Material::LinkSlotToSampler(const std::string & sampler_name,
 	_texture_slots[texture_slot_index].first = texture_channel_index;
 }
 
-void ok::graphics::Material::SetSlotProperties(int texture_slot_index, bool smooth, GLenum wrapping, ok::Color background_color)
+void ok::graphics::Material::SetSlotProperties(int texture_slot_index, bool smooth, GLenum wrapping, ok::Color background_color, bool fixed_asset)
 {
 	ok::graphics::MaterialTextureSlot& slot = _texture_slots[texture_slot_index].second;
 
 	slot.smooth = smooth;
 	slot.wrapping = wrapping;
 	slot.background_color = background_color;
+	slot.fixed_asset = fixed_asset;
 }
 
 void ok::graphics::Material::BindSubroutines(ok::graphics::ShaderAliasDispatcher * dispatcher)

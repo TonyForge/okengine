@@ -1,6 +1,8 @@
 #pragma once
 
-#include "IGame.h"
+#include "Interfaces.h"
+#include "StarSystem.h"
+#include "Planet.h"
 
 namespace ZonerX
 {

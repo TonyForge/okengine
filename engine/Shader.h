@@ -146,6 +146,7 @@ namespace ok
 			void SetSubroutineUniform(std::string name, GLenum shadertype, unsigned int* value, int count);
 			void SetSubroutineUniform(int index, GLenum shadertype, unsigned int* value, int count);
 
+			static void RebindCurrentShader();
 		protected:
 		private:
 			static ok::graphics::Shader* currentlyBoundShader;

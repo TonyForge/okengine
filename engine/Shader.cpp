@@ -1103,6 +1103,14 @@ void ok::graphics::Shader::SetSubroutineUniform(int index, GLenum shadertype, un
 	}
 }
 
+void ok::graphics::Shader::RebindCurrentShader()
+{
+	if (currentlyBoundShader != nullptr)
+	{
+		glUseProgram(currentlyBoundShader->shader_program_id);
+	}
+}
+
 void ok::graphics::Shader::_LinkSamplerToTextureChannelIndex(GLint sampler_location, int texture_channel_index)
 {
 	if (!IsBound())

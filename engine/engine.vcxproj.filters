@@ -37,6 +37,9 @@
     <Filter Include="projects\ZonerX\Interfaces">
       <UniqueIdentifier>{507742f1-131c-4a5b-a5bf-166bf0e82552}</UniqueIdentifier>
     </Filter>
+    <Filter Include="projects\ZonaX">
+      <UniqueIdentifier>{c3289796-0d90-4eef-ac8a-714de81c99b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -254,6 +257,24 @@
     </ClCompile>
     <ClCompile Include="ZonerX.cpp">
       <Filter>projects\ZonerX</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\ZonerX\StarSystem.cpp">
+      <Filter>projects\ZonerX</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\ZonerX\IStarSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\ZonerX\IGame.cpp">
+      <Filter>projects\ZonerX\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\ZonerX\Planet.cpp">
+      <Filter>projects\ZonerX</Filter>
+    </ClCompile>
+    <ClCompile Include="ZonaX.cpp">
+      <Filter>projects\ZonaX</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\ZonaX\Game.cpp">
+      <Filter>projects\ZonaX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -481,6 +502,27 @@
     </ClInclude>
     <ClInclude Include="projects\ZonerX\IActor.h">
       <Filter>projects\ZonerX\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\ZonerX\IStarSystem.h">
+      <Filter>projects\ZonerX\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\ZonerX\StarSystem.h">
+      <Filter>projects\ZonerX</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\ZonerX\Interfaces.h">
+      <Filter>projects\ZonerX\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\ZonerX\IPlanet.h">
+      <Filter>projects\ZonerX\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\ZonerX\Planet.h">
+      <Filter>projects\ZonerX</Filter>
+    </ClInclude>
+    <ClInclude Include="ZonaX.h">
+      <Filter>projects\ZonaX</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\ZonaX\Game.h">
+      <Filter>projects\ZonaX</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

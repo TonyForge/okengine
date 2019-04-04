@@ -574,6 +574,7 @@ namespace ok
 			shader = new ok::graphics::Shader();
 
 			F_LoadShader(shader, path);
+			ok::graphics::Shader::RebindCurrentShader();
 
 			shaders[path] = shader;
 		}
@@ -584,6 +585,7 @@ namespace ok
 			if (reload == true)
 			{
 				F_LoadShader(shader, path);
+				ok::graphics::Shader::RebindCurrentShader();
 			}
 		}
 
@@ -763,8 +765,8 @@ namespace ok
 				material->LinkSlotToSampler(e->Attribute("sampler"), texture_slot_index);
 				texture = GetTexture(e->Attribute("asset"));
 
-				material->SetSlotProperties(texture_slot_index, e->BoolAttribute("smooth"), GetAliasGL(e->Attribute("wrapping")), ok::Color(static_cast<unsigned char>(e->IntAttribute("r", 0)), static_cast<unsigned char>(e->IntAttribute("g", 0)), static_cast<unsigned char>(e->IntAttribute("b", 0)), static_cast<unsigned char>(255)));
 				material->SetTexture(texture_slot_index, texture);
+				material->SetSlotProperties(texture_slot_index, e->BoolAttribute("smooth"), GetAliasGL(e->Attribute("wrapping")), ok::Color(static_cast<unsigned char>(e->IntAttribute("r", 0)), static_cast<unsigned char>(e->IntAttribute("g", 0)), static_cast<unsigned char>(e->IntAttribute("b", 0)), static_cast<unsigned char>(255)), e->BoolAttribute("fixed_asset", false));
 			}
 
 			materials[path] = material;
