@@ -1,3 +1,0 @@
-<blueprints>
-	<blueprint name="nomad" file="nomad.xml" type="spaceship"/>
-</blueprints>

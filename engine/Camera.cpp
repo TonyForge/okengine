@@ -28,6 +28,7 @@ ok::graphics::Camera::Camera(ok::graphics::CameraCoordinateSystem coordinate_sys
 
 void ok::graphics::Camera::SetProjectionOrtho(float width, float height, float clip_plane_near, float clip_plane_far)
 {
+	//clip_plane_near must be positive!
 	std::swap(clip_plane_near, clip_plane_far);
 
 	float left = 0.f;
@@ -75,6 +76,7 @@ void ok::graphics::Camera::SetProjectionOrtho(float width, float height, float c
 
 void ok::graphics::Camera::SetProjectionPersp(float width, float height, float fov_degrees, float clip_plane_near, float clip_plane_far)
 {
+	//clip_plane_near must be positive!
 	std::swap(clip_plane_near, clip_plane_far);
 
 	mProj = glm::mat4(0.f);
@@ -356,4 +358,15 @@ float ok::graphics::Camera::GetViewportWidth()
 float ok::graphics::Camera::GetViewportHeight()
 {
 	return projection_height;
+}
+
+ok::Rect2Df ok::graphics::Camera::GetOrthoViewportXY()
+{
+	glm::vec3 lt = ScreenToWorldPosition(glm::vec3(0.f, 0.f, 0.f));
+	glm::vec3 rt = ScreenToWorldPosition(glm::vec3(1.f, 1.f, 0.f));
+	
+	ok::Rect2Df rect;
+	rect.SetLTRB(lt.x, lt.y, rt.x, rt.y);
+
+	return rect;
 }

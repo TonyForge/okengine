@@ -1,4 +1,0 @@
-<recipe>
-	<behaviour class="ItemCargoHold" blocks="1" />
-	<blueprint type="item" name="default_container" />
-</recipe>

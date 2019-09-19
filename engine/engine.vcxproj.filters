@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
@@ -16,29 +12,15 @@
     <Filter Include="projects">
       <UniqueIdentifier>{e59d570f-479c-4c47-8c07-8940a37c98d5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="projects\Zoner">
-      <UniqueIdentifier>{864f6ff7-e165-463b-944e-146ae7babc74}</UniqueIdentifier>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="projects\Zoner\Interfaces">
-      <UniqueIdentifier>{785a4a0d-c33f-4d77-86fa-067a582dd838}</UniqueIdentifier>
+    <Filter Include="projects\DenOfEvil">
+      <UniqueIdentifier>{be7287aa-d00d-4bf2-8be9-fa530e845482}</UniqueIdentifier>
     </Filter>
-    <Filter Include="projects\Kripta">
-      <UniqueIdentifier>{7f24f8eb-f766-4663-b378-437b7787d0e8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="projects\Kripta\Interfaces">
-      <UniqueIdentifier>{e07519f1-aafb-4d65-a812-e000a481c2d9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="projects\Treasurer">
-      <UniqueIdentifier>{c0c41e57-2b90-4b09-a881-d9b632403001}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="projects\ZonerX">
-      <UniqueIdentifier>{1d42afdd-cb13-4ddb-add3-4c4ac396142a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="projects\ZonerX\Interfaces">
-      <UniqueIdentifier>{507742f1-131c-4a5b-a5bf-166bf0e82552}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="projects\ZonaX">
-      <UniqueIdentifier>{c3289796-0d90-4eef-ac8a-714de81c99b7}</UniqueIdentifier>
+    <Filter Include="projects\DenOfEvil\Interfaces">
+      <UniqueIdentifier>{aa5b3328-b8ce-48f0-9d1d-1d3f6d10c376}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -150,74 +132,11 @@
     <ClCompile Include="LineBatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Zoner.cpp">
-      <Filter>projects\Zoner</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Zoner\Game.cpp">
-      <Filter>projects\Zoner</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Zoner\Ship.cpp">
-      <Filter>projects\Zoner</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Zoner\Preloader.cpp">
-      <Filter>projects\Zoner</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Zoner\Space.cpp">
-      <Filter>projects\Zoner</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Zoner\IShip.cpp">
-      <Filter>projects\Zoner\Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Zoner\ISpace.cpp">
-      <Filter>projects\Zoner\Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Zoner\IGame.cpp">
-      <Filter>projects\Zoner\Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Zoner\SmoothPath.cpp">
-      <Filter>projects\Zoner</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Zoner\Collision.cpp">
-      <Filter>projects\Zoner</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Zoner\UID.cpp">
-      <Filter>projects\Zoner</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Zoner\Commands.cpp">
-      <Filter>projects\Zoner</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Zoner\ShipCommands.cpp">
-      <Filter>projects\Zoner</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Zoner\JumpHole.cpp">
-      <Filter>projects\Zoner</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Zoner\SpaceCommands.cpp">
-      <Filter>projects\Zoner</Filter>
-    </ClCompile>
     <ClCompile Include="UI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="projects\Zoner\SpaceScreenGUI.cpp">
-      <Filter>projects\Zoner</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Zoner\IItem.cpp">
-      <Filter>projects\Zoner\Interfaces</Filter>
-    </ClCompile>
     <ClCompile Include="XMLPak.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Zoner\Item.cpp">
-      <Filter>projects\Zoner</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Zoner\ISpaceScreenGUI.cpp">
-      <Filter>projects\Zoner\Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="Kripta.cpp">
-      <Filter>projects\Kripta</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Kripta\Game.cpp">
-      <Filter>projects\Kripta</Filter>
     </ClCompile>
     <ClCompile Include="FOVMap.cpp">
       <Filter>Source Files</Filter>
@@ -225,56 +144,17 @@
     <ClCompile Include="VisibilityMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Treasurer.cpp">
-      <Filter>projects\Treasurer</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Treasurer\Game.cpp">
-      <Filter>projects\Treasurer</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Treasurer\PlayerNode.cpp">
-      <Filter>projects\Treasurer</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Kripta\Floor.cpp">
-      <Filter>projects\Kripta</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Kripta\GameRoom.cpp">
-      <Filter>projects\Kripta</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Kripta\Object.cpp">
-      <Filter>projects\Kripta</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Kripta\Characters.cpp">
-      <Filter>projects\Kripta</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\Kripta\IObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Random.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="projects\ZonerX\Game.cpp">
-      <Filter>projects\ZonerX</Filter>
+    <ClCompile Include="DenOfEvil.cpp">
+      <Filter>projects\DenOfEvil</Filter>
     </ClCompile>
-    <ClCompile Include="ZonerX.cpp">
-      <Filter>projects\ZonerX</Filter>
+    <ClCompile Include="projects\DenOfEvil\DOEGame.cpp">
+      <Filter>projects\DenOfEvil</Filter>
     </ClCompile>
-    <ClCompile Include="projects\ZonerX\StarSystem.cpp">
-      <Filter>projects\ZonerX</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\ZonerX\IStarSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\ZonerX\IGame.cpp">
-      <Filter>projects\ZonerX\Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\ZonerX\Planet.cpp">
-      <Filter>projects\ZonerX</Filter>
-    </ClCompile>
-    <ClCompile Include="ZonaX.cpp">
-      <Filter>projects\ZonaX</Filter>
-    </ClCompile>
-    <ClCompile Include="projects\ZonaX\Game.cpp">
-      <Filter>projects\ZonaX</Filter>
+    <ClCompile Include="projects\DenOfEvil\DOEFloor.cpp">
+      <Filter>projects\DenOfEvil</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -383,80 +263,11 @@
     <ClInclude Include="LineBatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Zoner.h">
-      <Filter>projects\Zoner</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Zoner\Game.h">
-      <Filter>projects\Zoner</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Zoner\Ship.h">
-      <Filter>projects\Zoner</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Zoner\Preloader.h">
-      <Filter>projects\Zoner</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Zoner\Space.h">
-      <Filter>projects\Zoner</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Zoner\IShip.h">
-      <Filter>projects\Zoner\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Zoner\IGame.h">
-      <Filter>projects\Zoner\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Zoner\ISpace.h">
-      <Filter>projects\Zoner\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Zoner\SmoothPath.h">
-      <Filter>projects\Zoner</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Zoner\Collision.h">
-      <Filter>projects\Zoner</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Zoner\UID.h">
-      <Filter>projects\Zoner</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Zoner\Commands.h">
-      <Filter>projects\Zoner</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Zoner\ShipCommands.h">
-      <Filter>projects\Zoner</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Zoner\JumpHole.h">
-      <Filter>projects\Zoner</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Zoner\RequestsDispatcher.h">
-      <Filter>projects\Zoner</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Zoner\SpaceCommands.h">
-      <Filter>projects\Zoner</Filter>
-    </ClInclude>
     <ClInclude Include="UI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="projects\Zoner\SpaceScreenGUI.h">
-      <Filter>projects\Zoner</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Zoner\IItem.h">
-      <Filter>projects\Zoner\Interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="XMLPak.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Zoner\Item.h">
-      <Filter>projects\Zoner</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Zoner\ISpaceScreenGUI.h">
-      <Filter>projects\Zoner\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="Kripta.h">
-      <Filter>projects\Kripta</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Kripta\Game.h">
-      <Filter>projects\Kripta</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Kripta\IGame.h">
-      <Filter>projects\Kripta\Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="FOVMap.h">
       <Filter>Header Files</Filter>
@@ -464,65 +275,20 @@
     <ClInclude Include="VisibilityMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Treasurer.h">
-      <Filter>projects\Treasurer</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Treasurer\Game.h">
-      <Filter>projects\Treasurer</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Treasurer\PlayerNode.h">
-      <Filter>projects\Treasurer</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Kripta\Floor.h">
-      <Filter>projects\Kripta</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Kripta\GameRoom.h">
-      <Filter>projects\Kripta</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Kripta\IObject.h">
-      <Filter>projects\Kripta\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Kripta\Object.h">
-      <Filter>projects\Kripta</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\Kripta\Characters.h">
-      <Filter>projects\Kripta</Filter>
-    </ClInclude>
     <ClInclude Include="Random.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ZonerX.h">
-      <Filter>projects\ZonerX</Filter>
+    <ClInclude Include="DenOfEvil.h">
+      <Filter>projects\DenOfEvil</Filter>
     </ClInclude>
-    <ClInclude Include="projects\ZonerX\IGame.h">
-      <Filter>projects\ZonerX\Interfaces</Filter>
+    <ClInclude Include="projects\DenOfEvil\DOEGame.h">
+      <Filter>projects\DenOfEvil</Filter>
     </ClInclude>
-    <ClInclude Include="projects\ZonerX\Game.h">
-      <Filter>projects\ZonerX</Filter>
+    <ClInclude Include="projects\DenOfEvil\IDOEGame.h">
+      <Filter>projects\DenOfEvil\Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="projects\ZonerX\IActor.h">
-      <Filter>projects\ZonerX\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\ZonerX\IStarSystem.h">
-      <Filter>projects\ZonerX\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\ZonerX\StarSystem.h">
-      <Filter>projects\ZonerX</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\ZonerX\Interfaces.h">
-      <Filter>projects\ZonerX\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\ZonerX\IPlanet.h">
-      <Filter>projects\ZonerX\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\ZonerX\Planet.h">
-      <Filter>projects\ZonerX</Filter>
-    </ClInclude>
-    <ClInclude Include="ZonaX.h">
-      <Filter>projects\ZonaX</Filter>
-    </ClInclude>
-    <ClInclude Include="projects\ZonaX\Game.h">
-      <Filter>projects\ZonaX</Filter>
+    <ClInclude Include="projects\DenOfEvil\DOEFloor.h">
+      <Filter>projects\DenOfEvil</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

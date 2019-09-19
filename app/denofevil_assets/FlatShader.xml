@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shader name="FlatShader">
+
+  <properties>
+    <transparent enabled="false" />
+    <blend enabled="true" template_file="Blend.DefaultAlpha.xml"/>
+    <cull enabled="true" face="GL_BACK" />
+    <depth enabled="true" depth_mask="GL_TRUE" depth_func="GL_GREATER"/>
+  </properties>
+  
+  <aliases>
+    <alias uniform="mvp0" type="mat4" ref="ModelViewProjectionMatrix" />
+	<alias uniform="morph_blend_0" type="float" ref="Callback" />
+	<alias uniform="morph_blend_1" type="float" ref="Callback" />
+	<alias uniform="morph_blend_2" type="float" ref="Callback" />
+	<alias uniform="morph_blend_3" type="float" ref="Callback" />
+  </aliases>
+  
+  <vertex>
+    <![CDATA[
+    #version 330 core
+	
+	#define _MORPH_ENABLED_
+	
+	
+    layout (location = 0) in vec3 pos0;
+    layout (location = 1) in vec2 uv0;
+	layout (location = 2) in vec3 nrm0;
+	
+	#ifdef _MORPH_ENABLED_
+		layout (location = 3) in vec3 morph_0_pos;
+		layout (location = 4) in vec3 morph_1_pos;
+		layout (location = 5) in vec3 morph_2_pos;
+		layout (location = 6) in vec3 morph_3_pos;
+		layout (location = 7) in vec3 morph_0_nrm;
+		layout (location = 8) in vec3 morph_1_nrm;
+		layout (location = 9) in vec3 morph_2_nrm;
+		layout (location = 10) in vec3 morph_3_nrm;
+	#endif
+
+    out vec2 uv0_out;
+	out vec3 nrm_out;
+	
+    uniform mat4 mvp0;
+	
+	#ifdef _MORPH_ENABLED_
+		uniform float morph_blend_0;
+		uniform float morph_blend_1;
+		uniform float morph_blend_2;
+		uniform float morph_blend_3;
+	#endif
+	
+    void main()
+    {
+	  #ifdef _MORPH_ENABLED_
+		  vec3 pos_morphed = pos0 + morph_0_pos * morph_blend_0 + morph_1_pos * morph_blend_1 + morph_2_pos * morph_blend_2 + morph_3_pos * morph_blend_3;
+		  vec3 nrm_morphed = normalize(nrm0 + morph_0_nrm * morph_blend_0 + morph_1_nrm * morph_blend_1 + morph_2_nrm * morph_blend_2 + morph_3_nrm * morph_blend_3);
+		  
+		  nrm_out = nrm_morphed;
+		  
+		  gl_Position = mvp0 * vec4(pos_morphed.xyz, 1.0);
+	  #else
+		nrm_out = nrm0;
+		gl_Position = mvp0 * vec4(pos0.xyz, 1.0);
+	  #endif
+
+      uv0_out = vec2(uv0.x, 1.0 - uv0.y);
+    }
+    ]]>
+  </vertex>
+  
+  <fragment>
+    <![CDATA[
+    #version 330 core
+    out vec4 FragColor;
+    
+    in vec2 uv0_out;
+	in vec3 nrm_out;
+	
+    uniform sampler2D tex0;
+    
+    void main()
+    {
+      FragColor = texture(tex0, uv0_out);
+	  FragColor.rgb = nrm_out;
+    }
+    ]]>
+  </fragment>
+  
+  <geometry>
+    <![CDATA[]]>
+  </geometry>
+</shader>

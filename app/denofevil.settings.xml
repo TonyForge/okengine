@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+  <application title="DenOfEvil">
+    <screen width="1024" height="768" depth="24" stencil="8" antialiasing="0" fullscreen="false" framerate="60" vsync="false" keep_aspect_ratio="true" fixed_resolution="true"
+			fixed_resolution_resample_enabled="false" fixed_resolution_resample_scale="1.0">
+      <background r="40" g="20" b="60" />
+	  <depth_clear_with value="0" />
+	  <stencil_clear_with value="0" />
+    </screen>
+    <assets root_folder="denofevil_assets\" />
+  </application>
+</settings>

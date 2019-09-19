@@ -1,1 +1,0 @@
-..\tools\make_atlas\make_atlas 1024 1024 2 RectBestAreaFit ui packages/ui.xml

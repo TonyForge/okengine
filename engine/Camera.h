@@ -1,7 +1,19 @@
 #pragma once
 
+/*
+Z axis looks through screen (faraway from us)
+Y axis looks down
+X axis looks right
+CCW triangles Z normal goes out of front face, so typical sprite batch quads are faced out of us
+
+near camera plane must be positive non zero!
+far camera plane must be positive too.
+Do not swap them! You dont need this.
+*/
+
 #include "Transform.h"
 #include "GameObject.h"
+#include "Rect2D.h"
 
 namespace ok
 {
@@ -39,6 +51,8 @@ namespace ok
 
 			float GetViewportWidth();
 			float GetViewportHeight();
+
+			ok::Rect2Df GetOrthoViewportXY();
 		protected:
 		private:
 			glm::mat4 mProj;

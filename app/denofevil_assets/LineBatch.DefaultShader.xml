@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shader name="LineBatchDefaultShader">
+
+  <properties>
+    <transparent enabled="false" />
+    <blend enabled="true" template_file="Blend.DefaultAlpha.xml"/>
+    <cull enabled="false" />
+    <depth enabled="true" depth_mask="GL_FALSE" depth_func="GL_GREATER"/>
+  </properties>
+  
+  <aliases>
+    <alias uniform="mvp0" type="mat4" ref="ModelViewProjectionMatrix" />
+	<alias uniform="softness" type="float" ref="Callback" />
+  </aliases>
+  
+  <vertex>
+    <![CDATA[
+    #version 330 core
+    layout (location = 0) in vec3 pos0;
+    layout (location = 1) in vec2 uv0;
+    layout (location = 2) in vec4 color0;
+    
+    out vec2 uv0_out;
+    out vec4 color0_out;
+    
+    uniform mat4 mvp0;
+    
+    void main()
+    {
+      gl_Position = mvp0 * vec4(pos0, 1.0);
+	  uv0_out = vec2(uv0.x, 1.0 - uv0.y);
+      color0_out = color0;
+    }
+    ]]>
+  </vertex>
+  
+  <fragment>
+    <![CDATA[
+    #version 330 core
+    out vec4 FragColor;
+    
+    in vec2 uv0_out;
+    in vec4 color0_out;
+    
+    uniform sampler2D tex0;
+    uniform float softness;
+	
+	float median(float r, float g, float b) {
+		return max(min(r, g), min(max(r, g), b));
+	}
+	
+    void main()
+    {
+		FragColor = texture(tex0, uv0_out);
+		
+		float sdf = smoothstep(0.0, softness, FragColor.r);
+		
+		FragColor.a = sdf * color0_out.a;
+		FragColor.rgb = color0_out.rgb;
+    }
+    ]]>
+  </fragment>
+  
+  <geometry>
+    <![CDATA[]]>
+  </geometry>
+</shader>

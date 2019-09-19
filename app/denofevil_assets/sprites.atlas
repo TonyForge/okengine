@@ -1,0 +1,22 @@
+<atlas>
+    <sprite texture="tiles.png" name="hero_spr" left="0" top="256" width="38" height="36" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="goblin_spr" left="38" top="256" width="39" height="39" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="golden_guard" left="77" top="260" width="34" height="34" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="blank" left="96" top="0" width="32" height="32" hotspot_x="0.0" hotspot_y="0.0" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="gold_pile" left="2" top="294" width="32" height="32" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="torch_frame_0" left="2" top="331" width="32" height="36" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="torch_frame_1" left="34" top="331" width="32" height="36" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="torch_frame_2" left="66" top="331" width="32" height="36" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="tomb" left="102" top="297" width="32" height="32" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="health_potion" left="38" top="297" width="32" height="32" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="mysterious_potion" left="70" top="297" width="32" height="32" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="switch_down_spr" left="224" top="0" width="32" height="32" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="switch_up_spr" left="256" top="0" width="32" height="32" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="skeleton_spr" left="113" top="256" width="42" height="40" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="slime_spr" left="155" top="267" width="36" height="29" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="slime_tiny_spr" left="191" top="273" width="27" height="23" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="vampire_spr" left="218" top="257" width="33" height="39" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="bat_spr" left="252" top="264" width="39" height="33" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="spider_spr" left="291" top="256" width="44" height="41" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+	<sprite texture="tiles.png" name="ghost_spr" left="335" top="261" width="35" height="36" hotspot_x="0.5" hotspot_y="0.5" scale_x="1" scale_y="1" tint_r="0" tint_g="0" tint_b="0" tint_a="0" flip_x="false" flip_y="false"/>
+</atlas>

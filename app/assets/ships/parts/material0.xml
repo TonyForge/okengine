@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<material shader="ships\parts\shader0.xml">
-	<textures count="3">
-		<slot index="0" sampler="_Maps" asset = "" smooth="false" wrapping="GL_REPEAT" r="0" g="0" b="0"/>
-		<slot index="1" sampler="_Normals" asset = "" smooth="true"  wrapping="GL_CLAMP_TO_EDGE" r="0" g="0" b="0"/>
-		<slot index="2" sampler="_Facture" asset = "" smooth="true"  wrapping="GL_REPEAT" r="0" g="0" b="0"/>
-	</textures>
-</material>
