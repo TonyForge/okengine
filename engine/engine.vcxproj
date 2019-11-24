@@ -318,6 +318,7 @@
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="projects\DenOfEvil\DOEGame.cpp" />
     <ClCompile Include="projects\DenOfEvil\DOEFloor.cpp" />
+    <ClCompile Include="projects\DenOfEvil\Scriptables.cpp" />
     <ClCompile Include="pystring.cpp" />
     <ClCompile Include="Quad.cpp" />
     <ClCompile Include="LayeredRenderer.cpp" />
@@ -369,6 +370,7 @@
     <ClInclude Include="projects\DenOfEvil\DOEGame.h" />
     <ClInclude Include="projects\DenOfEvil\DOEFloor.h" />
     <ClInclude Include="projects\DenOfEvil\IDOEGame.h" />
+    <ClInclude Include="projects\DenOfEvil\Scriptables.h" />
     <ClInclude Include="pystring.h" />
     <ClInclude Include="Quad.h" />
     <ClInclude Include="LayeredRenderer.h" />

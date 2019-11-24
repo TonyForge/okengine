@@ -37,8 +37,10 @@ namespace DOE
 		void Render(ok::graphics::SpriteBatch& batch, ok::Rect2Df& viewport);
 		void UpdateFOV(float eye_x, float eye_y, ok::Rect2Df viewport);
 		DOE::FloorTile& GetTile(int x, int y);
+		ok::GameObject* GetRootAll();
 	protected:
 	private:
+		ok::GameObject root_all;
 		ok::GameObject root_mobs;
 		ok::GameObject root_scriptables_global;
 		ok::GameObject root_player;

@@ -156,6 +156,9 @@
     <ClCompile Include="projects\DenOfEvil\DOEFloor.cpp">
       <Filter>projects\DenOfEvil</Filter>
     </ClCompile>
+    <ClCompile Include="projects\DenOfEvil\Scriptables.cpp">
+      <Filter>projects\DenOfEvil</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -288,6 +291,9 @@
       <Filter>projects\DenOfEvil\Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="projects\DenOfEvil\DOEFloor.h">
+      <Filter>projects\DenOfEvil</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\DenOfEvil\Scriptables.h">
       <Filter>projects\DenOfEvil</Filter>
     </ClInclude>
   </ItemGroup>

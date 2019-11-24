@@ -2,6 +2,7 @@
 
 #include "IDOEGame.h"
 #include "DOEFloor.h"
+#include "Scriptables.h"
 
 namespace DOE
 {
@@ -27,7 +28,7 @@ namespace DOE
 		ok::GameObject* scene_root;
 		ok::graphics::SpriteBatch* def_batch;
 		ok::graphics::TextBatch2D* def_text_batch;
-		DOE::DOEFloor floor1;
+		//DOE::DOEFloor floor1;
 		float _camera_target_x = 0.f;
 		float _camera_target_y = 0.f;
 		float _camera_speed = 1.f;

@@ -75,7 +75,7 @@ void DOE::DOEGame::ConvertTMXToChunk(ok::String & in, ok::String & out)
 	doc.LoadFile(in.toAnsiString().c_str());
 
 	tinyxml2::XMLElement* elem;
-	tinyxml2::XMLElement* inner_elem_layers;
+	//tinyxml2::XMLElement* inner_elem_layers;
 
 	elem = doc.FirstChildElement("map");
 
@@ -186,12 +186,18 @@ void DOE::DOEGame::ConvertTMXToChunk(ok::String & in, ok::String & out)
 	std::sort(floors.begin(), floors.end(), sort_floors_fnc);
 
 	int grid_tile_template[5];
-
+	
 	std::ofstream fo;
 	fo.open((const std::string&)(out+"_grid_data.chunk"), std::ofstream::out | std::ofstream::binary);
 	
+	int floors_count = floors.size();
+
+	fo.write(reinterpret_cast<char*>(&(floors_count)), sizeof(int));
+
 	for (auto& floor : floors)
 	{
+		fo.write(reinterpret_cast<char*>(&(floor.first)), sizeof(int));
+
 		for (int y = 0; y < DOE::global.g_floor_size; y++)
 		for (int x = 0; x < DOE::global.g_floor_size; x++)
 		{
@@ -215,7 +221,267 @@ void DOE::DOEGame::ConvertTMXToChunk(ok::String & in, ok::String & out)
 
 	for (tinyxml2::XMLElement* child = elem->FirstChildElement("objectgroup"); child != NULL; child = child->NextSiblingElement("objectgroup"))
 	{
+		int objects_floor = -1;
 
+		for (tinyxml2::XMLElement* property_item = child->FirstChildElement("properties")->FirstChildElement("property"); property_item != NULL; property_item = property_item->NextSiblingElement("property"))
+		{
+			str_attrib = property_item->Attribute("name");
+
+			if (str_attrib == "floor")
+			{
+				objects_floor = property_item->IntAttribute("value");
+			}
+		}
+		
+		for (tinyxml2::XMLElement* object = child->FirstChildElement("object"); object != NULL; object = object->NextSiblingElement("object"))
+		{
+			ok::GameObject* gobj = new ok::GameObject();
+
+			for (tinyxml2::XMLElement* property_item = object->FirstChildElement("properties")->FirstChildElement("property"); property_item != NULL; property_item = property_item->NextSiblingElement("property"))
+			{
+				str_attrib = property_item->Attribute("name");
+
+				if (str_attrib == "OnExplore")
+				{
+					auto script_node = gobj->GetComponent<DOE::ScriptNode>();
+
+					if (script_node == nullptr)
+					{
+						script_node = new DOE::ScriptNode();
+						gobj->AddComponent(script_node);
+					}
+
+					str_attrib = property_item->Value();
+					script_node->OnExplore.LoadFromText(str_attrib);
+				}
+				else
+				if (str_attrib == "OnShow")
+				{
+					auto script_node = gobj->GetComponent<DOE::ScriptNode>();
+
+					if (script_node == nullptr)
+					{
+						script_node = new DOE::ScriptNode();
+						gobj->AddComponent(script_node);
+					}
+
+					str_attrib = property_item->Value();
+					script_node->OnShow.LoadFromText(str_attrib);
+				}
+				else
+				if (str_attrib == "OnHide")
+				{
+					auto script_node = gobj->GetComponent<DOE::ScriptNode>();
+
+					if (script_node == nullptr)
+					{
+						script_node = new DOE::ScriptNode();
+						gobj->AddComponent(script_node);
+					}
+
+					str_attrib = property_item->Value();
+					script_node->OnHide.LoadFromText(str_attrib);
+				}
+				else
+				if (str_attrib == "OnTeamStepIn")
+				{
+					auto script_node = gobj->GetComponent<DOE::ScriptNode>();
+
+					if (script_node == nullptr)
+					{
+						script_node = new DOE::ScriptNode();
+						gobj->AddComponent(script_node);
+					}
+
+					str_attrib = property_item->Value();
+					script_node->OnTeamStepIn.LoadFromText(str_attrib);
+				}
+				else
+				if (str_attrib == "OnTeamStepOut")
+				{
+					auto script_node = gobj->GetComponent<DOE::ScriptNode>();
+
+					if (script_node == nullptr)
+					{
+						script_node = new DOE::ScriptNode();
+						gobj->AddComponent(script_node);
+					}
+
+					str_attrib = property_item->Value();
+					script_node->OnTeamStepOut.LoadFromText(str_attrib);
+				}
+				else
+				if (str_attrib == "OnMapInit")
+				{
+					auto script_node = gobj->GetComponent<DOE::ScriptNode>();
+
+					if (script_node == nullptr)
+					{
+						script_node = new DOE::ScriptNode();
+						gobj->AddComponent(script_node);
+					}
+
+					str_attrib = property_item->Value();
+					script_node->OnMapInit.LoadFromText(str_attrib);
+				}
+				else
+				if (str_attrib == "global")
+				{
+					auto script_node = gobj->GetComponent<DOE::ScriptNode>();
+
+					if (script_node == nullptr)
+					{
+						script_node = new DOE::ScriptNode();
+						gobj->AddComponent(script_node);
+					}
+
+					script_node->global = property_item->BoolAttribute("value");
+				}
+			}
+
+			gobj->SetPosition(glm::vec3(static_cast<float>(object->IntAttribute("x")), static_cast<float>(object->IntAttribute("y")), static_cast<float>(objects_floor)));
+
+			auto& obj_tile = floors[objects_floor].second->GetTile(
+				static_cast<int>(glm::floor(static_cast<float>(gobj->GetPosition().x + global.g_tile_size / 2) / static_cast<float>(global.g_tile_size))),
+				static_cast<int>(glm::floor(static_cast<float>(gobj->GetPosition().y + global.g_tile_size / 2) / static_cast<float>(global.g_tile_size))));
+			
+			auto script_node = gobj->GetComponent<DOE::ScriptNode>();
+
+			if (script_node != nullptr)
+			{
+				//scriptables
+				if (script_node->global)
+				{
+					floors[objects_floor].second->GetRootAll()->FindChild(ok::String("root_scriptables_global"))->AddChild(gobj);
+				}
+				else
+				{
+					obj_tile.root_scriptables_local.AddChild(gobj);
+				}
+			}
+			
+		}
+
+		
+		//save objects to chunk file
+
+		std::ofstream fo;
+		fo.open((const std::string&)(out + "_objects_data.chunk"), std::ofstream::out | std::ofstream::binary);
+
+		auto fnc_write_scriptable_object_to_file = [&fo](std::list<ok::Transform*>& objects)
+		{
+			int data_int = objects.size();
+
+			//count of global scriptable objects
+			fo.write(reinterpret_cast<char*>(&data_int), sizeof(int));
+
+			for (auto& obj : objects)
+			{
+				auto& gobj = obj->gameObject();
+				auto node = gobj.GetComponent<DOE::ScriptNode>();
+
+				data_int = node->events.size();
+
+				//events count
+				fo.write(reinterpret_cast<char*>(&data_int), sizeof(int));
+
+				for (auto& e : node->events)
+				{
+					data_int = e->script_labels.size();
+					fo.write(reinterpret_cast<char*>(&data_int), sizeof(int));
+					data_int = e->script_lines.size();
+					fo.write(reinterpret_cast<char*>(&data_int), sizeof(int));
+					data_int = sizeof(e->arguments) / sizeof(int);
+					fo.write(reinterpret_cast<char*>(&data_int), sizeof(int));
+
+					//arguments
+					fo.write(reinterpret_cast<char*>(e->arguments), sizeof(e->arguments));
+					//labels
+					fo.write(reinterpret_cast<char*>(&(e->script_labels[0])), sizeof(int)*e->script_labels.size());
+					//script lines
+					for (auto& sc_line : e->script_lines)
+					{
+						data_int = DOE::ToInt(sc_line.cmd_id);
+						fo.write(reinterpret_cast<char*>(&data_int), sizeof(int));
+						fo.write(reinterpret_cast<char*>(sc_line.arguments), sizeof(sc_line.arguments));
+					}
+				}
+			}
+		};
+
+		auto fnc_write_mob_object_to_file = [&fo](std::list<ok::Transform*>& objects)
+		{
+			int data_int = objects.size();
+
+			//count of objects
+			fo.write(reinterpret_cast<char*>(&data_int), sizeof(int));
+
+		};
+
+		auto fnc_write_player_object_to_file = [&fo](std::list<ok::Transform*>& objects)
+		{
+			int data_int = objects.size();
+
+			//count of objects
+			fo.write(reinterpret_cast<char*>(&data_int), sizeof(int));
+
+		};
+
+		auto fnc_write_item_object_to_file = [&fo](std::list<ok::Transform*>& objects)
+		{
+			int data_int = objects.size();
+
+			//count of objects
+			fo.write(reinterpret_cast<char*>(&data_int), sizeof(int));
+
+		};
+
+		auto fnc_write_corpse_object_to_file = [&fo](std::list<ok::Transform*>& objects)
+		{
+			int data_int = objects.size();
+
+			//count of objects
+			fo.write(reinterpret_cast<char*>(&data_int), sizeof(int));
+
+		};
+
+		int data_int;
+
+		data_int = floors.size();
+
+		//floors count
+		fo.write(reinterpret_cast<char*>(&data_int), sizeof(int));
+
+		for (auto& floor : floors)
+		{
+			auto floor_global_scripts_root = floor.second->GetRootAll()->FindChild(ok::String("root_scriptables_global"));	
+			fnc_write_scriptable_object_to_file(floor_global_scripts_root->GetChildrens());
+
+			auto floor_mobs_root = floor.second->GetRootAll()->FindChild(ok::String("root_mobs"));
+			fnc_write_mob_object_to_file(floor_mobs_root->GetChildrens());
+
+			auto floor_player_root = floor.second->GetRootAll()->FindChild(ok::String("root_player"));
+			fnc_write_player_object_to_file(floor_player_root->GetChildrens());
+
+			//save to file
+			data_int = DOE::global.g_floor_size * DOE::global.g_floor_size;
+			fo.write(reinterpret_cast<char*>(&data_int), sizeof(int));
+
+			for (int y = 0; y < DOE::global.g_floor_size; y++)
+				for (int x = 0; x < DOE::global.g_floor_size; x++)
+				{
+					auto tile = floor.second->GetTile(x, y);
+					fo.write(reinterpret_cast<char*>(&x), sizeof(int));
+					fo.write(reinterpret_cast<char*>(&y), sizeof(int));
+
+					fnc_write_scriptable_object_to_file(tile.root_scriptables_local.GetChildrens());
+					fnc_write_item_object_to_file(tile.root_items.GetChildrens());
+					fnc_write_corpse_object_to_file(tile.root_corpses.GetChildrens());
+				}
+
+		}
+
+		fo.close();
 	}
 }
 
@@ -230,53 +496,56 @@ void DOE::DOEGame::LoadGameFromSlot(int slot_id)
 	run_doc.LoadFile(ok::String(path + "\\run.xml").toAnsiString().c_str());
 
 	tinyxml2::XMLElement* elem;
-	tinyxml2::XMLElement* inner_elem_layers;
+	//tinyxml2::XMLElement* inner_elem_layers;
 
 	elem = run_doc.FirstChildElement("run")->FirstChildElement("grid");
 	ok::String grid_data = path + "\\" +elem->Attribute("file");
 
-	int grid_data_counter = 0;
-	int grid_x = 0;
-	int grid_y = 0;
+
 	std::ifstream fi;
 
+	int floors_count;
+	int floor_index;
+
 	fi.open(grid_data.toAnsiString().c_str(), std::ifstream::in | std::ifstream::binary);
-	while (true)
+	fi.read(reinterpret_cast<char *>(floors_count), sizeof(int));
+
+	for (int fc = 0; fc < floors_count; fc++)
 	{
-		fi.read(reinterpret_cast<char *>(grid_tile_template), sizeof(grid_tile_template));
-		if (fi.eof()) break;
+		int grid_x = 0;
+		int grid_y = 0;
 
-		if (grid_data_counter == 0)
+		fi.read(reinterpret_cast<char *>(floor_index), sizeof(int));
+		floors.resize(floor_index);
+
+		for(int tc = 0; tc < (DOE::global.g_floor_size * DOE::global.g_floor_size); tc++)
 		{
-			floors.resize(floors.size() + 1);
-		}
+			fi.read(reinterpret_cast<char *>(grid_tile_template), sizeof(grid_tile_template));
 
-		auto& tile = floors.back().GetTile(grid_x, grid_y);
-		tile.overlays.clear();
-		tile.sprite_id = grid_tile_template[0];
-		tile.overlays.push_back(grid_tile_template[1]);
-		tile.overlays.push_back(grid_tile_template[2]);
-		tile.overlays.push_back(grid_tile_template[3]);
-		tile.solid = (grid_tile_template[4] & 1);
+			auto& tile = floors[floor_index-1].GetTile(grid_x, grid_y);
+			tile.overlays.clear();
+			tile.sprite_id = grid_tile_template[0];
+			tile.overlays.push_back(grid_tile_template[1]);
+			tile.overlays.push_back(grid_tile_template[2]);
+			tile.overlays.push_back(grid_tile_template[3]);
+			tile.solid = (grid_tile_template[4] & 1);
 
-		grid_data_counter++;
-		grid_x++;
-		if (grid_x == DOE::global.g_floor_size)
-		{
-			grid_x = 0;
-			grid_y++;
-
-			if (grid_y == DOE::global.g_floor_size)
+			grid_x++;
+			if (grid_x == DOE::global.g_floor_size)
 			{
 				grid_x = 0;
-				grid_y = 0;
-				grid_data_counter = 0;
+				grid_y++;
+
+				if (grid_y == DOE::global.g_floor_size)
+				{
+					grid_x = 0;
+					grid_y = 0;
+				}
 			}
 		}
 	}
+	
 	fi.close();
-	//std::ifstream fi;
-	//fi.open(path+"\\run.xml")
 }
 
 void DOE::DOEGame::PlaceCamera(float x, float y)

@@ -17,6 +17,14 @@ DOE::DOEFloor::DOEFloor() : fov(global.g_screen_width/global.g_tile_size+2, glob
 	std::fill(map.begin(), map.end(), empty_tile);
 
 	fov.Clear();
+
+	root_mobs.Rename("root_mobs");
+	root_scriptables_global.Rename("root_scriptables_global");
+	root_player.Rename("root_player");
+
+	root_all.AddChild(&root_mobs);
+	root_all.AddChild(&root_scriptables_global);
+	root_all.AddChild(&root_player);
 }
 
 void DOE::DOEFloor::Render(ok::graphics::SpriteBatch & batch, ok::Rect2Df & viewport)
@@ -249,6 +257,11 @@ DOE::FloorTile & DOE::DOEFloor::GetTile(int x, int y)
 	return map[x + y * DOE::global.g_floor_size];
 }
 
+ok::GameObject * DOE::DOEFloor::GetRootAll()
+{
+	return &root_all;
+}
+
 void DOE::FloorTile::OnExplore()
 {
 }
@@ -261,6 +274,14 @@ void DOE::FloorTile::OnHide()
 {
 }
 
-void DOE::FloorTile::OnTouch()
+void DOE::FloorTile::OnTeamStepIn(int team_id)
+{
+}
+
+void DOE::FloorTile::OnTeamStepOut(int team_id)
+{
+}
+
+void DOE::FloorTile::OnMapInit()
 {
 }
