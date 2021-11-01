@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shader name="FlatShader">
+
+  <properties>
+    <transparent enabled="false" />
+    <blend enabled="true" template_file="Blend.DefaultAlpha.xml"/>
+    <cull enabled="true" face="GL_BACK" />
+    <depth enabled="true" depth_mask="GL_TRUE" depth_func="GL_GREATER"/>
+  </properties>
+  
+  <aliases>
+    <alias uniform="mvp0" type="mat4" ref="ModelViewProjectionMatrix" />
+	<alias uniform="bones" type="mat4_array" ref="Bones" />
+  </aliases>
+  
+  <vertex>
+    <![CDATA[
+    #version 330 core
+	
+	#define _SKIN_ENABLED_
+	
+	#ifdef _SKIN_ENABLED_
+	const int MAX_BONES = 20; 
+	#endif
+	
+    layout (location = 0) in vec3 pos0;
+    layout (location = 1) in vec2 uv0;
+	layout (location = 2) in vec3 nrm0;
+	
+	#ifdef _SKIN_ENABLED_
+	layout (location = 3) in vec4 bones_weights;
+	layout (location = 4) in vec4 bones_indexes;
+	#endif
+
+    out vec2 uv0_out;
+	out vec3 nrm_out;
+	
+    uniform mat4 mvp0;
+	
+	#ifdef _SKIN_ENABLED_
+	uniform mat4 bones[MAX_BONES];
+	#endif
+	
+    void main()
+    {
+	#ifdef _SKIN_ENABLED_
+		vec4 skinned_position = vec4(pos0, 1.0);
+		vec4 skinned_normal = vec4(pos0+nrm0, 1.0);
+		
+		ivec4 bone_index = ivec4(round(bones_indexes));
+		vec4 bones_weights_normalized = normalize(bones_weights + bones_weights * clamp(bone_index, -1, 0));
+		
+		skinned_position = mix(skinned_position, bones[bone_index.x] * skinned_position, bones_weights_normalized.x);
+		skinned_normal = mix(skinned_normal, bones[bone_index.x] * skinned_normal, bones_weights_normalized.x);
+		
+		skinned_position = mix(skinned_position, bones[bone_index.y] * skinned_position, bones_weights_normalized.y);
+		skinned_normal = mix(skinned_normal, bones[bone_index.y] * skinned_normal, bones_weights_normalized.y);
+			
+		skinned_position = mix(skinned_position, bones[bone_index.z] * skinned_position, bones_weights_normalized.z);
+		skinned_normal = mix(skinned_normal, bones[bone_index.z] * skinned_normal, bones_weights_normalized.z);
+			
+		skinned_position = mix(skinned_position, bones[bone_index.w] * skinned_position, bones_weights_normalized.w);
+		skinned_normal = mix(skinned_normal, bones[bone_index.w] * skinned_normal, bones_weights_normalized.w);
+		
+		skinned_normal.xyz = normalize((skinned_normal - skinned_position).xyz);
+		
+		nrm_out = skinned_normal.xyz;
+		gl_Position = mvp0 * vec4(skinned_position.xyz, 1.0);
+		
+	#else
+		nrm_out = nrm0;
+		gl_Position = mvp0 * vec4(pos0.xyz, 1.0);
+	#endif
+
+		uv0_out = vec2(uv0.x, 1.0 - uv0.y);
+    }
+    ]]>
+  </vertex>
+  
+  <fragment>
+    <![CDATA[
+    #version 330 core
+    out vec4 FragColor;
+    
+    in vec2 uv0_out;
+	in vec3 nrm_out;
+	
+    uniform sampler2D tex0;
+    
+    void main()
+    {
+      FragColor = texture(tex0, uv0_out);
+	  FragColor.rgb = nrm_out;
+    }
+    ]]>
+  </fragment>
+  
+  <geometry>
+    <![CDATA[]]>
+  </geometry>
+</shader>

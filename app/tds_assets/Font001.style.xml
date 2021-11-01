@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<font name="Font001" internal_font="consola.ttf" internal_character_size="32">
+	<characters>
+		<preset value="english"/>
+		<preset value="russian"/>
+		<preset value="digits"/>
+		<preset value="punctuation"/>
+		<preset value="punctuation_ext"/>
+		<preset value="`~ " />
+	</characters>
+	<customization>
+		<fx type="fill" />
+		<fx type="outer_shadow"/>
+		<fx type="inner_shadow" />
+		<fx type="gradient" />
+		<fx type="outer_glow" />
+		<fx type="inner_glow" />
+		<fx type="contour" />
+	</customization>
+</font>

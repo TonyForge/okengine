@@ -22,6 +22,12 @@
     <Filter Include="projects\DenOfEvil\Interfaces">
       <UniqueIdentifier>{aa5b3328-b8ce-48f0-9d1d-1d3f6d10c376}</UniqueIdentifier>
     </Filter>
+    <Filter Include="projects\TDS">
+      <UniqueIdentifier>{ba633501-264d-467d-a150-bb4e7fe4ef80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="projects\TDS\Interfaces">
+      <UniqueIdentifier>{b697a2c5-beb7-497a-8ff0-faf018188152}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -159,6 +165,12 @@
     <ClCompile Include="projects\DenOfEvil\Scriptables.cpp">
       <Filter>projects\DenOfEvil</Filter>
     </ClCompile>
+    <ClCompile Include="TDS.cpp">
+      <Filter>projects\TDS</Filter>
+    </ClCompile>
+    <ClCompile Include="projects\TDS\TDSGame.cpp">
+      <Filter>projects\TDS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -295,6 +307,15 @@
     </ClInclude>
     <ClInclude Include="projects\DenOfEvil\Scriptables.h">
       <Filter>projects\DenOfEvil</Filter>
+    </ClInclude>
+    <ClInclude Include="TDS.h">
+      <Filter>projects\TDS</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\TDS\ITDSGame.h">
+      <Filter>projects\TDS\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="projects\TDS\TDSGame.h">
+      <Filter>projects\TDS</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
